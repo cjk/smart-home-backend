@@ -1,0 +1,48 @@
+{
+  "name": "home-automation-backend",
+  "version": "0.0.1",
+  "description": "Provides a real-time API for reading and writing to your home's devices",
+  "main": "app/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cjk/smart-home-backend.git"
+  },
+  "keywords": [
+    "hapi",
+    "hapi.js",
+    "node",
+    "knx",
+    "real-time",
+    "socket.io",
+    "redis",
+    "pubsub",
+    "automation"
+  ],
+  "author": "@cjk",
+  "license": "GPL-2.0",
+  "homepage": "https://github.com/cjk/smart-home-backend#readme",
+  "dependencies": {
+    "babel": "^5.8.21",
+    "babel-core": "^5.8.22",
+    "hapi": "latest",
+    "inert": "latest",
+    "redis": "latest",
+    "socket.io": "latest",
+    "socket.io-client": "latest"
+  },
+  "devDependencies": {
+    "babel-eslint": "^4.1.0",
+    "gulp": "^3.9.0",
+    "gulp-nodemon": "^2.0.4",
+    "gulp-util": "^3.0.6",
+    "nodemon": "latest",
+    "piping": "^0.2.0",
+    "tape": "latest"
+  },
+  "scripts": {
+    "start": "PORT=8000 ./node_modules/.bin/nodemon ./src/index.js"
+  },
+  "engines": {
+    "node": ">=0.12"
+  }
+}

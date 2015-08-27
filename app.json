@@ -1,0 +1,10 @@
+{
+  "name": "home-automation-backend",
+  "description": "Next-generation home-automation-backend.",
+  "env": {
+   "NODE_ENV": "production"
+  },
+  "repository": "git://github.com/cjk/smart-home-backend.git",
+  "logo": "http://cdn0.dailydot.com/cache/eb/a4/eba4bb2f70f42db2095f51d338a9bb19.jpg",
+  "keywords": ["automation", "smart", "gulp", "immutable", "backend", "knx", "node"]
+}
