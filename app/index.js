@@ -6,7 +6,6 @@ function enablePiping(env) {
       return;
     }
   }
-  require('./server');
+  require('./main');
 }
-
 enablePiping(process.env.NODE_ENV);

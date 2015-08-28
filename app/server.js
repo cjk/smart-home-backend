@@ -1,7 +1,8 @@
-import Path from 'path';
-import {Server} from 'hapi';
 import config from './config';
 import Inert from 'inert';
+import Monitor from './monitor';
+import Path from 'path';
+import {Server} from 'hapi';
 
 /**
  * Start Hapi server
@@ -9,6 +10,7 @@ import Inert from 'inert';
 const server = new Server({
   connections: {
     routes: {
+      cors: {credentials: true},
       files: {
         relativeTo: Path.join(__dirname, 'static')
       }
@@ -16,29 +18,35 @@ const server = new Server({
   }
 });
 
-server.connection(config.server);
+server.connection({port: config.server.port, labels: ['api']});
+server.connection({port: 4001, labels: ['monitor']});
+
+const api = server.select('api');
+const mon = server.select('monitor');
 
 /**
  * Serve static requests
  */
-server.register(Inert, (err) => {
-
+api.register(Inert, (err) => {
   if (err)
     throw err;
 
-  server.route({
-    // method: 'GET',
-    // path: '/',
-    // handler: {
-    // file: './index.html'
-    // },
-
+  api.route({
     method: 'GET',
     path: '/',
     handler: (req, reply) => { reply.file('index.html'); }
-
   });
 
+});
+
+/* Init KNX bus monitor via Websockets plugin */
+mon.register(Monitor, function(err) {
+  if (err)
+    throw err;
+
+});
+
+export default function() {
   server.start((err) => {
     if (err)
       throw err;
@@ -46,7 +54,4 @@ server.register(Inert, (err) => {
     console.info('==> ✅  Server is listening');
     console.info('==> 🌎  Go to ' + server.info.uri.toLowerCase());
   });
-
-});
-
-export default server;
+}
