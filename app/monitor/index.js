@@ -1,12 +1,12 @@
 import Handlers from './handlers';
-import {listener, handler} from '../knx';
+import {knxListender, handler} from '../knx';
 
 let register = function(server, options, next) {
 
-  let io = require('socket.io')(server.select('monitor').listener);
+  const io = require('socket.io')(server.select('monitor').listener),
+        knxHandler = handler(io);
 
-  const knxHandler = handler(io);
-  listener(knxHandler);
+  knxListender(knxHandler);
 
   io.on('connection', function(socket) {
 
