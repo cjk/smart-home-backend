@@ -1,4 +1,3 @@
-
 export function hello() {
   this.emit('Hi back at you');
 }

@@ -26,6 +26,7 @@
     "babel-core": "^5.8.22",
     "eibd": "^0.3.0",
     "hapi": "latest",
+    "immutable": "^3.7.4",
     "inert": "latest",
     "redis": "latest",
     "socket.io": "latest",
