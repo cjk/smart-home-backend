@@ -19,3 +19,6 @@ GPATH
 GRTAGS
 GTAGS
 .projectile
+
+# Credentials or sensitive information
+app/config/group-address-list.js
