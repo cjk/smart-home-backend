@@ -14,9 +14,12 @@ config.monitor = {
 config.knx = {
   addresses: addresses,
   readableAddr: [
-    '1/1/5',/* Kellerlicht Hobby1 + Waschraum via Tasterrückmeldung */
-    '1/1/7',/* Keller-3 Deckenleuchte via Tasterrückmeldung */
-    '1/2/1',/* Küche Deckenleuchten via Schaltaktor 1.1.2 Ausg. 3 */
+    '1/1/5',/* UG Keller-1-2 + Hobby1 via Tasterrückmeldung */
+    '1/1/6',/* UG Keller-2 Deckenleuchte via Präsenzmelder 1.1.42 Ausg. 0  */
+    '1/1/7',/* UG Keller-3 Deckenleuchte via Tasterrückmeldung */
+    '1/2/1',/* EG Küche Deckenleuchten via Schaltaktor 1.1.2 Ausg. 3 */
+    '1/2/6',/* EG WC Deckenleuchte via Schaltaktor 1.1.2 Ausg. 1 */
+    '10/0/10', /* UG Fenster Keller-2 Kontakt via Binäreingang 1.1.39 Ausg. A-1  */
   ]
 };
 
