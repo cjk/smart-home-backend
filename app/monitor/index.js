@@ -1,13 +1,11 @@
-/* TODO: Make use of Handlers */
-// import Handlers from './handlers';
+import IO from 'socket.io';
+import KnxHandler from './knx-handler';
+
 let register = function(server, options, next) {
 
-  const io = require('socket.io')(server.select('monitor').listener),
+  const io = IO(server.select('monitor').listener),
+        knxHandler = KnxHandler()(io),
         knxEvents = options.knxEmitter;
-
-  const sendKNXEvent = (event) => {
-    io.emit('KNX-event', event);
-  };
 
   io.on('connection', function(socket) {
 
@@ -18,12 +16,12 @@ let register = function(server, options, next) {
     // socket.on('goodbye', Handlers.goodbye);
 
     // socket.emit('news', 'Hello from server!');
-
   });
-  knxEvents.onValue(event => sendKNXEvent(event));
+
+  knxEvents.onValue(event => knxHandler(event));
 
   io.on('disconnect', function() {
-    knxEvents.offValue(() => sendKNXEvent());
+    knxEvents.offValue(() => knxHandler());
   });
 
   next();
