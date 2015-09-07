@@ -28,6 +28,7 @@
     "hapi": "latest",
     "immutable": "^3.7.4",
     "inert": "latest",
+    "kefir": "^2.8.1",
     "redis": "latest",
     "socket.io": "latest",
     "socket.io-client": "latest"
