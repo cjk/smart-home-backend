@@ -1,10 +1,11 @@
-import config from './config';
 import Inert from 'inert';
 import Monitor from './monitor';
 import Path from 'path';
 import {Server} from 'hapi';
 
 export default function(app) {
+  const {conf, busEmitter} = app;
+
   const server = new Server({
     connections: {
       routes: {
@@ -16,7 +17,7 @@ export default function(app) {
     }
   });
 
-  server.connection({port: config.server.port, labels: ['api']});
+  server.connection({port: conf.port, labels: ['api']});
   server.connection({port: 4001, labels: ['monitor']});
 
   const api = server.select('api');
@@ -38,7 +39,7 @@ export default function(app) {
   });
 
   /* Init KNX bus monitor via Websockets plugin */
-  mon.register({register: Monitor, options: {knxEmitter: app.knxEmitter}}, function(err) {
+  mon.register({register: Monitor, options: {busEmitter: busEmitter}}, function(err) {
     if (err)
       throw err;
 

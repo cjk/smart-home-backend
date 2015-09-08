@@ -5,7 +5,7 @@ let register = function(server, options, next) {
 
   const io = IO(server.select('monitor').listener),
         knxHandler = KnxHandler()(io),
-        knxEvents = options.knxEmitter;
+        knxEvents = options.busEmitter;
 
   io.on('connection', function(socket) {
 

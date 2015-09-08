@@ -1,6 +1,8 @@
 import knxd from 'eibd';
 import Event from './event';
 
+/* TODO: Implement error-handling here, since eibd throw strange messages when
+   connecting fails! */
 function groupSocketListen(opts, callback) {
   let conn = knxd.Connection();
 
