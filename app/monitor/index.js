@@ -1,22 +1,24 @@
-import Handlers from './handlers';
-import {knxListender, handler} from '../knx';
+import IO from 'socket.io';
+import KnxHandler from './knx-handler';
 
 let register = function(server, options, next) {
 
-  const io = require('socket.io')(server.select('monitor').listener),
-        knxHandler = handler(io);
-
-  knxListender(knxHandler);
+  const io = IO(server.select('monitor').listener),
+        knxHandler = KnxHandler()(io),
+        knxEvents = options.busEmitter;
 
   io.on('connection', function(socket) {
 
-    console.log('New connection!');
+    console.log('Got a WS-connection');
+    // socket.on('initialstate', Handlers.hello);
 
-    // socket.on('hello', Handlers.hello);
-    // socket.on('newMessage', Handlers.newMessage);
-    // socket.on('goodbye', Handlers.goodbye);
+    // socket.emit('news', 'Hello from server!');
+  });
 
-    socket.emit('news', 'Hello from server!');
+  knxEvents.onValue(event => knxHandler(event));
+
+  io.on('disconnect', function() {
+    knxEvents.offValue(() => knxHandler());
   });
 
   next();
