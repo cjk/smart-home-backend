@@ -10,10 +10,7 @@ let register = function(server, options, next) {
   io.on('connection', function(socket) {
 
     console.log('Got a WS-connection');
-
-    // socket.on('hello', Handlers.hello);
-    // socket.on('newMessage', Handlers.newMessage);
-    // socket.on('goodbye', Handlers.goodbye);
+    // socket.on('initialstate', Handlers.hello);
 
     // socket.emit('news', 'Hello from server!');
   });

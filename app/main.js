@@ -19,11 +19,6 @@ const busEvents = Kefir.stream((emitter) => {
 /* Create another stream only for events that carry a value, i.e. mutates our bus-state */
   mutatingBusEvents = busEvents.filter(e => mutatingEvents.contains(e.action));
 
-/* Setup and configure (websocket-/http-) server and pass event-emitters along
-   for use in plugins et. al. */
-server({conf: config.server, busEmitter: busEvents});
-console.log('Server initialized and ready to run.');
-
 const busState = mutatingBusEvents.scan((currentState, event) => {
   const addr = currentState.find(addr => addr.get('id') === event.dest);
   // console.log('Updating address: ', addr);
@@ -32,6 +27,11 @@ const busState = mutatingBusEvents.scan((currentState, event) => {
 }, initialstate);
 
 const busMonitor = Kefir.zip([mutatingBusEvents, busState]);
+
+/* Setup and configure (websocket-/http-) server and pass event-emitters along
+   for use in plugins et. al. */
+server({conf: config.server, busEmitter: busEvents});
+console.log('Server initialized and ready to run.');
 
 /* Also locally log each KNX-bus event to the console */
 // busEvents.log();
