@@ -1,6 +1,6 @@
 {
   "name": "home-automation-backend",
-  "version": "0.0.1",
+  "version": "0.8.0",
   "description": "Provides a real-time API for reading and writing to your home's devices",
   "main": "index.js",
   "repository": {
