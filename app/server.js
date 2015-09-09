@@ -4,7 +4,7 @@ import Path from 'path';
 import {Server} from 'hapi';
 
 export default function(app) {
-  const {conf, busEmitter} = app;
+  const {conf, busEmitter, busState} = app;
 
   const server = new Server({
     connections: {
@@ -39,7 +39,7 @@ export default function(app) {
   });
 
   /* Init KNX bus monitor via Websockets plugin */
-  mon.register({register: Monitor, options: {busEmitter: busEmitter}}, function(err) {
+  mon.register({register: Monitor, options: {busEmitter: busEmitter, busState: busState}}, function(err) {
     if (err)
       throw err;
 
