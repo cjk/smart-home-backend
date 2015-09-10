@@ -6,7 +6,7 @@ config.server = {
   port: process.env.PORT || 3005
 };
 
-config.monitor = {
+config.knxd = {
   host: 'zircon',
   port: '6720'
 };
