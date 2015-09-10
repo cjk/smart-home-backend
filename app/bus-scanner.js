@@ -1,4 +1,4 @@
-import readGroupAddr from './knx/readGroupAddress';
+import {readGroupAddr} from './knx/performBusAction';
 import Kefir from 'kefir';
 
 export default function scanBusAddr(addresses) {
