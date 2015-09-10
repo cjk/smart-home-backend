@@ -14,4 +14,4 @@ const {readableAddr} = config.knx;
 
 busScanner(readableAddr);
 
-// writeGroupAddr('1/1/7', '1');
+// writeGroupSAddr('1/1/7', '1');

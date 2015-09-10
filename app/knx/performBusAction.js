@@ -25,7 +25,7 @@ const sendReqToBusFor = function(action, datatype, value, address) {
       if (err) {
         callback(err);
       } else {
-        let msg = (action === 'read') ?
+        let msg = (action === 'read') ? /* as long as there is only read & write... */
                   knxReadMsg(action) :
                   knxWriteMsg(datatype, parseInt(value));
         conn.sendAPDU(msg, callback);
@@ -41,6 +41,10 @@ export function readGroupAddr(address, callback?) {
   return readAddr(address);
 }
 
-export function writeGroupAddr(address, value, callback?) {
+export function writeGroupSAddr(address, value, callback?) {
   return writeAddr('DPT3', value, address);
+}
+
+export function writeGroupAddr(address, value, callback?) {
+  return writeAddr('DPT5', value, address);
 }
