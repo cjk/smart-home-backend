@@ -1,19 +1,18 @@
 import IO from 'socket.io';
-import KnxHandler from './knx-handler';
+import handleEvents from './handleEvents';
 
 let register = function(server, options, next) {
 
-  const io = IO(server.select('monitor').listener),
-    knxHandler = KnxHandler()(io),
-    knxEvents = options.busEmitter,
-    busState = options.busState;
+  const io = IO(server.select('busHandler').listener),
+        eventHandler = handleEvents()(io),
+        busEvents = options.busEmitter,
+        busState = options.busState;
 
   io.on('connection', function(socket) {
-
-    console.log('Got a WS-connection');
+    // console.log('Got a WS-connection');
 
     io.on('disconnect', function() {
-      knxEvents.offValue(() => knxHandler());
+      busEvents.offValue(() => eventHandler());
     });
 
     /* Send current bus-state to client on demand */
@@ -27,13 +26,13 @@ let register = function(server, options, next) {
     // socket.emit('news', 'Hello from server!');
   });
 
-  knxEvents.onValue(event => knxHandler(event));
+  busEvents.onValue(event => eventHandler(event));
 
   next();
 };
 
 register.attributes = {
-  name: 'knx-monitor'
+  name: 'bus-handler'
 };
 
 export default register;

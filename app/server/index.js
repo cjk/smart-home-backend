@@ -1,5 +1,5 @@
 import Inert from 'inert';
-import Monitor from './monitor';
+import BusHandler from './handler';
 import Path from 'path';
 import {Server} from 'hapi';
 
@@ -18,10 +18,10 @@ export default function(app) {
   });
 
   server.connection({port: conf.port, labels: ['api']});
-  server.connection({port: 4001, labels: ['monitor']});
+  server.connection({port: 4001, labels: ['busHandler']});
 
   const api = server.select('api');
-  const mon = server.select('monitor');
+  const hdl = server.select('busHandler');
 
   /**
    * Serve static requests
@@ -38,8 +38,8 @@ export default function(app) {
 
   });
 
-  /* Init KNX bus monitor via Websockets plugin */
-  mon.register({register: Monitor, options: {busEmitter: busEmitter, busState: busState}}, function(err) {
+  /* Init (KNX-) bus-handler via HAPI Websockets plugin */
+  hdl.register({register: BusHandler, options: {busEmitter: busEmitter, busState: busState}}, function(err) {
     if (err)
       throw err;
 
