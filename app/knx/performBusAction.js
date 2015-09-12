@@ -14,11 +14,10 @@ const isWriteOnly = (action) => action === 'write',
       knxReadMsg = R.unary(knxd.createMessage),
       knxWriteMsg = R.partial(knxd.createMessage, 'write');
 
-const sendReqToBusFor = function(action, datatype, value, address) {
+const sendReqToBusFor = function(action, datatype, value, address, callback = defaultCallback) {
   const conn = knxd.Connection(),
         addr = knxd.str2addr(address),
-        conf = config.knxd,
-        callback = defaultCallback;
+        conf = config.knxd;
 
   conn.socketRemote(conf, function() {
     conn.openTGroup(addr, isWriteOnly(action), (err) => {
@@ -37,14 +36,16 @@ const sendReqToBusFor = function(action, datatype, value, address) {
 const readAddr = R.partial(sendReqToBusFor, 'read', null, null);
 const writeAddr = R.partial(sendReqToBusFor, 'write');
 
+/* TODO: use address-record for `address` everywhere instead of text-string */
+
 export function readGroupAddr(address, callback?) {
   return readAddr(address);
 }
 
 export function writeGroupSAddr(address, value, callback?) {
-  return writeAddr('DPT3', value, address);
+  return writeAddr('DPT3', value, address, callback);
 }
 
 export function writeGroupAddr(address, value, callback?) {
-  return writeAddr('DPT5', value, address);
+  return writeAddr('DPT5', value, address, callback);
 }

@@ -1,5 +1,7 @@
 import IO from 'socket.io';
 import handleEvents from './handleEvents';
+import handleInitialState from './handleInitialState';
+import handleBusWrites from './handleBusWrites';
 
 let register = function(server, options, next) {
 
@@ -11,19 +13,20 @@ let register = function(server, options, next) {
   io.on('connection', function(socket) {
     // console.log('Got a WS-connection');
 
-    io.on('disconnect', function() {
-      busEvents.offValue(() => eventHandler());
-    });
-
     /* Send current bus-state to client on demand */
-    socket.on('initialstate', (request) => {
-      busState.onValue((currentState) => socket.emit('initialstate', currentState));
-    }, (err) => {
+    socket.on('initialstate', handleInitialState(socket, busState), (err) => {
       console.log('Oops, error occurred while answering to <initialstate> request: ', err);
     });
 
-    // socket.on('initialstate', Handlers.hello);
+    socket.on('writeToBus', handleBusWrites(socket), (err) => {
+      console.log('Oops, error occurred while answering to <writeToBus> request: ', err);
+    });
+
     // socket.emit('news', 'Hello from server!');
+  });
+
+  io.on('disconnect', function() {
+    busEvents.offValue(() => eventHandler());
   });
 
   busEvents.onValue(event => eventHandler(event));
