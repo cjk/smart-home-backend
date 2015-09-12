@@ -1,14 +1,21 @@
 import Address from '../../knx/address';
+import K from 'kefir';
 import {writeGroupSAddr, writeGroupAddr} from '../../knx/performBusAction';
 
 export default function handleBusWrites(socket) {
-  return (writeRequest) => {
-    const addr = new Address(writeRequest);
 
+  const writeRequests = K.stream(emitter => {
+    socket.on('writeToBus', (writeRequest) => {
+      emitter.emit(new Address(writeRequest));
+    }, (err) => {
+      console.log('Oops, error occurred while answering to <writeToBus> request: ', err);
+    });
+  });
+
+  writeRequests.onValue((addr) => {
     console.log('[handleBusWrites] Received write request for addr: ', addr);
 
     switch (addr.type) {
-
       case 'DPT3':
         writeGroupSAddr(addr.id, addr.value, (v) => console.log('done writing: ', v));
         break;
@@ -17,5 +24,5 @@ export default function handleBusWrites(socket) {
         writeGroupAddr(addr.addr, addr.value, (v) => console.log('done writing: ', v));
         break;
     }
-  };
+  });
 };

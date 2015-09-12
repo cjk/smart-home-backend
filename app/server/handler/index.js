@@ -1,7 +1,7 @@
-import IO from 'socket.io';
 import handleEvents from './handleEvents';
 import handleInitialState from './handleInitialState';
 import handleBusWrites from './handleBusWrites';
+import IO from 'socket.io';
 
 let register = function(server, options, next) {
 
@@ -14,15 +14,11 @@ let register = function(server, options, next) {
     // console.log('Got a WS-connection');
 
     /* Send current bus-state to client on demand */
-    socket.on('initialstate', handleInitialState(socket, busState), (err) => {
-      console.log('Oops, error occurred while answering to <initialstate> request: ', err);
-    });
+    handleInitialState(socket, busState);
 
-    socket.on('writeToBus', handleBusWrites(socket), (err) => {
-      console.log('Oops, error occurred while answering to <writeToBus> request: ', err);
-    });
-
-    // socket.emit('news', 'Hello from server!');
+    /* Send received bus-write-request to the bus (without ACK, since the
+       bus-write-event will be send to the client anyways) */
+    handleBusWrites(socket);
   });
 
   io.on('disconnect', function() {
