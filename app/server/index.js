@@ -49,7 +49,8 @@ export default function(app) {
     if (err)
       throw err;
 
-    console.info('==> ✅  Server is listening');
-    console.info('==> 🌎  Go to ' + server.info.uri.toLowerCase());
+    console.info('==> ✅  Server started');
+    console.info('==> 🌎  API is available on ' + server.connections[0].info.uri.toLowerCase());
+    console.info('==> 🌎  HomeBus is available on ' + server.connections[1].info.uri.toLowerCase());
   });
 }
