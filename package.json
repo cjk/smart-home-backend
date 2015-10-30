@@ -44,7 +44,7 @@
     "tape": "latest"
   },
   "scripts": {
-    "start": "PORT=8000 ./node_modules/.bin/nodemon ./src/index.js"
+    "start": "PORT=8000 ./node_modules/.bin/nodemon ./app/index.js"
   },
   "engines": {
     "node": ">=0.12"
