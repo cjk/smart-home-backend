@@ -7,7 +7,7 @@ config.server = {
 };
 
 config.knxd = {
-  host: 'zircon',
+  host: 'localhost',
   port: '6720'
 };
 
