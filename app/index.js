@@ -1,4 +1,4 @@
-require('babel/register')({optional: ['es7']});
+require('babel-register');
 
 function enablePiping(env) {
   if (env !== 'production') {

@@ -38,14 +38,14 @@ const writeAddr = R.partial(sendReqToBusFor, 'write');
 
 /* TODO: use address-record for `address` everywhere instead of text-string */
 
-export function readGroupAddr(address, callback?) {
+export function readGroupAddr(address, callback) {
   return readAddr(address);
 }
 
-export function writeGroupSAddr(address, value, callback?) {
+export function writeGroupSAddr(address, value, callback) {
   return writeAddr('DPT3', value, address, callback);
 }
 
-export function writeGroupAddr(address, value, callback?) {
+export function writeGroupAddr(address, value, callback) {
   return writeAddr('DPT5', value, address, callback);
 }
