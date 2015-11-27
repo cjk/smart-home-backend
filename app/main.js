@@ -12,6 +12,7 @@ console.log('Server initialized and ready to run.');
 
 const {readableAddr} = config.knx;
 
-busScanner(readableAddr);
+if (config.knxd.isAvailable)
+  busScanner(readableAddr);
 
 // writeGroupSAddr('1/1/7', '1');
