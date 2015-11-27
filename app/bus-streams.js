@@ -3,7 +3,7 @@ import immutable, {List} from 'immutable';
 
 import Kefir from 'kefir';
 
-import {knxListender} from './knx';
+import knxListener from './knx';
 
 export default function createBusStreams() {
 
@@ -32,14 +32,12 @@ export default function createBusStreams() {
         mutatingEvents = new List(['write', 'response']);
 
   /* 1. Create stream to capture *all* KNX-bus events */
-  const busEvents = Kefir.stream((emitter) => {
-    knxListender(emitter);
-  });
+  const busEvents = Kefir.stream((emitter) => knxListener(emitter));
 
-  /* Create another (sub-) stream only for events that carry a value, i.e. mutate our bus-state */
+  /* 2. Create another (sub-) stream only for events that carry a value, i.e. mutate our bus-state */
   const mutatingBusEvents = busEvents.filter(e => mutatingEvents.contains(e.action));
 
-  /* Create a modified (property-) stream derived from busState by applying an
+  /* 3. Create a modified (property-) stream derived from busState by applying an
      event-delta when events come in from the bus-events-stream.
      This reflects our bus-state changing over time.
    */

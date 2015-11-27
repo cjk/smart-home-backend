@@ -1,10 +1,10 @@
 import config from '../config';
 
-import listener from './listener';
+import knxdSrc from './knxdSource';
+import mockSrc from './mockSource';
 
 const opts = {host: config.knxd.host, port: config.knxd.port},
-      knxListender = listener(opts);
+      /*       knxListener = knxdSrc(opts); */
+      knxListener = mockSrc(opts);
 
-export default {
-  knxListender,
-};
+export default knxListener;
