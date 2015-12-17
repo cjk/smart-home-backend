@@ -12,7 +12,7 @@ function defaultCallback(err) {
 
 const isWriteOnly = (action) => action === 'write',
       knxReadMsg = R.unary(knxd.createMessage),
-      knxWriteMsg = R.partial(knxd.createMessage, 'write');
+      knxWriteMsg = R.partial(knxd.createMessage, ['write']);
 
 const sendReqToBusFor = function(action, datatype, value, address, callback = defaultCallback) {
   const conn = knxd.Connection(),
@@ -24,7 +24,7 @@ const sendReqToBusFor = function(action, datatype, value, address, callback = de
       if (err) {
         callback(err);
       } else {
-        let msg = (action === 'read') ? /* as long as there is only read & write... */
+        const msg = (action === 'read') ? /* as long as there is only read & write... */
                   knxReadMsg(action) :
                   knxWriteMsg(datatype, parseInt(value, 10));
         conn.sendAPDU(msg, callback);
