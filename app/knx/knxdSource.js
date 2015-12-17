@@ -9,6 +9,10 @@ const getTimestamp = () => new Date().toISOString().slice(0, 19);
 
 function listener(emitter) {
   return (parser) => {
+    /* TODO: Once EIBd#openGroupSocket allows for an err-object, we can start emmiting errors when needed: */
+    /* if (err) {
+       emitter.error(err);
+       } else { ... */
     parser.on('write', function(src, dest, type, val) {
       console.log(`[${getTimestamp()}] Write from ${src} to ${dest}: ${val} [${type}]`);
       emitter.emit(new Event({created: Date.now(), action: 'write', src: src, dest: dest, type: type, value: val}));
@@ -21,16 +25,26 @@ function listener(emitter) {
       console.log(`[${getTimestamp()}] Read from ${src} to ${dest}`);
       emitter.emit(new Event({created: Date.now(), action: 'read', src: src, dest: dest}), 'bar');
     });
+
   };
 }
 
 
-/* TODO: Implement error-handling here, since eibd throw strange messages when
-   connecting fails! */
+/* Used to call into EIBd#openGroupSocket using the callback-function defined
+   above.
+
+   We implement error-handling here, since eibd throws strange messages when
+   connecting fails (i.e. KNXd is down)! */
 function groupSocketListen(opts, callback) {
   let conn = knxd.Connection();
 
-  conn.socketRemote(opts, function() {
+  conn.socketRemote(opts, function(err) {
+    if (err) {
+      console.log('ERROR connecting to remote KNXd: ', err);
+      callback(err);
+      return;
+    }
+
     conn.openGroupSocket(0, callback);
   });
 }
