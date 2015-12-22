@@ -3,7 +3,7 @@ import handleInitialState from './handleInitialState';
 import handleBusWrites from './handleBusWrites';
 import IO from 'socket.io';
 
-let register = function(server, options, next) {
+const register = function(server, options, next) {
 
   const io = IO(server.select('busHandler').listener),
         eventHandler = handleEvents()(io),

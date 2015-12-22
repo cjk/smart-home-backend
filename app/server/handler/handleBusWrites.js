@@ -17,11 +17,11 @@ export default function handleBusWrites(socket) {
 
     switch (addr.type) {
       case 'DPT3':
-        writeGroupSAddr(addr.id, addr.value, (v) => console.log('done writing: ', v));
+        writeGroupSAddr(addr.id, addr.value, (v) => console.log('done writing to s-addr: ', v));
         break;
 
       case 'DPT5':
-        writeGroupAddr(addr.addr, addr.value, (v) => console.log('done writing: ', v));
+        writeGroupAddr(addr.addr, addr.value, (v) => console.log('done writing to addr: ', v));
         break;
     }
   });
