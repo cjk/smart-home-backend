@@ -47,8 +47,12 @@ export default function createBusStreams() {
   // const busMonitor = Kefir.zip([mutatingBusEvents, busState]);
 
   /* for DEBUGGING: Also locally log each KNX-bus event to the console */
-  busEvents.log();
-  busState.log();
+  if (config.logging.logBusEvents)
+    busEvents.log();
+
+  if (config.logging.logBusStateOnEvent)
+    busState.log();
+
   // busMonitor.log();
 
   return {

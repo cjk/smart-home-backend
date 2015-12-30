@@ -12,6 +12,11 @@ config.knxd = {
   isAvailable: true
 };
 
+config.logging = {
+  logBusStateOnEvent: false,
+  logBusEvents: true
+};
+
 config.knx = {
   addresses: addresses,
   readableAddr: [
