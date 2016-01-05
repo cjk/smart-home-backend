@@ -22,13 +22,13 @@ export default function createBusStreams() {
 
   /* From all groupaddresses, returns only those with a readable-flag set (see
      config.knx.readableAddr) */
-  function initialStateOnlyForReadableAddr(addresses) {
+  function initialStateWithReadableAddr(addresses) {
     const addressFilter = new List(readableAddr);
 
     return immutable.fromJS(addresses).filter(addr => addressFilter.contains(addr.get('id')));
   }
 
-  const initialstate = initialStateOnlyForReadableAddr(addresses),
+  const initialstate = initialStateWithReadableAddr(addresses),
         mutatingEvents = new List(['write', 'response']);
 
   /* 1. Create stream to capture *all* KNX-bus events */

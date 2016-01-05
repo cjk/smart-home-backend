@@ -2,8 +2,14 @@
    running somewhere on your network.
  */
 
+import config from '../config';
 import Event from './event';
 import knxd from 'eibd';
+
+/* Identify name of the event's associated address to make debug-output more
+   readable */
+const addresses = config.knx.addressMap();
+const addressFor = (addrId) => addresses.get(addrId).name;
 
 const getTimestamp = () => new Date().toISOString().slice(0, 19);
 
@@ -14,16 +20,22 @@ function listener(emitter) {
        emitter.error(err);
        } else { ... */
     parser.on('write', function(src, dest, type, val) {
-      console.log(`[${getTimestamp()}] Write from ${src} to ${dest}: ${val} [${type}]`);
-      emitter.emit(new Event({created: Date.now(), action: 'write', src: src, dest: dest, type: type, value: val}));
+      console.log(`[${getTimestamp()}] Write from ${src} to ${dest} (${addressFor(dest)}): ${val} [${type}]`);
+      emitter.emit(new Event(
+        {created: Date.now(), action: 'write', src: src, dest: dest, type: type, value: val}
+      ));
     });
     parser.on('response', function(src, dest, type, val) {
-      console.log(`[${getTimestamp()}] Response from ${src} to ${dest}: ${val} [${type}]`);
-      emitter.emit(new Event({created: Date.now(), action: 'response', src: src, dest: dest, type: type, value: val}), 'foo');
+      console.log(`[${getTimestamp()}] Response from ${src} to ${dest} (${addressFor(dest)}): ${val} [${type}]`);
+      emitter.emit(new Event(
+        {created: Date.now(), action: 'response', src: src, dest: dest, type: type, value: val}
+      ), 'foo');
     });
     parser.on('read', function(src, dest) {
-      console.log(`[${getTimestamp()}] Read from ${src} to ${dest}`);
-      emitter.emit(new Event({created: Date.now(), action: 'read', src: src, dest: dest}), 'bar');
+      console.log(`[${getTimestamp()}] Read from ${src} to ${dest} (${addressFor(dest)})`);
+      emitter.emit(new Event(
+        {created: Date.now(), action: 'read', src: src, dest: dest}
+      ), 'bar');
     });
 
   };
