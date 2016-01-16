@@ -27,10 +27,10 @@ export default function createBusStreams() {
 
     return immutable.fromJS(addresses).filter(addr => addressFilter.contains(addr.get('id')));
   }
-
   const initialstate = initialStateWithReadableAddr(addresses),
         mutatingEvents = new List(['write', 'response']);
 
+  /* Create BUS-state */
   /* 1. Create stream to capture *all* KNX-bus events */
   const busEvents = Kefir.stream((emitter) => knxListener(emitter));
 
@@ -43,17 +43,12 @@ export default function createBusStreams() {
    */
   const busState = mutatingBusEvents.scan(updateFromEvent, initialstate);
 
-  /* Not needed yet: Combinded stream of all that's going on on the home-bus */
-  // const busMonitor = Kefir.zip([mutatingBusEvents, busState]);
-
   /* for DEBUGGING: Also locally log each KNX-bus event to the console */
   if (config.logging.logBusEvents)
     busEvents.log();
 
   if (config.logging.logBusStateOnEvent)
     busState.log();
-
-  // busMonitor.log();
 
   return {
     busEvents: busEvents,

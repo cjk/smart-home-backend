@@ -7,8 +7,6 @@ export default function handleBusWrites(socket) {
   const writeRequests = K.stream(emitter => {
     socket.on('writeToBus', (writeRequest) => {
       emitter.emit(new Address(writeRequest));
-    }, (err) => {
-      console.log('Oops, error occurred while answering to <writeToBus> request: ', err);
     });
   });
 

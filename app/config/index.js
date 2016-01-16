@@ -50,4 +50,9 @@ config.knx = {
   ]
 };
 
+config.fermenter = {
+  host: 'alarmpi',
+  port: 8080
+};
+
 export default config;

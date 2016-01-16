@@ -1,24 +1,25 @@
 import handleEvents from './handleEvents';
+import handleFermenterState from './handleFermenterState';
 import handleInitialState from './handleInitialState';
 import handleBusWrites from './handleBusWrites';
 import IO from 'socket.io';
 
 const register = function(server, options, next) {
 
+  const {busEvents, busState, fermenterState} = options.streams;
+
   const io = IO(server.select('busHandler').listener),
-        eventHandler = handleEvents()(io),
-        busEvents = options.busEmitter,
-        busState = options.busState;
+        eventHandler = handleEvents()(io);
 
   io.on('connection', function(socket) {
-    // console.log('Got a WS-connection');
-
     /* Send current bus-state to client on demand */
     handleInitialState(socket, busState);
 
     /* Send received bus-write-request to the bus (without ACK, since the
        bus-write-event will be send to the client anyways) */
     handleBusWrites(socket);
+
+    handleFermenterState(socket, fermenterState);
   });
 
   io.on('disconnect', function() {

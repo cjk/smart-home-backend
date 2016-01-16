@@ -9,8 +9,6 @@ export default function handleInitialState(socket, busState) {
   const initialStateRequests = K.stream(emitter => {
     socket.on('initialstate', (req) => {
       emitter.emit(socket);
-    }, (err) => {
-      console.log('Oops, error occurred while answering to <initialstate> request: ', err);
     });
   });
 

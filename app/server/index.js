@@ -4,7 +4,7 @@ import Path from 'path';
 import {Server} from 'hapi';
 
 export default function(app) {
-  const {conf, busEmitter, busState} = app;
+  const {conf, streams} = app;
 
   const server = new Server({
     connections: {
@@ -39,7 +39,7 @@ export default function(app) {
   });
 
   /* Init (KNX-) bus-handler via HAPI Websockets plugin */
-  hdl.register({register: BusHandler, options: {busEmitter: busEmitter, busState: busState}}, function(err) {
+  hdl.register({register: BusHandler, options: {streams: streams}}, function(err) {
     if (err)
       throw err;
 
