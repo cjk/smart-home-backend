@@ -1,5 +1,5 @@
 import config from './config';
-import immutable, {List} from 'immutable';
+import {List} from 'immutable';
 
 import Kefir from 'kefir';
 
@@ -7,17 +7,22 @@ import knxListener from './knx';
 
 export default function createBusStreams() {
 
-  const {addresses, readableAddr} = config.knx;
+  const {addressMap, readableAddr} = config.knx;
 
   /* Takes the current bus-state and an event, applies the changes the event
      implies and returns the new bus-state */
   function updateFromEvent(currentState, event) {
-    const addr = currentState.find(addr => addr.get('id') === event.dest);
+    const addrId = event.dest;
 
-    if (!addr)
+    /* DEBUGGING */
+    console.log(`Updateing state for addr ${addrId} from ${currentState.get(addrId)} to ${event.value}`);
+
+    if (!currentState.has(addrId)) {
+      console.warn(`No matching address found for key ${addrId} - ignoring!`);
       return currentState;
+    }
 
-    return currentState.set(currentState.indexOf(addr), addr.set('value', event.value));
+    return currentState.update(event.dest, addr => addr.set('value', event.value));
   };
 
   /* From all groupaddresses, returns only those with a readable-flag set (see
@@ -25,9 +30,11 @@ export default function createBusStreams() {
   function initialStateWithReadableAddr(addresses) {
     const addressFilter = new List(readableAddr);
 
-    return immutable.fromJS(addresses).filter(addr => addressFilter.contains(addr.get('id')));
+    return addresses
+             .filter((v,k) => addressFilter.contains(k));
   }
-  const initialstate = initialStateWithReadableAddr(addresses),
+
+  const initialstate = initialStateWithReadableAddr(addressMap()),
         mutatingEvents = new List(['write', 'response']);
 
   /* Create BUS-state */

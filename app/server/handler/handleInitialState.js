@@ -16,6 +16,6 @@ export default function handleInitialState(socket, busState) {
 
   handleInitialState.onValue((args) => {
     const [state, socket] = args;
-    socket.emit('initialstate', state);
+    socket.emit('initialstate', state.toJS());
   });
 };

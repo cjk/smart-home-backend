@@ -9,6 +9,7 @@ import knxd from 'eibd';
 /* Identify name of the event's associated address to make debug-output more
    readable */
 const addresses = config.knx.addressMap();
+
 const addressFor = (addrId) => addresses.get(addrId).name;
 
 const getTimestamp = () => new Date().toISOString().slice(0, 19);
