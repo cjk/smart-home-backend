@@ -9,9 +9,15 @@ config.server = {
 };
 
 config.knxd = {
-  host: 'zircon', /* like 'localhost'  */
+  host: 'zircon', /* like 'zircon' or 'localhost'  */
   port: '6720',
   isAvailable: true
+};
+
+config.fermenter = {
+  host: 'alarmpi', /* default: 'alarmpi' */
+  // port: 8081 /* default: 8080 for local development */
+  port: 8080 /* default: 8080 on alarmpi */
 };
 
 config.logging = {
@@ -49,11 +55,6 @@ config.knx = {
     '9/0/1', /* EG Wohnzimmer/Esszimmer/Küche Szene "Abendessen" via Taster 1.1.24 Taste 7 (Rückmeldeobjekt Taste 7, Objekt A) */
     '9/1/0', /* OG Kind-1 / Schlafzimmer Deckenleuchte Nord via Rückmeldeobjekt Taster 1.1.31 Taste 1 */
   ]
-};
-
-config.fermenter = {
-  host: 'localhost', /* default: 'alarmpi' */
-  port: 8081 /* default: 8080 */
 };
 
 export default config;

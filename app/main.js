@@ -24,5 +24,7 @@ console.log('Server initialized and ready to run.');
 const {readableAddr} = config.knx;
 
 /* Start initial bus-scan for some well-known addresses  */
-if (config.knxd.isAvailable)
+if (config.knxd.isAvailable) {
   busScanner(readableAddr);
+  busState.log();
+}
