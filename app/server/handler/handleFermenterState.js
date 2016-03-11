@@ -8,7 +8,7 @@ import K from 'kefir';
 export default function handleFermenterState(socket, fermenterState) {
   const fermenterStateRequests = K.stream(emitter => {
     socket.on('fermenterstate', (req) => {
-      console.log(`~~~ Fermenter-Handler got request: ${JSON.stringify(req)}`);
+      console.log('~~~ Fermenter-Handler got request from web-client.');
 
       emitter.emit(socket);
     });
@@ -19,7 +19,7 @@ export default function handleFermenterState(socket, fermenterState) {
   handleFermenterState
     .onValue((args) => {
       const [state, socket] = args;
-      console.log(`~~~ Emitting fermenterstate: JSON.stringify(state)`);
+      console.log(`~~~ Emitting fermenterstate: ${JSON.stringify(state)}`);
 
       socket.emit('fermenterstate', state);
     })
