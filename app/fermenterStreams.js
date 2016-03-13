@@ -8,6 +8,10 @@ const {host, port} = config.fermenter;
 
 export default function createFermenterStreams() {
 
+  if (!config.fermenter.isAvailable) {
+    return {fermenterState: Kefir.constant({})};
+  }
+
   const fermenterStateStream = Kefir.stream(emitter => {
     const emitFermenterState = (state) => {
       console.log('Got Fermenter-State:', JSON.stringify(immutable.fromJS(state).updateIn(['env', 'createdAt'], v => moment(v).format())));
