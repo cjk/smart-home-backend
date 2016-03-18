@@ -1,9 +1,7 @@
-import config from './config';
+import config from '../config';
 import {List} from 'immutable';
-
 import Kefir from 'kefir';
-
-import knxListener from './knx';
+import knxListener from '../knx';
 
 /* Takes the current bus-state and an event, applies the changes the event
    implies and returns the new bus-state */
@@ -25,7 +23,6 @@ function updateFromEvent(currentState, event) {
 };
 
 export default function createBusStreams() {
-
   const {addressMap, readableAddr} = config.knx;
 
   /* From all groupaddresses, returns only those with a readable-flag set (see

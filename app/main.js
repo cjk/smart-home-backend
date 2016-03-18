@@ -1,7 +1,7 @@
 import busScanner from './bus-scanner';
 import config from './config';
-import createBusStreams from './bus-streams';
-import createFermenterStreams from './fermenterStreams.js';
+import createBusStreams from './streams/bus';
+import createFermenterStreams from './streams/fermenter.js';
 
 import server from './server';
 

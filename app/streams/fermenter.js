@@ -1,4 +1,4 @@
-import config from './config';
+import config from '../config';
 import io from 'socket.io-client';
 import Kefir from 'kefir';
 import moment from 'moment';
