@@ -2,6 +2,7 @@ import config from '../config';
 import {List} from 'immutable';
 import Kefir from 'kefir';
 import knxListener from '../knx';
+import addressRefresher from '../lib/auto-refresher.js';
 
 /* Takes the current bus-state and an event, applies the changes the event
    implies and returns the new bus-state */
@@ -49,6 +50,9 @@ export default function createBusStreams() {
      This reflects our bus-state changing over time.
    */
   const busState = mutatingBusEvents.scan(updateFromEvent, initialstate);
+
+  /* Refresh address-values in state from time to time */
+  addressRefresher(busState);
 
   /* for DEBUGGING: Also locally log each KNX-bus event to the console */
   if (config.logging.logBusEvents)
