@@ -5,25 +5,28 @@ import Kefir from 'kefir';
 
 import knxListener from './knx';
 
+/* Takes the current bus-state and an event, applies the changes the event
+   implies and returns the new bus-state */
+function updateFromEvent(currentState, event) {
+  const addrId = event.dest;
+
+  if (!currentState.has(addrId)) {
+    console.warn(`No matching address found for key ${addrId} - ignoring!`);
+    return currentState;
+  }
+
+  /* DEBUGGING */
+  console.log(`~~ Updateing state for addr ${addrId} <${currentState.get(addrId).name}> from ${currentState.get(addrId).value} to ${event.value}`);
+
+  return currentState.update(event.dest, addr => addr
+                         .set('value', event.value)
+                         .set('updatedAt', Date.now())
+  );
+};
+
 export default function createBusStreams() {
 
   const {addressMap, readableAddr} = config.knx;
-
-  /* Takes the current bus-state and an event, applies the changes the event
-     implies and returns the new bus-state */
-  function updateFromEvent(currentState, event) {
-    const addrId = event.dest;
-
-    /* DEBUGGING */
-    console.log(`Updateing state for addr ${addrId} from ${currentState.get(addrId)} to ${event.value}`);
-
-    if (!currentState.has(addrId)) {
-      console.warn(`No matching address found for key ${addrId} - ignoring!`);
-      return currentState;
-    }
-
-    return currentState.update(event.dest, addr => addr.set('value', event.value));
-  };
 
   /* From all groupaddresses, returns only those with a readable-flag set (see
      config.knx.readableAddr) */
