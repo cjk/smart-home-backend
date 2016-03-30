@@ -3,19 +3,38 @@
 
 import K from 'kefir';
 
-/* TODO: Check if we're leaking resources here - unsubscribe from streams,
-   handle onDisconnect-socket, ...?! */
-export default function handleInitialState(socket, busState) {
-  const initialStateRequests = K.stream(emitter => {
+function createRequestStream(socket) {
+  return K.stream(emitter => {
     socket.on('initialstate', (req) => {
+      console.log('~~~ Initialstate-Handler got request from web-client.');
       emitter.emit(socket);
     });
   });
-
-  const handleInitialState = busState.sampledBy(initialStateRequests, (state, socket) => [state, socket]);
-
-  handleInitialState.onValue((args) => {
-    const [state, socket] = args;
-    socket.emit('initialstate', state.toJS());
-  });
 };
+
+function errorHandler(error) {
+  console.warn(error);
+}
+
+function handleInitialState(io, stream) {
+  io.on('connection', (socket) => {
+
+    function sendState(state) {
+      console.log(`~~~ Emitting initial (smart-home-) state: ${JSON.stringify(state)}`);
+      socket.emit('initialstate', state.toJS());
+    };
+
+    const stateRequestStream = createRequestStream(socket);
+    const triggerStateRespone = stream.sampledBy(stateRequestStream);
+
+    triggerStateRespone.onValue(sendState)
+                       .onError(errorHandler);
+
+    io.on('disconnect', () => {
+      triggerStateRespone.OffValue(sendState)
+                         .OffError(errorHandler);
+    });
+  });
+}
+
+export default handleInitialState;

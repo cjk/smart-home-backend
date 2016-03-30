@@ -12,14 +12,15 @@ const register = function(server, options, next) {
         eventHandler = handleEvents()(io);
 
   io.on('connection', function(socket) {
-    /* Send current bus-state to client on demand */
-    handleInitialState(socket, busState);
 
     /* Send received bus-write-request to the bus (without ACK, since the
        bus-write-event will be send to the client anyways) */
     handleBusWrites(socket);
 
   });
+
+  /* Send current bus-state to client on demand */
+  handleInitialState(io, busState);
 
   handleFermenterState(io, fermenterState);
 
