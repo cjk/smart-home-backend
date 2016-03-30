@@ -19,8 +19,9 @@ const register = function(server, options, next) {
        bus-write-event will be send to the client anyways) */
     handleBusWrites(socket);
 
-    handleFermenterState(socket, fermenterState);
   });
+
+  handleFermenterState(io, fermenterState);
 
   io.on('disconnect', function() {
     busEvents.offValue(() => eventHandler());

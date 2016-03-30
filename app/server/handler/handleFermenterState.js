@@ -3,27 +3,35 @@
 
 import K from 'kefir';
 
-/* TODO: Check if we're leaking resources here - unsubscribe from streams,
-   handle onDisconnect-socket, ...?! */
-export default function handleFermenterState(socket, fermenterState) {
-  const fermenterStateRequests = K.stream(emitter => {
+function createRequestStream(socket) {
+  return K.stream(emitter => {
     socket.on('fermenterstate', (req) => {
       console.log('~~~ Fermenter-Handler got request from web-client.');
-
       emitter.emit(socket);
     });
   });
-
-  const handleFermenterState = fermenterState.sampledBy(fermenterStateRequests, (state, socket) => [state, socket]);
-
-  handleFermenterState
-    .onValue((args) => {
-      const [state, socket] = args;
-      console.log(`~~~ Emitting fermenterstate: ${JSON.stringify(state)}`);
-
-      socket.emit('fermenterstate', state);
-    })
-    .onError(error => {
-      console.warn(error);
-    });
 };
+
+function handleFermenterState(io, stream) {
+  io.on('connection', (socket) => {
+
+    function sendState(state) {
+      console.log(`~~~ Emitting fermenterstate: ${JSON.stringify(state)}`);
+      socket.emit('fermenterstate', state);
+    };
+
+    //const stateRequestStream = createRequestStream(socket);
+    //stateRequestStream.onValue(sendState);
+
+    stream.onValue(sendState)
+                        .onError(error => {
+                          console.warn(error);
+                        });
+
+    io.on('disconnect', () => {
+      stream.OffValue(sendState);
+    });
+  });
+}
+
+export default handleFermenterState;
