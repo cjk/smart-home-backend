@@ -35,14 +35,12 @@ export default function(app) {
       path: '/',
       handler: (req, reply) => { reply.file('index.html'); }
     });
-
   });
 
   /* Init (KNX-) bus-handler via HAPI Websockets plugin */
   hdl.register({register: BusHandler, options: {streams: streams}}, function(err) {
     if (err)
       throw err;
-
   });
 
   server.start((err) => {
