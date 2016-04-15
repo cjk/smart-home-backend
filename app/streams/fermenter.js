@@ -7,7 +7,6 @@ import immutable from 'immutable';
 const {host, port} = config.fermenter;
 
 export default function createFermenterStreams() {
-
   if (!config.fermenter.isAvailable) {
     return {fermenterState: Kefir.constant({})};
   }
@@ -15,7 +14,7 @@ export default function createFermenterStreams() {
   const fermenterStateStream = Kefir.stream(emitter => {
     const emitFermenterState = (state) => {
       console.log('Got Fermenter-State:', JSON.stringify(immutable.fromJS(state).updateIn(['env', 'createdAt'], v => moment(v).format())));
-      emitter.emit({'fermenterState': state});
+      emitter.emit({fermenterState: state});
     };
 
     const socket = io.connect(`http://${host}:${port}`);
@@ -25,10 +24,10 @@ export default function createFermenterStreams() {
 
     socket.on('connect', () => {
       console.log('Connected to Fermenter-Closet - requesting fermenter-state...');
-      socket.on('tempHumidity', emitFermenterState);
+      socket.on('fermenterState', emitFermenterState);
 
       /* Request fermenter environmental data */
-      socket.emit('tempHumidity', {from: 'smart-home-backend'});
+      socket.emit('fermenterState', {from: 'smart-home-backend'});
     });
   });
 

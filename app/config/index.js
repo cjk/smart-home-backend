@@ -27,7 +27,7 @@ config.logging = {
 };
 
 config.knx = {
-  addresses: addresses,
+  addresses,
   addressMap: () => new Map(addresses.reduce((col = {}, addr) => {
     col[addr.id] = new Addr(addr);
     return col;

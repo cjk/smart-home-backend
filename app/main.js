@@ -13,9 +13,9 @@ const {fermenterState} = createFermenterStreams();
 server({
   conf: config.server,
   streams: {
-    busEvents: busEvents,
-    busState: busState,
-    fermenterState: fermenterState
+    busEvents,
+    busState,
+    fermenterState
   }
 });
 

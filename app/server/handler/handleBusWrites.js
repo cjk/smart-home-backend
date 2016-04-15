@@ -9,7 +9,7 @@ function createRequestStream(socket) {
       emitter.emit(new Address(writeRequest));
     });
   });
-};
+}
 
 function errorHandler(error) {
   console.warn(error);
@@ -28,16 +28,19 @@ function handleBusWrites(io) {
         case 'DPT5':
           writeGroupAddr(addr.addr, addr.value, (v) => console.log('done writing to addr: ', v));
           break;
+
+        default:
+          console.log(`WARNING: Unknown knx-address type detected: <${addr.type}>`);
       }
-    };
+    }
 
     const writeAddressStream = createRequestStream(socket);
     writeAddressStream.onValue(writeAddress)
                       .onError(errorHandler);
 
     io.on('disconnect', () => {
-      writeAddressStream.OffValue(writeAddress)
-                        .OffError(errorHandler);
+      writeAddressStream.offValue(writeAddress)
+                        .offError(errorHandler);
     });
   });
 }
