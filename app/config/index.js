@@ -15,9 +15,9 @@ config.knxd = {
 };
 
 config.fermenter = {
-  host: 'localhost', /* default: 'alarmpi' */
-  port: 8081, /* default: 8080 for local development */
-  //port: 8080, /* default: 8080 on alarmpi */
+  host: 'alarmpi', /* default: 'alarmpi' */
+  //port: 8081, /* default: 8080 for local development */
+  port: 8080, /* default: 8080 on alarmpi */
   isAvailable: true
 };
 
