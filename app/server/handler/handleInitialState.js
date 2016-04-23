@@ -10,7 +10,7 @@ function createRequestStream(socket) {
       emitter.emit();
     });
   });
-};
+}
 
 function errorHandler(error) {
   console.warn(error);
@@ -18,11 +18,10 @@ function errorHandler(error) {
 
 function handleInitialState(io, stream) {
   io.on('connection', (socket) => {
-
     function sendState(state) {
       console.log(`~~~ Emitting initial (smart-home-) state: ${JSON.stringify(state)}`);
       socket.emit('initialstate', state.toJS());
-    };
+    }
 
     const stateRequestStream = createRequestStream(socket);
     const triggerStateRespone = stream.sampledBy(stateRequestStream);
@@ -31,8 +30,8 @@ function handleInitialState(io, stream) {
                        .onError(errorHandler);
 
     io.on('disconnect', () => {
-      triggerStateRespone.OffValue(sendState)
-                         .OffError(errorHandler);
+      triggerStateRespone.offValue(sendState)
+                         .offError(errorHandler);
     });
   });
 }

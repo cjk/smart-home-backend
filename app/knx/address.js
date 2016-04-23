@@ -2,7 +2,7 @@ import {Record} from 'immutable';
 
 export default Record({
   id: null,
-  name: '',
+  name: 'unknown',
   value: null,
   story: null,
   room: null,
