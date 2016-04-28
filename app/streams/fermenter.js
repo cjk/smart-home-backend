@@ -1,7 +1,6 @@
 import config from '../config';
 import io from 'socket.io-client';
 import Kefir from 'kefir';
-import moment from 'moment';
 import immutable from 'immutable';
 
 const {host, port} = config.fermenter;
@@ -13,8 +12,8 @@ export default function createFermenterStreams() {
 
   const fermenterStateStream = Kefir.stream(emitter => {
     const emitFermenterState = (state) => {
-      console.log('Got Fermenter-State:', JSON.stringify(immutable.fromJS(state).updateIn(['env', 'createdAt'], v => moment(v).format())));
-      emitter.emit({fermenterState: state});
+      console.log('Emitting fermenter state we just received:', JSON.stringify(immutable.fromJS(state).get('env')));
+      return emitter.emit({fermenterState: state});
     };
 
     const socket = io.connect(`http://${host}:${port}`);
@@ -27,7 +26,11 @@ export default function createFermenterStreams() {
       socket.on('fermenterState', emitFermenterState);
 
       /* Request fermenter environmental data */
-      socket.emit('fermenterState', {from: 'smart-home-backend'});
+      return socket.emit('fermenterState', {from: 'smart-home-backend'});
+    });
+    socket.on('disconnect', () => {
+      console.log('Disconnected from Fermenter-Closet.');
+      return emitter.end();
     });
   });
 
