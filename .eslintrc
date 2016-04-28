@@ -6,7 +6,8 @@
   "rules": {
     "object-curly-spacing": ["error", "never"],
     "space-before-function-paren": ["error", "never"],
-    "comma-dangle": ["error", "only-multiline"]
+    "comma-dangle": ["error", "only-multiline"],
+    "no-underscore-dangle": "off"
   },
   "extends": "airbnb"
 }
