@@ -14,13 +14,6 @@ config.knxd = {
   isAvailable: true
 };
 
-config.fermenter = {
-  host: 'alarmpi', /* default: 'alarmpi' */
-  //port: 8081, /* default: 8080 for local development */
-  port: 8080, /* default: 8080 on alarmpi */
-  isAvailable: true
-};
-
 /* WIP */
 config.commands = {
   simulate: false

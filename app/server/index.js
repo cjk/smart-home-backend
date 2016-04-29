@@ -38,7 +38,7 @@ export default function(app) {
   });
 
   /* Init (KNX-) bus-handler via HAPI Websockets plugin */
-  hdl.register({register: BusHandler, options: {streams: streams}}, function(err) {
+  hdl.register({register: BusHandler, options: {streams}}, (err) => {
     if (err)
       throw err;
   });

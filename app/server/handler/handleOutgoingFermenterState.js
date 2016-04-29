@@ -1,13 +1,12 @@
+/* eslint no-console: "off" */
+
 /* Replies to 'fermenterstate'-Websocket requests by emitting the current
    environmental / status received from the fermenter-closet downstream */
-
-import R from 'ramda';
-
 function errorHandler(error) {
   console.warn(`ERROR occured: ${error}`);
 }
 
-function handleFermenterState(io, stream) {
+function handleOutgoingFermenterState(io, stream) {
   io.on('connection', (socket) => {
     function sendState(state) {
       console.log(`~~~ Emitting fermenterstate as of ${state.fermenterState.env.createdAt}`);
@@ -18,16 +17,16 @@ function handleFermenterState(io, stream) {
       socket.emit('fermenterstate', state);
     }
 
-    console.log('~~~ Subscribing to fermenter-stream');
+    console.log('~~~ Some client subscribed to our fermenter-stream');
     stream.onValue(sendState)
           .onError(errorHandler);
 
     io.on('disconnect', () => {
-      console.log('~~~ Unsubscribing from fermenter-stream');
+      console.log('~~~ Some client unsubscribed from our fermenter-stream');
       stream.offValue(sendState)
             .offError(errorHandler);
     });
   });
 }
 
-export default handleFermenterState;
+export default handleOutgoingFermenterState;
