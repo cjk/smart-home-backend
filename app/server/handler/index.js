@@ -1,7 +1,12 @@
 import handleEvents from './handleEvents';
 import handleInitialState from './handleInitialState';
+
 import handleIncomingFermenterState from './handleIncomingFermenterState.js';
 import handleOutgoingFermenterState from './handleOutgoingFermenterState.js';
+
+import handleIncomingFermenterCommands from './handleIncomingFermenterCommands.js';
+import handleOutgoingFermenterCommands from './handleOutgoingFermenterCommands.js';
+
 import handleBusWrites from './handleBusWrites';
 import IO from 'socket.io';
 
@@ -17,13 +22,28 @@ const register = (server, options, next) => {
   handleEvents(io, busEvents);
   handleInitialState(io, busState);
 
-  /* Handle in- and out-going fermenter streams */
+  /* Handle in- and out-going fermenter state (streams) */
   const incomingFermenterState = handleIncomingFermenterState(io);
   handleOutgoingFermenterState(io, incomingFermenterState);
+
+  /* Handle in- and out-going fermenter commands (streams) */
+  const incomingFermenterCommands = handleIncomingFermenterCommands(io);
+  handleOutgoingFermenterCommands(io, incomingFermenterCommands);
 
   /* Send received bus-write-request to the bus (without ACK, since the
      bus-write-event will be send to the client anyways) */
   handleBusWrites(io);
+
+  io.on('connection', (socket) => {
+    io.of('/').clients((err, clients) => {
+      if (err) {
+        console.warn('Error counting clients!');
+        return err;
+      }
+      console.log(`################ Now connected clients: <${clients}>`);
+      return clients;
+    });
+  });
 
   next();
 };

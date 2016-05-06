@@ -2,6 +2,7 @@ import Address from '../../knx/address';
 import K from 'kefir';
 import {writeGroupSAddr, writeGroupAddr} from '../../knx/performBusAction';
 
+/* TODO: Move to ../../streams directory */
 function createRequestStream(socket) {
   return K.stream(emitter => {
     socket.on('writeToBus', (writeRequest) => {

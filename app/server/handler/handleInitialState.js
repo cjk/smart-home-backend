@@ -1,16 +1,6 @@
 /* Replies to 'initialstate'-Websocket requests by emitting the current
    bus-state downstream */
-
-import K from 'kefir';
-
-function createRequestStream(socket) {
-  return K.stream(emitter => {
-    socket.on('initialstate', (req) => {
-      console.log('~~~ Initialstate-Handler got request from web-client.');
-      emitter.emit();
-    });
-  });
-}
+import createRequestStream from '../../streams/initialBusStateRequests';
 
 function errorHandler(error) {
   console.warn(error);
@@ -19,7 +9,7 @@ function errorHandler(error) {
 function handleInitialState(io, stream) {
   io.on('connection', (socket) => {
     function sendState(state) {
-      console.log(`~~~ Emitting initial (smart-home-) state: ${JSON.stringify(state)}`);
+      console.log(`~~~ Emitting initial / full (smart-home-) state: ${JSON.stringify(state)}`);
       socket.emit('initialstate', state.toJS());
     }
 

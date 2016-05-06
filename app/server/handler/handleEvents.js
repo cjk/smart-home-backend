@@ -10,7 +10,7 @@ function handleEvents(io, stream) {
     }
 
     stream.onValue(sendState)
-             .onError(errorHandler);
+          .onError(errorHandler);
 
     io.on('disconnect', () => {
       stream.offValue(sendState)
