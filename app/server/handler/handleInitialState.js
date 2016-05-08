@@ -1,3 +1,5 @@
+/* eslint no-console: "off" */
+
 /* Replies to 'initialstate'-Websocket requests by emitting the current
    bus-state downstream */
 import createRequestStream from '../../streams/initialBusStateRequests';
@@ -16,13 +18,17 @@ function handleInitialState(io, stream) {
     const stateRequestStream = createRequestStream(socket);
     const triggerStateRespone = stream.sampledBy(stateRequestStream);
 
+    function disconnectHndlr() {
+      console.log('~~~ Some client unsubscribed from initialstate-stream');
+      triggerStateRespone.offValue(sendState)
+                         .offError(errorHandler);
+    }
+
     triggerStateRespone.onValue(sendState)
                        .onError(errorHandler);
 
-    io.on('disconnect', () => {
-      triggerStateRespone.offValue(sendState)
-                         .offError(errorHandler);
-    });
+    io.sockets.removeListener('disconnect', disconnectHndlr);
+    io.on('disconnect', disconnectHndlr);
   });
 }
 

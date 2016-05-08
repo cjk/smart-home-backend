@@ -1,3 +1,5 @@
+/* eslint no-console: "off" */
+
 function errorHandler(error) {
   console.warn(error);
 }
@@ -11,12 +13,16 @@ export default function handleOutgoingFermenterCommands(io, fermenterCommandStre
       socket.emit('fermenterCmd', cmd);
     }
 
+    function disconnectHndlr() {
+      console.log('~~~ Some client unsubscribed from our fermenter-command-stream');
+      fermenterCommandStream.offValue(commandToFermenter)
+                            .offError(errorHandler);
+    }
+
     fermenterCommandStream.onValue(commandToFermenter)
                           .onError(errorHandler);
 
-    fermenterIO.on('disconnect', () => {
-      fermenterCommandStream.offValue(commandToFermenter)
-                            .offError(errorHandler);
-    });
+    fermenterIO.removeListener('disconnect', disconnectHndlr);
+    fermenterIO.on('disconnect', disconnectHndlr);
   });
 }

@@ -2,9 +2,19 @@
 
 /* Replies to 'fermenterstate'-Websocket requests by emitting the current
    environmental / status received from the fermenter-closet downstream */
-function errorHandler(error) {
+
+import R from 'ramda';
+
+function errorHndlr(error) {
   console.warn(`ERROR occured: ${error}`);
 }
+
+function infoHdlr(src, message) {
+  console.log(`[${src}]: ${message}`);
+}
+
+const newListenerHndlr = R.partial(infoHdlr, ['NEW_LISTENER']);
+const removeListenerHndlr = R.partial(infoHdlr, ['REMOVE_LISTENER']);
 
 function handleOutgoingFermenterState(io, stream) {
   io.on('connection', (socket) => {
@@ -17,25 +27,22 @@ function handleOutgoingFermenterState(io, stream) {
       return socket.emit('fermenter-state', state);
     }
 
-    console.log('~~~ Some client subscribed to our fermenter-stream');
-    stream.onValue(sendState)
-          .onError(errorHandler);
-
-    io.on('disconnect', () => {
+    function disconnectHndlr() {
       console.log('~~~ Some client unsubscribed from our fermenter-stream');
       stream.offValue(sendState)
-            .offError(errorHandler);
-    });
-    io.on('error', () => {
-      console.log('[[ERROR]]');
-    });
-    io.on('newListener', () => {
-      console.log('[[NEW_LISTENER]]');
-    });
-    io.on('removeListener', () => {
-      console.log('[[REMOVE_LISTENER]]');
-    });
+            .offError(errorHndlr);
+    }
+
+    console.log('~~~ Some client subscribed to our fermenter-stream');
+    stream.onValue(sendState)
+          .onError(errorHndlr);
+
+    io.sockets.removeListener('disconnect', disconnectHndlr);
+    io.on('disconnect', disconnectHndlr);
   });
+  io.on('error', errorHndlr);
+  io.on('newListener', newListenerHndlr);
+  io.on('removeListener', removeListenerHndlr);
 }
 
 export default handleOutgoingFermenterState;

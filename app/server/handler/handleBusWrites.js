@@ -1,3 +1,5 @@
+/* eslint no-console: "off" */
+
 import Address from '../../knx/address';
 import K from 'kefir';
 import {writeGroupSAddr, writeGroupAddr} from '../../knx/performBusAction';
@@ -36,13 +38,17 @@ function handleBusWrites(io) {
     }
 
     const writeAddressStream = createRequestStream(socket);
+
+    function disconnectHndlr() {
+      writeAddressStream.offValue(writeAddress)
+                        .offError(errorHandler);
+    }
+
     writeAddressStream.onValue(writeAddress)
                       .onError(errorHandler);
 
-    io.on('disconnect', () => {
-      writeAddressStream.offValue(writeAddress)
-                        .offError(errorHandler);
-    });
+    io.sockets.removeListener('disconnect', disconnectHndlr);
+    io.on('disconnect', disconnectHndlr);
   });
 }
 
