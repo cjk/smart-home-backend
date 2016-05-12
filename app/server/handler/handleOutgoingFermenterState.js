@@ -4,6 +4,7 @@
    environmental / status received from the fermenter-closet downstream */
 
 import R from 'ramda';
+import moment from 'moment';
 
 function errorHndlr(error) {
   console.warn(`ERROR occured: ${error}`);
@@ -19,7 +20,7 @@ const removeListenerHndlr = R.partial(infoHdlr, ['REMOVE_LISTENER']);
 function handleOutgoingFermenterState(io, stream) {
   io.on('connection', (socket) => {
     function sendState(state) {
-      console.log(`[Fermenter-Out-Stream] Emitting fermenterstate (via WS) as of ${state.fermenterState.env.createdAt}`);
+      console.log(`[Fermenter-Out-Stream] Emitting fermenterstate (via WS) as of ${moment(state.fermenterState.env.createdAt).format()}`);
       /* TODO: It seems we're currently emitting fermenter state to *all*
          connected clients - which included the fermenter-closet itself?!! And
          each time the smart-home-app is reloaded in the browser, a new client
