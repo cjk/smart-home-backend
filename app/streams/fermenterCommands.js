@@ -21,5 +21,5 @@ export default function createFermenterCmdStream(io) {
     /* PENDING: For now do nothing on stream-deactivation */
     return () => {};
   });
-  return stream.toProperty(() => 'fermenterStart');
+  return stream;
 }

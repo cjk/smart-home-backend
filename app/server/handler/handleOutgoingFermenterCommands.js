@@ -9,7 +9,7 @@ export default function handleOutgoingFermenterCommands(io, fermenterCommandStre
 
   fermenterIO.on('connection', (socket) => {
     function commandToFermenter(cmd) {
-      console.log(`~~~ Dispatching fermenter-command to fermenter-closet: ${JSON.stringify(cmd)}`);
+      console.log(`~~~ Dispatching fermenter-command to fermenter-closet: <${JSON.stringify(cmd)}>`);
       socket.emit('fermenterCmd', cmd);
     }
 
