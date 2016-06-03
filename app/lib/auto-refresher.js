@@ -18,7 +18,7 @@ function refreshStaleAddresses(stream) {
         .onValue((addresses) => {
           const now = Date.now();
           /* Convert time-span to seconds and compare to max allowed age (600 = 10 min.) */
-          const staleAddresses = addresses.filter(addr => Math.floor((now - addr.get('updatedAt')) / 1000) > 600);
+          const staleAddresses = addresses.filter(addr => Math.floor((now - addr.get('updatedAt')) / 1000) > 1200);
 
           /* DEBUGGING: */
           console.log(`~~ Address-refresher: We have ${staleAddresses.size} stale addresses - refreshing a max of ${maxRefreshLimit} of these: ${reduceAddressesToIds(staleAddresses).join('|')}`);
