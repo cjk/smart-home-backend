@@ -1,3 +1,5 @@
+/* eslint no-console: "off" */
+
 /* Implements a (knx-) event-source for the KNXd. This requires you have KNXd
    running somewhere on your network.
  */
@@ -27,7 +29,16 @@ function createEvent(action, src, dest, type, val) {
 }
 
 function _eventHandler(emitter, eventType, src, dest, type, val) {
-  console.log(`[${getTimestamp()}] <${eventType}> from ${src} to ${dest} (${addressFor(dest)}): ${val} [${type}]`);
+  try {
+    console.log(`[${getTimestamp()}] <${eventType}> from ${src} to ${dest} (${addressFor(dest)}): ${val} [${type}]`);
+  } catch (e) {
+    if (e instanceof TypeError) {
+      console.log(`ERROR: Unknown or invalid knx-address <${dest}> - perhaps you need to add it to your address-list first?`);
+    } else {
+      console.log(`ERROR: Unexpected exception on trying to parse knx-event of type <${type}> from source <${src}> for destination <${dest}>`);
+    }
+    return;
+  }
   emitter.emit(createEvent(eventType, src, dest, type, val));
 }
 
