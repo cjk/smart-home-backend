@@ -1,3 +1,5 @@
+/* eslint max-len: 0 */
+
 import Addr from '../knx/address';
 import addresses from './group-address-list';
 import {Map} from 'immutable';
@@ -9,7 +11,7 @@ config.server = {
 };
 
 config.knxd = {
-  host: '192.168.0.28', /* like 'zircon' or 'localhost'  */
+  host: '192.168.0.28', /* like '192.168.0.28' or 'localhost'  */
   port: '6720',
   isAvailable: true
 };
@@ -21,7 +23,7 @@ config.commands = {
 
 config.logging = {
   logBusStateOnEvent: false,
-  logBusEvents: true
+  logBusEvents: false
 };
 
 config.knx = {
@@ -51,10 +53,11 @@ config.knx = {
     '1/2/7', /* EG Küche Deckenleuchten Nord+Ost via Schaltaktor 1.1.5 Ausg. 1 */
     '1/3/2', /* OG Kind-3 Deckenleuchte via Schaltaktor 1.1.1 Ausg. 13 */
     '1/3/10', /* OG Bad Wand-/Waschtisch-Leuchten via Schaltaktor 1.1.1 Ausg. 7 */
+    '1/5/0', /* EG Wohnzimmer/Esszimmer/Küche Szene "Abendessen" via Taster 1.1.24 Taste 7 (für Rückmeldeobjekt s. 9/0/1) */
     '4/2/0', /* Rollladen EG zentral lang via Schaltaktor 1.2.24 Taste 3 + 4 */
     '4/2/1', /* Rollladen EG zentral kurz via Schaltaktor 1.2.24 Taste 3 + 4 */
     '6/0/0', /* EG Außenbereich Westwand / Garten 1.1.41 Lichtsensor 107 - resultierender Istwert senden */
-    '9/0/1', /* EG Wohnzimmer/Esszimmer/Küche Szene "Abendessen" via Taster 1.1.24 Taste 7 (Rückmeldeobjekt Taste 7, Objekt A) */
+    '9/0/1', /* EG Wohnzimmer/Esszimmer/Küche Rückmeldeobjekt für Szene "Abendessen" via Taster 1.1.24 Taste 7 (Rückmeldeobjekt Taste 7, Objekt A) */
     '9/1/0', /* OG Kind-1 / Schlafzimmer Deckenleuchte Nord via Rückmeldeobjekt Taster 1.1.31 Taste 1 */
   ]
 };
