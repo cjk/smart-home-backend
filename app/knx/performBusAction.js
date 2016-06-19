@@ -3,22 +3,23 @@
 import config from '../config';
 import knxd from 'eibd';
 import R from 'ramda';
+import {deriveAddrFormat} from './knx-lib';
 
 function defaultCallback(err) {
   if (err) {
     console.error('[performBusAction] Error communicating with KNXd.');
     throw err;
   }
-  console.log('Success sending APDU to KNXd.');
+  console.log('[performBusAction] Success sending APDU to KNXd.');
 }
 
 const isWriteOnly = (action) => action === 'write';
 const knxReadMsg = R.unary(knxd.createMessage);
 const knxWriteMsg = R.partial(knxd.createMessage, ['write']);
 
-function sendReqToBusFor(action, datatype, value, address, callback = defaultCallback) {
-  const conn = knxd.Connection();
-  const addr = knxd.str2addr(address);
+function sendReqToBusFor(action, datatype, value, addrId, callback = defaultCallback) {
+  const conn = knxd.Connection(); /* eslint new-cap: "off" */
+  const addr = knxd.str2addr(addrId);
   const conf = config.knxd;
 
   conn.socketRemote(conf, () => {
@@ -40,14 +41,11 @@ const writeAddr = R.partial(sendReqToBusFor, ['write']);
 
 /* TODO: use address-record for `address` everywhere instead of text-string */
 
-export function readGroupAddr(address, callback = defaultCallback) {
-  return readAddr(address, callback);
+export function readGroupAddr(addrId, callback = defaultCallback) {
+  return readAddr(addrId, callback);
 }
 
-export function writeGroupSAddr(address, value, callback = defaultCallback) {
-  return writeAddr('DPT3', value, address, callback);
-}
-
-export function writeGroupAddr(address, value, callback = defaultCallback) {
-  return writeAddr('DPT5', value, address, callback);
+export function writeGroupAddr(address, callback = defaultCallback) {
+  console.log(`[INFO] Writing to address ${address} in format <${deriveAddrFormat(address)}>`);
+  return writeAddr(deriveAddrFormat(address), address.value, address.id, callback);
 }
