@@ -4,7 +4,7 @@ import Addr from '../knx/address';
 import addresses from './group-address-list';
 import {Map} from 'immutable';
 
-let config = {};
+const config = {};
 
 config.server = {
   port: process.env.PORT || 3005
@@ -39,6 +39,7 @@ config.knx = {
     '1/2/1', /* EG Küche Deckenleuchten via Schaltaktor 1.1.2 Ausg. 3 */
     '1/2/6', /* EG WC Deckenleuchte via Schaltaktor 1.1.2 Ausg. 1 */
     '1/2/13', /* EG Wohnzimmer Wandlampen via Schaltaktor 1.1.1 Ausg. 11 */
+    '1/2/14', /* WL/Leuchtstoffleuchte WZ Nordwand 1.42.1 1.1.1 Ausg. 14 */
     '10/0/10', /* UG Fenster Keller-2 Kontakt via Binäreingang 1.1.39 Ausg. A-1  */
     '10/1/0', /* EG Türen Haustür Kontakt via Binäreingang 1.1.47 Ausg. A-0  */
     '1/2/3', /* EG Büro/Emma Deckenleuchte via Schaltaktor 1.1.1 Ausg. 12 */
