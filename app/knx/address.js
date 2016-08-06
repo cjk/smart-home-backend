@@ -8,5 +8,6 @@ export default Record({
   room: null,
   type: null,
   func: null,
+  fbAddr: null,
   updatedAt: null
 });

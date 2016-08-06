@@ -17,16 +17,16 @@ function refreshStaleAddresses(stream) {
   stream.sampledBy(timer)
         .onValue((addresses) => {
           const now = Date.now();
-          /* Convert time-span to seconds and compare to max allowed age (600 = 10 min.) */
-          const staleAddresses = addresses.filter(addr => Math.floor((now - addr.get('updatedAt')) / 1000) > 1200);
+          const staleAddresses = addresses
+            /* Convert time-span to seconds and compare to max allowed age (600 = 10 min.) */
+            .filter(addr => Math.floor((now - addr.get('updatedAt')) / 1000) > 1200);
 
           /* DEBUGGING: */
           console.log(`~~ Address-refresher: We have ${staleAddresses.size} stale addresses - refreshing a max of ${maxRefreshLimit} of these: ${reduceAddressesToIds(staleAddresses).join('|')}`);
-          //console.log(staleAddresses.take(5).reduce((lst, addr) => lst.push(addr.get('id')), new List()).toJS());
+          // console.log(staleAddresses.take(5).reduce((lst, addr) => lst.push(addr.get('id')), new List()).toJS());
 
           busScanner(reduceAddressesToIds(staleAddresses.take(maxRefreshLimit)).toJS());
         })
-  //.log()
   ;
 }
 
