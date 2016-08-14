@@ -37,6 +37,7 @@ config.knx = {
     '1/1/5', /* UG Keller-1-2 + Hobby1 via Tasterrückmeldung */
     '1/1/6', /* UG Keller-2 Deckenleuchte via Schaltaktor 1.1.2 Ausg. 14  */
     '1/1/7', /* UG Keller-3 Deckenleuchte via Schaltaktor 1.1.2 Ausg. 5 */
+    '1/2/0', /* EG Technik Deckenleuchte via [TODO] */
     '1/2/1', /* EG Küche Deckenleuchten via Schaltaktor 1.1.2 Ausg. 3 */
     '1/2/2', /* EG/OG Treppenlicht LED via Schaltaktor 1.1.1 Ausg. 10 */
     '1/2/3', /* EG Büro/Emma Deckenleuchte via Schaltaktor 1.1.1 Ausg. 12 */
@@ -48,10 +49,17 @@ config.knx = {
     '1/2/14', /* WL/Leuchtstoffleuchte WZ Nordwand 1.42.1 1.1.1 Ausg. 14 */
     '1/2/12', /* EG Büro/Emma Hängeleuchte via Schaltaktor 1.1.45 Ausg. 5 */
     '1/2/10', /* EG Wohnzimmer Erker Deckenleuchte via Schaltaktor 1.1.45 Ausg. 4 */
+    '1/2/11', /* EG Flur Wandlampe via [TODO] */
+    '1/3/1', /* OG Kind-2 Deckenleuchte via Schaltaktor [TODO] */
     '1/3/2', /* OG Kind-3 Deckenleuchte via Schaltaktor 1.1.1 Ausg. 13 */
+    '1/3/3', /* OG Bad Deckenleuchte via [TODO] */
     '1/3/4', /* OG Flur Wandleuchte via Schaltaktor 1.1.2 Ausg. 8 */
+    '1/3/5', /* DG Treppe / Flur LED-Wandleuchte via Schaltaktor 1.1.1 Ausg. 16 */
     '1/3/10', /* OG Bad Wand-/Waschtisch-Leuchten via Schaltaktor 1.1.1 Ausg. 7 */
     '1/3/12', /* OG Kind-1 / Schlafzimmer Deckenleuchte Nord via Dimmaktor 1.1.6 Ausg. 4 */
+    '1/4/0', /* Außenleuchte Eingang via Schaltaktor 1.1.1 Ausgang 1 */
+    '1/4/1', /* Außenleuchte Westen / Terrasse via Schaltaktor 1.1.45 Kanal 1 - Helligkeits- / Bewegungsmelder gesteuert */
+    '1/4/2', /* Sperre Außenleuchte Westen / Terrasse über Bewegungsmelder via Bewegungsmelder 1.1.41 Sperrobjekt Block 1 */
     '1/5/0', /* EG Wohnzimmer/Esszimmer/Küche Szene "Abendessen" via Taster 1.1.24 Taste 7 (für Rückmeldeobjekt s. 9/0/1) */
     '4/2/0', /* Rollladen EG zentral lang via Schaltaktor 1.2.24 Taste 3 + 4 */
     '4/2/1', /* Rollladen EG zentral kurz via Schaltaktor 1.2.24 Taste 3 + 4 */
