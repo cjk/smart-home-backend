@@ -1,14 +1,15 @@
+import IO from 'socket.io';
+
 import handleEvents from './handleEvents';
 import handleInitialState from './handleInitialState';
 
-import handleIncomingFermenterState from './handleIncomingFermenterState.js';
-import handleOutgoingFermenterState from './handleOutgoingFermenterState.js';
+import handleIncomingFermenterState from './handleIncomingFermenterState';
+import handleOutgoingFermenterState from './handleOutgoingFermenterState';
 
-import handleIncomingFermenterCommands from './handleIncomingFermenterCommands.js';
-import handleOutgoingFermenterCommands from './handleOutgoingFermenterCommands.js';
+import handleIncomingFermenterCommands from './handleIncomingFermenterCommands';
+import handleOutgoingFermenterCommands from './handleOutgoingFermenterCommands';
 
 import handleBusWrites from './handleBusWrites';
-import IO from 'socket.io';
 
 const register = (server, options, next) => {
   const {busEvents, busState} = options.streams;

@@ -1,8 +1,8 @@
 /* eslint no-console: "off" */
 
-import config from '../config';
 import knxd from 'eibd';
 import R from 'ramda';
+import config from '../config';
 import {deriveAddrFormat} from './knx-lib';
 
 function defaultCallback(err) {
@@ -13,7 +13,7 @@ function defaultCallback(err) {
   console.log('[performBusAction] Success sending APDU to KNXd.');
 }
 
-const isWriteOnly = (action) => action === 'write';
+const isWriteOnly = action => action === 'write';
 const knxReadMsg = R.unary(knxd.createMessage);
 const knxWriteMsg = R.partial(knxd.createMessage, ['write']);
 

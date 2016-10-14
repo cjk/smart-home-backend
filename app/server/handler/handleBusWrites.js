@@ -1,12 +1,12 @@
 /* eslint no-console: "off" */
 
-import Address from '../../knx/address';
 import K from 'kefir';
+import Address from '../../knx/address';
 import {writeGroupAddr} from '../../knx/performBusAction';
 
 /* TODO: Move to ../../streams directory */
 function createRequestStream(socket) {
-  return K.stream(emitter => {
+  return K.stream((emitter) => {
     socket.on('writeToBus', (writeRequest) => {
       //       console.log('~~~ WriteToBus-Handler got request from web-client.');
       emitter.emit(new Address(writeRequest));

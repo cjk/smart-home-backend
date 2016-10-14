@@ -4,16 +4,16 @@
    running somewhere on your network.
  */
 
-import config from '../config';
-import Event from './event';
 import knxd from 'eibd';
 import R from 'ramda';
+import config from '../config';
+import Event from './event';
 
 /* Identify name of the event's associated address to make debug-output more
    readable */
 const addresses = config.knx.addressMap();
 
-const addressFor = (addrId) => addresses.get(addrId).name;
+const addressFor = addrId => addresses.get(addrId).name;
 
 const getTimestamp = () => new Date().toISOString().slice(0, 19);
 
@@ -79,5 +79,5 @@ function groupSocketListen(opts, callback) {
 }
 
 export default function knxdSource(opts) {
-  return (emitter) => groupSocketListen(opts, listener(emitter));
+  return emitter => groupSocketListen(opts, listener(emitter));
 }

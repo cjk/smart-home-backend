@@ -2,8 +2,8 @@
    running somewhere on your network.
  */
 
-import Event from './event';
 import Kefir from 'kefir';
+import Event from './event';
 
 const getTimestamp = () => new Date().toISOString().slice(0, 19);
 

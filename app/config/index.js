@@ -1,8 +1,8 @@
 /* eslint max-len: 0 */
 
+import {Map} from 'immutable';
 import Addr from '../knx/address';
 import addresses from './group-address-list';
-import {Map} from 'immutable';
 
 const config = {};
 

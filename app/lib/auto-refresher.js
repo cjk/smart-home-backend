@@ -1,6 +1,6 @@
+import {List} from 'immutable';
 import Kefir from 'kefir';
 import busScanner from './bus-scanner';
-import {List} from 'immutable';
 
 const maxRefreshLimit = 5;
 
@@ -10,12 +10,13 @@ function reduceAddressesToIds(addrMap) {
 
 function refreshStaleAddresses(stream) {
   /* Check address-timestamps every 30 secs */
-  const timer = Kefir.withInterval(30000, emitter => {
+  const timer = Kefir.withInterval(30000, (emitter) => {
     emitter.emit();
   });
 
   stream.sampledBy(timer)
         .onValue((addresses) => {
+          console.log(addresses);
           const now = Date.now();
           const staleAddresses = addresses
             /* Convert time-span to seconds and compare to max allowed age (600 = 10 min.) */

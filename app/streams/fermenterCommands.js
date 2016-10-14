@@ -3,7 +3,7 @@
 import Kefir from 'kefir';
 
 export default function createFermenterCmdStream(io) {
-  const stream = Kefir.stream(emitter => {
+  const stream = Kefir.stream((emitter) => {
     const emitFermenterCmd = (cmd) => {
       console.log(`[Fermenter-Cmd-Stream] Emitting fermenter command we just received: <${cmd}>`);
       return emitter.emit({fermenterCmd: cmd});

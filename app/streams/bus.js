@@ -1,8 +1,8 @@
-import config from '../config';
 import {List} from 'immutable';
 import Kefir from 'kefir';
+import config from '../config';
 import knxListener from '../knx';
-import addressRefresher from '../lib/auto-refresher.js';
+import addressRefresher from '../lib/auto-refresher';
 
 /* Takes the current bus-state and an event, applies the changes the event
    implies and returns the new bus-state */
@@ -40,7 +40,7 @@ export default function createBusStreams() {
 
   /* Create BUS-state */
   /* 1. Create stream to capture *all* KNX-bus events */
-  const busEvents = Kefir.stream((emitter) => knxListener(emitter));
+  const busEvents = Kefir.stream(emitter => knxListener(emitter));
 
   /* 2. Create another (sub-) stream only for events that carry a value, i.e.
      mutate our bus-state */
