@@ -1,4 +1,3 @@
-import busScanner from './lib/bus-scanner';
 import config from './config';
 import createBusStreams from './streams/bus';
 
@@ -18,10 +17,7 @@ server({
 
 console.log('Server initialized and ready to run.');
 
-const {readableAddr} = config.knx;
-
-/* Start initial bus-scan for some well-known addresses  */
+/* Start the stream by logging from it */
 if (config.knxd.isAvailable) {
-  busScanner(readableAddr);
   busState.log();
 }

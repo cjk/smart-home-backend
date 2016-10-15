@@ -49,12 +49,12 @@ config.knx = {
     '1/2/14', /* WL/Leuchtstoffleuchte WZ Nordwand 1.42.1 1.1.1 Ausg. 14 */
     '1/2/12', /* EG Büro/Emma Hängeleuchte via Schaltaktor 1.1.45 Ausg. 5 */
     '1/2/10', /* EG Wohnzimmer Erker Deckenleuchte via Schaltaktor 1.1.45 Ausg. 4 */
-    '1/2/11', /* EG Flur Wandlampe via [TODO] */
+    '1/2/11', /* EG Flur Wandlampe via Schaltaktor 1.1.2 Ausg. 13 */
     '1/3/1', /* OG Kind-2 Deckenleuchte via Schaltaktor [TODO] */
     '1/3/2', /* OG Kind-3 Deckenleuchte via Schaltaktor 1.1.1 Ausg. 13 */
     '1/3/3', /* OG Bad Deckenleuchte via [TODO] */
     '1/3/4', /* OG Flur Wandleuchte via Schaltaktor 1.1.2 Ausg. 8 */
-    '1/3/5', /* DG Treppe / Flur LED-Wandleuchte via Schaltaktor 1.1.1 Ausg. 16 */
+    //     '1/3/5', /* DG Treppe / Flur LED-Wandleuchte via Schaltaktor 1.1.1 Ausg. 16 - NICHT VERWENDET, kein Sensor! */
     '1/3/10', /* OG Bad Wand-/Waschtisch-Leuchten via Schaltaktor 1.1.1 Ausg. 7 */
     '1/3/12', /* OG Kind-1 / Schlafzimmer Deckenleuchte Nord via Dimmaktor 1.1.6 Ausg. 4 */
     '1/4/0', /* Außenleuchte Eingang via Schaltaktor 1.1.1 Ausgang 1 */
