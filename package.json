@@ -32,6 +32,7 @@
     "immutable": "latest",
     "inert": "latest",
     "kefir": "latest",
+    "moment": "^2.15.1",
     "ramda": "latest",
     "redis": "latest",
     "socket.io": "latest",
