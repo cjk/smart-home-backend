@@ -2,6 +2,7 @@ import {List} from 'immutable';
 import Kefir from 'kefir';
 import busScanner from './bus-scanner';
 
+const runDelaySeconds = 20;
 const maxRefreshLimit = 20;
 
 function reduceAddressesToIds(addrMap) {
@@ -10,7 +11,7 @@ function reduceAddressesToIds(addrMap) {
 
 function refreshStaleAddresses(stream) {
   /* Check address-timestamps every 30 secs */
-  const timer = Kefir.withInterval(30000, (emitter) => {
+  const timer = Kefir.withInterval(runDelaySeconds * 1000, (emitter) => {
     emitter.emit();
   });
 
@@ -25,8 +26,12 @@ function refreshStaleAddresses(stream) {
             .sortBy(v => v.updatedAt);
 
           /* DEBUGGING: */
-          console.log(`~~ Address-refresher: We have ${staleAddresses.size} stale addresses - refreshing a max of ${maxRefreshLimit} of these: ${reduceAddressesToIds(staleAddresses).join('|')}`);
-          //           console.log(addresses.sortBy(v => v.updatedAt).take(20).toJS());
+          if (staleAddresses.size > 0) {
+            console.log(`~~ Address-refresher: We have ${staleAddresses.size} stale addresses - refreshing a max of ${maxRefreshLimit} of these: ${reduceAddressesToIds(staleAddresses).join('|')}`);
+          } else {
+            console.log('~~ Address-refresher: All addresses up to date - nothing to do :)');
+          }
+          //           console.log(staleAddresses.map(a => a.get('id')).toJS());
 
           busScanner(reduceAddressesToIds(staleAddresses.take(maxRefreshLimit)).toJS());
         })
