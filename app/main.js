@@ -1,6 +1,6 @@
 import config from './config';
 import createBusStreams from './streams/bus';
-
+import addrMapToConsole from './lib/debug';
 import server from './server';
 
 const {busEvents, busState} = createBusStreams();
@@ -19,5 +19,5 @@ console.log('Server initialized and ready to run.');
 
 /* Start the stream by logging from it */
 if (config.knxd.isAvailable) {
-  busState.log();
+  busState.map(addrMapToConsole).log();
 }
