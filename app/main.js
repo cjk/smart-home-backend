@@ -7,7 +7,7 @@ import cron from './cron';
 const {busEvents, busState} = createBusStreams();
 
 /* Init + start chronologial rules engine */
-cron(busState).log();
+cron(busState);
 
 /* Setup and configure (websocket-/http-) server and pass event-emitters along
    for use in plugins et. al. */
