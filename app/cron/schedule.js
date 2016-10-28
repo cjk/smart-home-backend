@@ -1,7 +1,16 @@
-import {assoc} from 'ramda';
+import R, {prop, map, not, isEmpty, isNil} from 'ramda';
 
-function parse(crontab) {
-  return assoc('at', Date.now(), crontab);
+const isDaily = R.propEq('repeat', 'daily');
+
+const jobShouldRun = (j) => {
+  const hasFixedTime = not(isNil(prop('at', j)));
+
+  return isDaily && hasFixedTime;
+};
+
+function schedule(crontab) {
+  const scheduledTab = R.map(j => R.assoc('scheduled', jobShouldRun(j), j));
+  return scheduledTab(crontab);
 }
 
-export default parse;
+export default schedule;

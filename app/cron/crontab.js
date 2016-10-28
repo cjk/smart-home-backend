@@ -1,6 +1,6 @@
 import R from 'ramda';
 
-const idIdxStart = 1;
+let idIdx = 0;
 
 const crontab = [
   {
@@ -19,7 +19,7 @@ const crontab = [
   {
     jobId: 2,
     name: 'sample-2',
-    at: '07:00',
+    at: null,
     repeat: 'hourly',
     scheduled: false,
     running: false,
@@ -32,16 +32,37 @@ const crontab = [
 
 const taskMeta = {id: 10, status: null, startedAt: null, endedAt: null};
 
+/* Normalizes crontab-structure
+ *
+ * - Each task-target is extracted into it's own task-entry and enriched with meta-attributes
+ *
+ */
 function loadCrontab() {
-  const evolveTasks = task => R.fromPairs(R.map(t => ['target', t], task.targets));
+  /* Each unfolded task get's it own, single task-property */
+  const addTargetPropToTask = R.assoc('target');
+  /* Targets-array is removed from task in favour of single target-property for each unfolded task */
+  const removeTaskTargets = R.dissoc('targets');
 
-  return R.pipe(
-    R.map(j =>
-      R.assoc('tasks', R.map(evolveTasks, j.tasks), j)
-    ),
-    R.tap(v => console.log(v)),
-    //     R.map(evolveTasks)
-    /* TODO */
+  /* Not sure how to prevent this for now, but R.scan leaves it's initial object as is :( */
+  const removeEmptyTasks = R.reject(R.isEmpty);
+
+  /* Make sure all task-IDs are unique */
+  const incId = () => (idIdx += 1);
+  const uniqueId = R.map(t => R.assoc('id', incId(), t));
+
+  const extractTasks = task => uniqueId(
+    removeEmptyTasks(
+      R.scan((acc, target) => R.merge(
+        removeTaskTargets(task),
+        R.merge(taskMeta, addTargetPropToTask(target, acc))
+      ), {}, task.targets)
+    )
+  );
+
+  return R.map(j =>
+    R.assoc('tasks',
+            R.flatten(
+              R.map(extractTasks, j.tasks)), j)
   )(crontab);
 }
 
