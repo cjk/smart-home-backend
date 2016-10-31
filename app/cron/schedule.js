@@ -1,15 +1,15 @@
-import R, {prop, map, not, isEmpty, isNil} from 'ramda';
-
-const isDaily = R.propEq('repeat', 'daily');
+import R, {prop, map, not, assoc, isNil} from 'ramda';
 
 const jobShouldRun = (j) => {
+  const isDaily = R.propEq('repeat', 'daily', j);
+  const isRunning = R.propEq('running', true, j);
   const hasFixedTime = not(isNil(prop('at', j)));
 
-  return isDaily && hasFixedTime;
+  return not(isRunning) && isDaily && hasFixedTime;
 };
 
 function schedule(crontab) {
-  const scheduledTab = R.map(j => R.assoc('scheduled', jobShouldRun(j), j));
+  const scheduledTab = map(j => assoc('scheduled', jobShouldRun(j), j));
   return scheduledTab(crontab);
 }
 

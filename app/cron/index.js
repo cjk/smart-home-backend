@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-import R, {map, tap, assoc, merge, filter, compose, pipe, flatten, head, prop, props, propEq, isEmpty, not, when} from 'ramda';
+import R, {map, tap, assoc, merge, filter, compose, pipe, flatten, head, prop, props, propEq, isEmpty, not} from 'ramda';
 import K from 'kefir';
 import schedule from './schedule';
 import loadCrontab from './crontab';
@@ -68,19 +68,35 @@ function init($busState) {
     return {crontab, state, results};
   }).scan((prev, cur) => {
     const {crontab, state, results} = cur;
-    const crontabOld = prev.crontab;
+
+    const syncWithPrevJobs = map((j) => {
+      const prevJob = R.find(R.propEq('jobId', j.jobId), prev.crontab);
+      if (!prevJob)
+        /* TODO: Make sure returning nothing is OK here! */
+        return j;
+      return R.merge(j, R.pick(['running', 'scheduled'], prevJob));
+    });
+
+    console.log(`synced: ${JSON.stringify(syncWithPrevJobs(crontab))}`);
+    //     const retainedCrontabContent = R.pick(['running'], prev.crontab);
+    //     const crontab = merge(currentCrontab, retainedCrontabContent);
+
+    const setRunning = assoc('running', true);
 
     /* TODO: Schedule jobs according to their time / interval prop, not their jobId */
     //     const schedule = map(j => (j.jobId === 1 ? assoc('scheduled', true, j) : j), crontab);
-    const schedCrontab = schedule(crontab);
+    const schedCrontab = schedule(syncWithPrevJobs(crontab));
+    const scheduledJobs = filter(j => j.scheduled);
 
-    // console.log(`crontab-0: ${JSON.stringify(crontabOld)}`);
-    // console.log(`crontab-1: ${JSON.stringify(crontab)}`);
-    // console.log(`action-1: ${JSON.stringify(results)}`);
+    const initiateJobs = R.pipe(
+      scheduledJobs,
+      R.adjust(setRunning, 0)
+    );
+    console.log(`crontab: ${JSON.stringify(initiateJobs(schedCrontab))}`);
 
     //     console.log(`action-1: ${JSON.stringify(R.fromPairs([[1, [{'act':'off','id':1,'status':null,'startedAt':null,'endedAt':null,'target':'1/1/1'}, {'act':'off','id':1,'status':null,'startedAt':null,'endedAt':null,'target':'1/1/2'}]]]))}`);
 
-    return assoc('crontab', schedCrontab, cur);
+    return assoc('crontab', initiateJobs(schedCrontab), cur);
   }).observe(onValue);
 }
 
