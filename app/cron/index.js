@@ -1,35 +1,18 @@
 import {EventEmitter} from 'events';
-import R, {map, tap, pluck, assoc, merge, filter, compose, pipe, head, prop, props, propEq, isEmpty, not} from 'ramda';
+import R, {map, pluck, assoc, merge, filter, compose, pipe, head, prop, props, propEq, isEmpty, not} from 'ramda';
 import K from 'kefir';
 import schedule from './schedule';
 import loadCrontab from './crontab';
+import dispatch from './taskDispatcher';
 
-const scheduled = j => j.scheduled;
-const running = j => j.running;
+import {scheduledJobIds, runningJobIds} from './util';
 
-const scheduledJobIds = compose(
-  pluck('jobId'),
-  filter(running)
-);
-const runningJobIds = compose(
-  pluck('jobId'),
-  filter(scheduled)
-);
-
-/* Simulated fake async operation */
-const writeGroupAddr = (addr, cb) => {
-  console.log(`Writing address ${JSON.stringify(addr)}...`);
-  setTimeout(() => {
-    console.log(`Address ${JSON.stringify(addr)} written:`);
-    cb(null, addr);
-  }, 1000);
-};
-
+/* Load and transform initial crontab entries */
 const _crontab = loadCrontab();
 console.log(`Loaded crontab:\n <${JSON.stringify(_crontab)}>`);
 
 function init(busState$) {
-  const cron$ = K.withInterval(3000, (emitter) => {
+  const cron$ = K.withInterval(1000, (emitter) => {
     emitter.emit(_crontab);
   });
 
@@ -38,39 +21,20 @@ function init(busState$) {
   /* TODO: Define action-result-stream that emits completed rules so we can set running=false in our state */
   const actionResult$ = K.fromEvents(eventEmitter, 'actionFinished').toProperty(() => {});
 
-  const createAddrWriteStream = addr => K.fromNodeCallback((callback) => {
-    writeGroupAddr(addr, callback);
-  });
-
   /* Sideeffects routine */
-  const onValue = ({crontab, results}) => {
-    console.log(`[Results-onValue] ${JSON.stringify(results)}`);
+  const onValue = ({crontab}) => {
+    console.log(`[onValue] Job(s) <${scheduledJobIds(crontab)}> scheduled.`);
+    console.log(`[onValue] Job(s) <${runningJobIds(crontab)}> running.`);
 
-    console.log(`[onValue] <${scheduledJobIds(crontab)}> jobs scheduled.`);
-    console.log(`[onValue] <${runningJobIds(crontab)}> jobs running.`);
+    const taskStreams = dispatch(crontab);
 
-    if (!isEmpty(scheduledJobIds(crontab))) {
-      console.log(`Scheduled jobs: ${JSON.stringify(scheduledJobIds(crontab))}`);
-    }
-
-    const firstScheduledTask = pipe(
-      filter(scheduled),
-      head,
-      prop('tasks'),
-      head,
-    );
-
-    const taskStart = {status: 'started', startedAt: Date.now()};
-
-    if (!isEmpty(scheduledJobIds(crontab))) {
-      const task = firstScheduledTask(crontab);
-      const result$ = createAddrWriteStream(merge(task, taskStart));
-
-      /* TODO: Need to trigger the action-results stream with done rule-id */
-      //     result$.flatMap(v => console.log(`got ${v}`));
-      result$.onValue((taskState) => { console.log(`[result$] ${JSON.stringify(taskState)}`); eventEmitter.emit('actionFinished', taskState); });
-    }
+    /* TODO: Need to trigger the action-results stream with done rule-id */
+    //     result$.flatMap(v => console.log(`got ${v}`));
+    map(result$ =>
+      result$.onValue((taskState) => { console.log(`[result$] ${JSON.stringify(taskState)}`); eventEmitter.emit('actionFinished', taskState); })
+    )(taskStreams);
   };
+
   /* END of sideeffects */
 
   return K.combine([cron$, actionResult$], [busState$], (crontab, results, state) => {
@@ -103,13 +67,13 @@ function init(busState$) {
 
     const initiateJobs = R.pipe(
       scheduledJobs,
-      R.adjust(setRunning, 0)
+      map(setRunning)
     );
 
     const newState = assoc('crontab', initiateJobs(schedCrontab), cur);
 
-    console.log(`<${scheduledJobIds(newState.crontab)}> jobs scheduled.`);
-    console.log(`<${runningJobIds(newState.crontab)}> jobs running.`);
+    console.log(`<${scheduledJobIds(newState.crontab).length}> jobs scheduled.`);
+    console.log(`<${runningJobIds(newState.crontab).length}> jobs running.`);
 
     console.log(`[finalSchedule]: ${JSON.stringify(newState.crontab)}`);
 
