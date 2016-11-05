@@ -1,5 +1,5 @@
 import {EventEmitter} from 'events';
-import R, {map, pluck, assoc, merge, filter, compose, pipe, head, prop, props, propEq, isEmpty, not} from 'ramda';
+import {assoc, find, isNil, map, pipe, pick, propEq, merge} from 'ramda';
 import K from 'kefir';
 import schedule from './schedule';
 import loadCrontab from './crontab';
@@ -53,13 +53,13 @@ function init(busState$) {
     const syncWithPrevJobs = map((j) => {
       const syncedProps = ['running', 'scheduled', 'lastRun'];
       console.log(`Looking for jobId <${j.jobId}> in previous job.`);
-      const prevJob = R.find(R.propEq('jobId', j.jobId), prev.crontab);
-      if (R.isNil(prevJob)) {
+      const prevJob = find(propEq('jobId', j.jobId), prev.crontab);
+      if (isNil(prevJob)) {
         /* TODO: Make sure returning nothing is OK here! */
         console.log(`No previous job <${j.jobId}> found.`);
         return j;
       }
-      return R.merge(j, R.pick(syncedProps, prevJob));
+      return merge(j, pick(syncedProps, prevJob));
     });
 
     console.log(`[synced] ${JSON.stringify(syncWithPrevJobs(crontab))}`);
@@ -70,7 +70,7 @@ function init(busState$) {
     /* Schedule jobs */
     const schedCrontab = schedule(syncWithPrevJobs(crontab));
 
-    const initiateJob = R.pipe(
+    const initiateJob = pipe(
       setRunning,
       setLastRun
     );
