@@ -5,11 +5,11 @@ import R, {tap, isEmpty, filter, flatten, pipe, pickAll, merge, map, reduce} fro
 import {scheduled, scheduledJobIds} from './util';
 
 /* Simulated fake async operation */
-const writeGroupAddr = (addr, cb) => {
-  console.log(`Writing address ${JSON.stringify(addr)}...`);
+const runTask = (task, cb) => {
+  console.log(`Running task ${JSON.stringify(task)}...`);
   setTimeout(() => {
-    console.log(`Address ${JSON.stringify(addr)} written`);
-    cb(null, addr);
+    console.log(`Completed task ${JSON.stringify(task)}.`);
+    cb(null, task);
   }, 500);
 };
 
@@ -20,10 +20,10 @@ function dispatch(crontab) {
 
   const createAddrWriteStream = scheduledTasks => K.fromNodeCallback((callback) => {
     K.sequentially(250, scheduledTasks)
-     .onValue(task => writeGroupAddr(task.target, callback));
+     .onValue(task => runTask(task, callback));
   });
 
-  console.log(`[dispatcher] Scheduled jobs: ${JSON.stringify(scheduledJobIds(crontab))}`);
+  console.log(`[dispatcher] Scheduled jobs are: ${JSON.stringify(scheduledJobIds(crontab))}`);
 
   const taskStartProps = {status: 'started', startedAt: Date.now()};
   const scheduledTasks = pipe(
@@ -31,7 +31,7 @@ function dispatch(crontab) {
     reduce((acc, j) => acc.concat(pickAll(['jobId', 'tasks'], j)), []),
     map(j => map(t => R.assoc('jobId', j.jobId, merge(t, taskStartProps)), j.tasks)),
     flatten,
-    tap(lst => console.log(`>>> ${JSON.stringify(lst)}`)),
+    tap(lst => console.log(`[dispatcher] dispatching tasks: ${JSON.stringify(lst)}`)),
   );
   const result$ = createAddrWriteStream(scheduledTasks(crontab));
 

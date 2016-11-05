@@ -39,45 +39,52 @@ function init(busState$) {
 
   return K.combine([cron$, actionResult$], [busState$], (crontab, results, state) => {
     /* PENDING: No logic here yet */
+    console.log(`PING: ${Date.now()}`);
     return {crontab, results, state};
   }).scan((prev, cur) => {
     const {crontab, state, results} = cur;
 
+    /* DEBUGGING */
+    // console.log(`[PREV] ${JSON.stringify(prev)}`);
+    // console.log(`[CUR] ${JSON.stringify(cur)}`);
+
     console.log(`[Results-In-Stream] ${JSON.stringify(results)}`);
 
     const syncWithPrevJobs = map((j) => {
+      const syncedProps = ['running', 'scheduled', 'lastRun'];
+      console.log(`Looking for jobId <${j.jobId}> in previous job.`);
       const prevJob = R.find(R.propEq('jobId', j.jobId), prev.crontab);
-      if (!prevJob) {
+      if (R.isNil(prevJob)) {
         /* TODO: Make sure returning nothing is OK here! */
+        console.log(`No previous job <${j.jobId}> found.`);
         return j;
       }
-      return R.merge(j, R.pick(['running', 'scheduled'], prevJob));
+      return R.merge(j, R.pick(syncedProps, prevJob));
     });
 
-    console.log(`synced: ${JSON.stringify(syncWithPrevJobs(crontab))}`);
-    //     const retainedCrontabContent = R.pick(['running'], prev.crontab);
-    //     const crontab = merge(currentCrontab, retainedCrontabContent);
+    console.log(`[synced] ${JSON.stringify(syncWithPrevJobs(crontab))}`);
 
     const setRunning = assoc('running', true);
+    const setLastRun = assoc('lastRun', Date.now());
 
-    /* TODO: Schedule jobs according to their time / interval prop, not their jobId */
-    //     const schedule = map(j => (j.jobId === 1 ? assoc('scheduled', true, j) : j), crontab);
+    /* Schedule jobs */
     const schedCrontab = schedule(syncWithPrevJobs(crontab));
-    const scheduledJobs = filter(j => j.scheduled);
 
-    const initiateJobs = R.pipe(
-      scheduledJobs,
-      map(setRunning)
+    const initiateJob = R.pipe(
+      setRunning,
+      setLastRun
     );
 
-    const newState = assoc('crontab', initiateJobs(schedCrontab), cur);
+    /* Set scheduled jobs as running + lastRun-timestamp */
+    const jobs = map(j => (j.scheduled ? initiateJob(j) : j), schedCrontab);
+
+    /* Update state with new crontab */
+    const newState = assoc('crontab', jobs, cur);
 
     console.log(`<${scheduledJobIds(newState.crontab).length}> jobs scheduled.`);
     console.log(`<${runningJobIds(newState.crontab).length}> jobs running.`);
 
     console.log(`[finalSchedule]: ${JSON.stringify(newState.crontab)}`);
-
-    //     console.log(`action-1: ${JSON.stringify(R.fromPairs([[1, [{'act':'off','id':1,'status':null,'startedAt':null,'endedAt':null,'target':'1/1/1'}, {'act':'off','id':1,'status':null,'startedAt':null,'endedAt':null,'target':'1/1/2'}]]]))}`);
 
     return newState;
   }).observe(onValue);

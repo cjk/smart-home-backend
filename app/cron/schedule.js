@@ -4,8 +4,10 @@ const jobShouldRun = (j) => {
   const isDaily = R.propEq('repeat', 'daily', j);
   const isRunning = R.propEq('running', true, j);
   const hasFixedTime = not(isNil(prop('at', j)));
+  const hasRun = not(isNil(prop('lastRun', j)));
 
-  return not(isRunning) && isDaily && hasFixedTime;
+  return not(hasRun) && not(isRunning) && isDaily && hasFixedTime;
+  //   return not(isRunning);
 };
 
 function schedule(crontab) {
