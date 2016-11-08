@@ -1,8 +1,11 @@
 /* General purpose functions */
-import {pluck, filter, compose} from 'ramda';
+import {assoc, pluck, filter, compose} from 'ramda';
 
 const scheduled = j => j.scheduled;
 const running = j => j.running;
+
+const setRunning = assoc('running', true);
+const setLastRun = assoc('lastRun', Date.now());
 
 const scheduledJobIds = compose(
   pluck('jobId'),
@@ -14,4 +17,4 @@ const runningJobIds = compose(
   filter(scheduled)
 );
 
-export {scheduled, running, scheduledJobIds, runningJobIds};
+export {scheduled, running, setLastRun, setRunning, scheduledJobIds, runningJobIds};

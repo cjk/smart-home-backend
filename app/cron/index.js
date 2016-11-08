@@ -5,11 +5,30 @@ import schedule from './schedule';
 import loadCrontab from './crontab';
 import dispatch from './taskDispatcher';
 
-import {scheduledJobIds, runningJobIds} from './util';
+import {scheduledJobIds, runningJobIds, setLastRun, setRunning} from './util';
 
 /* Load and transform initial crontab entries */
 const _crontab = loadCrontab();
 console.log(`Loaded crontab:\n <${JSON.stringify(_crontab)}>`);
+
+/* Cron side-effects routine */
+function onCronTick(eventEmitter) {
+  return ({crontab}) => {
+    console.log(`[onValue] Job(s) <${scheduledJobIds(crontab)}> scheduled.`);
+    console.log(`[onValue] Job(s) <${runningJobIds(crontab)}> running.`);
+
+    const taskStreams = dispatch(crontab);
+
+    map(result$ =>
+      result$.onValue(
+        (taskState) => {
+          console.log(`[result$] ${JSON.stringify(taskState)}`); eventEmitter.emit('actionFinished', taskState);
+        }
+      )
+    )(taskStreams);
+  };
+  /* END of sideeffects */
+}
 
 function init(busState$) {
   const cron$ = K.withInterval(1000, (emitter) => {
@@ -18,35 +37,16 @@ function init(busState$) {
 
   const eventEmitter = new EventEmitter();
 
-  /* TODO: Define action-result-stream that emits completed rules so we can set running=false in our state */
-  const actionResult$ = K.fromEvents(eventEmitter, 'actionFinished').toProperty(() => {});
+  /* Create task-result-stream that returns task-results as they finished running */
+  const taskResult$ = K.fromEvents(eventEmitter, 'actionFinished').toProperty(() => {});
+  const onValue = onCronTick(eventEmitter);
 
-  /* Sideeffects routine */
-  const onValue = ({crontab}) => {
-    console.log(`[onValue] Job(s) <${scheduledJobIds(crontab)}> scheduled.`);
-    console.log(`[onValue] Job(s) <${runningJobIds(crontab)}> running.`);
-
-    const taskStreams = dispatch(crontab);
-
-    /* TODO: Need to trigger the action-results stream with done rule-id */
-    //     result$.flatMap(v => console.log(`got ${v}`));
-    map(result$ =>
-      result$.onValue((taskState) => { console.log(`[result$] ${JSON.stringify(taskState)}`); eventEmitter.emit('actionFinished', taskState); })
-    )(taskStreams);
-  };
-
-  /* END of sideeffects */
-
-  return K.combine([cron$, actionResult$], [busState$], (crontab, results, state) => {
+  return K.combine([cron$, taskResult$], [busState$], (crontab, results, state) => {
     /* PENDING: No logic here yet */
     console.log(`PING: ${Date.now()}`);
     return {crontab, results, state};
   }).scan((prev, cur) => {
     const {crontab, state, results} = cur;
-
-    /* DEBUGGING */
-    // console.log(`[PREV] ${JSON.stringify(prev)}`);
-    // console.log(`[CUR] ${JSON.stringify(cur)}`);
 
     console.log(`[Results-In-Stream] ${JSON.stringify(results)}`);
 
@@ -63,9 +63,6 @@ function init(busState$) {
     });
 
     console.log(`[synced] ${JSON.stringify(syncWithPrevJobs(crontab))}`);
-
-    const setRunning = assoc('running', true);
-    const setLastRun = assoc('lastRun', Date.now());
 
     /* Schedule jobs */
     const schedCrontab = schedule(syncWithPrevJobs(crontab));
