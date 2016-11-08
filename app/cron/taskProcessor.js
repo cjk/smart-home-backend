@@ -12,7 +12,7 @@ function createTaskResultStream() {
   return K.fromEvents(eventEmitter, 'actionFinished').toProperty(() => {});
 }
 
-function prepareCrontab(prev, cur) {
+function prepareSchedule(prev, cur) {
   const {crontab, state, results} = cur;
 
   console.log(`[Results-In-Stream] ${JSON.stringify(results)}`);
@@ -71,4 +71,4 @@ function processTask() {
   };
 }
 
-export {createTaskResultStream, prepareCrontab, processTask};
+export {createTaskResultStream, prepareSchedule, processTask};

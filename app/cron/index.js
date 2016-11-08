@@ -1,6 +1,6 @@
 import K from 'kefir';
 import loadCrontab from './crontab';
-import {createTaskResultStream, prepareCrontab, processTask} from './taskProcessor';
+import {createTaskResultStream, prepareSchedule, processTask} from './taskProcessor';
 
 /* Load and transform initial crontab entries */
 const _crontab = loadCrontab();
@@ -13,11 +13,14 @@ function init(busState$) {
 
   const taskResult$ = createTaskResultStream();
 
-  return K.combine([cron$, taskResult$], [busState$], (crontab, results, state) => {
-    /* PENDING: No logic here yet */
-    console.log(`PING: ${Date.now()}`);
-    return {crontab, results, state};
-  }).scan(prepareCrontab).observe(processTask());
+  return K
+    .combine([cron$, taskResult$], [busState$], (crontab, results, state) => {
+      /* PENDING: No logic here yet */
+      console.log(`PING: ${Date.now()}`);
+      return {crontab, results, state};
+    })
+    .scan(prepareSchedule)
+    .observe(processTask());
 }
 
 export default init;
