@@ -59,15 +59,13 @@ function processTask() {
     console.log(`[onValue] Job(s) <${scheduledJobIds(crontab)}> scheduled.`);
     console.log(`[onValue] Job(s) <${runningJobIds(crontab)}> running.`);
 
-    const taskStreams = dispatch(crontab);
+    const result$ = dispatch(crontab);
 
-    map(result$ =>
-      result$.onValue(
-        (taskState) => {
-          console.log(`[result$] ${JSON.stringify(taskState)}`); eventEmitter.emit('actionFinished', taskState);
-        }
-      )
-    )(taskStreams);
+    result$.onValue(
+      (taskState) => {
+        console.log(`[result$] ${JSON.stringify(taskState)}`); eventEmitter.emit('actionFinished', taskState);
+      }
+    );
   };
 }
 
