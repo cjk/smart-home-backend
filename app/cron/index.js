@@ -1,6 +1,7 @@
 import K from 'kefir';
 import loadCrontab from './crontab';
-import {createTaskResultStream, prepareSchedule, processTask} from './taskProcessor';
+import {createTaskResultStream, processTaskResults} from './taskProcessor';
+import prepareSchedule from './schedule';
 
 /* Load and transform initial crontab entries */
 const _crontab = loadCrontab();
@@ -20,7 +21,7 @@ function init(busState$) {
       return {crontab, results, state};
     })
     .scan(prepareSchedule)
-    .observe(processTask());
+    .observe(processTaskResults());
 }
 
 export default init;

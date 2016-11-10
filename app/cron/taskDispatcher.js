@@ -1,17 +1,9 @@
 /* Given a crontab, filters all waiting tasks from scheduled jobs, starts the task(s) and returns a list of
    result-streams for each running task. */
 import K from 'kefir';
-import R, {assoc, tap, isEmpty, filter, flatten, pipe, pickAll, merge, map, reduce} from 'ramda';
+import {assoc, tap, isEmpty, filter, flatten, pipe, pickAll, merge, map, reduce} from 'ramda';
 import {scheduled, scheduledJobIds} from './util';
-
-/* Simulated fake async operation */
-const runTask = (task, cb) => {
-  console.log(`Running task ${JSON.stringify(task)}...`);
-  setTimeout(() => {
-    console.log(`Completed task ${JSON.stringify(task)}.`);
-    cb(null, assoc('endedAt', Date.now(), task));
-  }, 500);
-};
+import {runTask} from './taskProcessor';
 
 /* Given a crontab returns a stream of dispatched tasks */
 function dispatch(crontab) {
@@ -29,7 +21,7 @@ function dispatch(crontab) {
   const scheduledTasks = pipe(
     filter(scheduled),
     reduce((acc, j) => acc.concat(pickAll(['jobId', 'tasks'], j)), []),
-    map(j => map(t => R.assoc('jobId', j.jobId, merge(t, taskStartProps)), j.tasks)),
+    map(j => map(t => assoc('jobId', j.jobId, merge(t, taskStartProps)), j.tasks)),
     flatten,
     tap(lst => console.log(`[dispatcher] dispatching tasks: ${JSON.stringify(lst)}`)),
   );
