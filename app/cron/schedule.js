@@ -32,12 +32,12 @@ function schedule(crontab) {
 function prepareSchedule(prev, cur) {
   const {crontab, state, results} = cur;
 
-  /* DEBUGGING */
-  console.log(`[results-in-stream] ${JSON.stringify(results)}`);
-  console.log(`[synced] ${JSON.stringify(syncWithPrevJobs(crontab))}`);
-
   /* Synchronize crontab with previous state and schedule jobs that can/should run */
   const schedCrontab = schedule(syncWithPrevJobs(prev.crontab)(crontab));
+
+  /* DEBUGGING */
+  console.log(`[results-in-stream] ${JSON.stringify(results)}`);
+  console.log(`[synced] ${JSON.stringify(schedCrontab)}`);
 
   const initiateJob = pipe(
     setRunning,
