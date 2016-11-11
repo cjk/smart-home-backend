@@ -27,11 +27,13 @@ function schedule(crontab) {
   return scheduledTab(crontab);
 }
 
+/* TICK-function called on each cron-timer iteration.
+ * Brings over job-state from last tick. */
 function prepareSchedule(prev, cur) {
   const {crontab, state, results} = cur;
 
   /* DEBUGGING */
-  console.log(`[Results-In-Stream] ${JSON.stringify(results)}`);
+  console.log(`[results-in-stream] ${JSON.stringify(results)}`);
   console.log(`[synced] ${JSON.stringify(syncWithPrevJobs(crontab))}`);
 
   /* Synchronize crontab with previous state and schedule jobs that can/should run */
