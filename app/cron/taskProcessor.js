@@ -1,6 +1,6 @@
 import K from 'kefir';
 import {EventEmitter} from 'events';
-import {assoc, compose} from 'ramda';
+import R, {assoc, compose} from 'ramda';
 import dispatch from './taskDispatcher';
 import {scheduledJobIds, runningJobIds} from './util';
 
@@ -11,14 +11,14 @@ function createTaskEventStream() {
   const endedEvents$ = K.fromEvents(eventEmitter, 'taskEnded');
 
   /* Create task-event-stream that returns task-events as they finished running */
-  return K.merge([startedEvents$, endedEvents$]).toProperty(() => {});
+  return K.merge([startedEvents$, endedEvents$]).toProperty(() => R.of({}));
 }
 
 /* Taskrunner: What a task is actually doing - your sideeffects go here! */
 function runTask(task, callback) {
   /* PENDING: Simulated fake async operation */
   console.log(`Started task ${JSON.stringify(task)}...`);
-  eventEmitter.emit('taskStarted', task);
+  eventEmitter.emit('taskStarted', [task]);
 
   setTimeout(() => {
     //     console.log(`Completed task ${JSON.stringify(task)}.`);
@@ -37,9 +37,7 @@ function processTaskEvents() {
     const event$ = dispatch(crontab);
 
     event$.onValue(
-      (taskState) => {
-        console.log(`[taskEvents$] ${JSON.stringify(taskState)}`); eventEmitter.emit('taskEnded', taskState);
-      }
+      taskState => eventEmitter.emit('taskEnded', [taskState])
     );
   };
 }
