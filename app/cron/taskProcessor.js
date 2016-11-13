@@ -6,15 +6,20 @@ import {scheduledJobIds, runningJobIds} from './util';
 
 const eventEmitter = new EventEmitter();
 
-function createTaskResultStream() {
-  /* Create task-result-stream that returns task-results as they finished running */
-  return K.fromEvents(eventEmitter, 'actionFinished').toProperty(() => {});
+function createTaskEventStream() {
+  const startedEvents$ = K.fromEvents(eventEmitter, 'taskStarted');
+  const endedEvents$ = K.fromEvents(eventEmitter, 'taskEnded');
+
+  /* Create task-event-stream that returns task-events as they finished running */
+  return K.merge([startedEvents$, endedEvents$]).toProperty(() => {});
 }
 
 /* Taskrunner: What a task is actually doing - your sideeffects go here! */
 function runTask(task, callback) {
   /* PENDING: Simulated fake async operation */
   console.log(`Started task ${JSON.stringify(task)}...`);
+  eventEmitter.emit('taskStarted', task);
+
   setTimeout(() => {
     //     console.log(`Completed task ${JSON.stringify(task)}.`);
     const end = compose(assoc('endedAt', Date.now()), assoc('status', 'ended'));
@@ -24,19 +29,19 @@ function runTask(task, callback) {
 }
 
 /* Cron side-effects routine */
-function processTaskResults() {
+function processTaskEvents() {
   return ({crontab}) => {
     console.log(`[onValue] Job(s) <${scheduledJobIds(crontab)}> scheduled.`);
     console.log(`[onValue] Job(s) <${runningJobIds(crontab)}> running.`);
 
-    const result$ = dispatch(crontab);
+    const event$ = dispatch(crontab);
 
-    result$.onValue(
+    event$.onValue(
       (taskState) => {
-        console.log(`[result$] ${JSON.stringify(taskState)}`); eventEmitter.emit('actionFinished', taskState);
+        console.log(`[taskEvents$] ${JSON.stringify(taskState)}`); eventEmitter.emit('taskEnded', taskState);
       }
     );
   };
 }
 
-export {createTaskResultStream, processTaskResults, runTask};
+export {createTaskEventStream, processTaskEvents, runTask};

@@ -1,5 +1,5 @@
 /* Given a crontab, filters all waiting tasks from scheduled jobs, starts the task(s) and returns a list of
-   result-streams for each running task. */
+   event-streams for each running task. */
 import K from 'kefir';
 import {assoc, tap, isEmpty, filter, flatten, pipe, pickAll, merge, map, reduce} from 'ramda';
 import {scheduled, scheduledJobIds} from './util';
