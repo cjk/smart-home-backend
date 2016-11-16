@@ -29,7 +29,7 @@ function schedule(crontab) {
 
 /* TICK-function called on each cron-timer iteration.
  * Brings over job-state from last tick. */
-function prepareSchedule(prev, cur) {
+function scheduleTick(prev, cur) {
   const {crontab, state, taskEvents} = cur;
 
   /* Synchronize crontab with previous state and schedule jobs that can/should run */
@@ -58,4 +58,4 @@ function prepareSchedule(prev, cur) {
   return newState;
 }
 
-export default prepareSchedule;
+export default scheduleTick;

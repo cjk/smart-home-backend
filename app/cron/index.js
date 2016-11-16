@@ -1,7 +1,7 @@
 import K from 'kefir';
 import loadCrontab from './crontab';
 import {createTaskEventStream, processTaskEvents} from './taskProcessor';
-import prepareSchedule from './schedule';
+import scheduleTick from './schedule';
 
 /* Load and transform initial crontab entries */
 const _crontab = loadCrontab();
@@ -20,7 +20,7 @@ function init(busState$) {
       console.log(`PING: ${Date.now()}`);
       return {crontab, taskEvents, state};
     })
-    .scan(prepareSchedule)
+    .scan(scheduleTick)
     .observe(processTaskEvents());
 }
 
