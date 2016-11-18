@@ -5,8 +5,10 @@ import {assoc, tap, isEmpty, filter, flatten, pipe, pickAll, merge, map, reduce}
 import {scheduled, scheduledJobIds} from './util';
 import {runTask} from './taskProcessor';
 
+import type {Crontab} from '../../smart-home-backend.js.flow';
+
 /* Given a crontab returns a stream of dispatched tasks */
-function dispatch(crontab) {
+function dispatch(crontab: Crontab) {
   if (isEmpty(scheduledJobIds(crontab))) {
     return K.constant({});/* immediately return a stream holding an empty class if no jobs are scheduled */
   }
