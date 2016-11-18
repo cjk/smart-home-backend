@@ -22,11 +22,6 @@
   "license": "GPL-2.0",
   "homepage": "https://github.com/cjk/smart-home-backend#readme",
   "dependencies": {
-    "babel": "latest",
-    "babel-core": "latest",
-    "babel-preset-es2015": "^6.16.0",
-    "babel-preset-stage-0": "^6.16.0",
-    "babel-register": "^6.16.3",
     "eibd": "^0.3.5",
     "hapi": "latest",
     "immutable": "latest",
@@ -39,6 +34,11 @@
     "socket.io-client": "latest"
   },
   "devDependencies": {
+    "babel": "latest",
+    "babel-core": "latest",
+    "babel-preset-es2015": "latest",
+    "babel-preset-stage-0": "latest",
+    "babel-register": "latest",
     "babel-eslint": "latest",
     "gulp": "^3.9.1",
     "gulp-nodemon": "^2.2.1",
