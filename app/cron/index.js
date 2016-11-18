@@ -17,7 +17,7 @@ function init(busState$) {
   return K
     .combine([cron$, taskEvent$], [busState$], (crontab, taskEvents, state) => {
       /* PENDING: No logic here yet */
-      console.log(`PING: ${Date.now()}`);
+      console.log(`[cron]: PING: ${Date.now()}`);
       return {crontab, taskEvents, state};
     })
     .scan(scheduleTick)

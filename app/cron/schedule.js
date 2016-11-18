@@ -13,14 +13,20 @@ const jobShouldRun = (j) => {
 
 const syncWithPrevJobs = prevCrontab => map((j) => {
   const syncedProps = ['running', 'scheduled', 'lastRun'];
-  console.log(`Looking for jobId <${j.jobId}> in previous job.`);
   const prevJob = find(propEq('jobId', j.jobId), prevCrontab);
   if (isNil(prevJob)) {
-    console.log(`No previous job <${j.jobId}> found.`);
+    console.warn(`No previous job <${j.jobId}> found.`);
     return j;
   }
-  return merge(j, pick(syncedProps, prevJob));
+  return assoc('tasks', prevJob.tasks, merge(j, pick(syncedProps, prevJob)));
 });
+
+const updateFromTaskEvents = (crontab, taskEvents) =>
+  R.reduce((tab, event) => {
+    if (isEmpty(event)) return tab;
+
+    return updateTaskFromEvent(event, tab);
+  }, crontab, taskEvents);
 
 function schedule(crontab) {
   const scheduledTab = map(j => assoc('scheduled', jobShouldRun(j), j));
@@ -33,19 +39,18 @@ function scheduleTick(prev, cur) {
   const {crontab, state, taskEvents} = cur;
 
   /* DEBUGGING */
-  console.log(`[taskEvents-in-stream] ${JSON.stringify(taskEvents)}`);
+  //   console.log(`[taskEvents-in-stream] ${JSON.stringify(taskEvents)}`);
 
   /* Synchronize crontab with previous state and schedule jobs that can/should run */
   const schedCrontab = schedule(syncWithPrevJobs(prev.crontab)(crontab));
+
   /* DEBUGGING */
-  console.log(`[synced] ${JSON.stringify(schedCrontab)}`);
+  //   console.log(`[synced] ${JSON.stringify(schedCrontab)}`);
 
-  const newCrontab = R.reduce((ct, e) => {
-    if (isEmpty(e)) return ct;
+  const newCrontab = updateFromTaskEvents(schedCrontab, taskEvents);
 
-    return updateTaskFromEvent(e, ct);
-  }, schedCrontab, taskEvents);
-  console.log(`[event-new-crontab] ${JSON.stringify(newCrontab)} `);
+  /* DEBUGGING */
+  //   console.log(`[event-new-crontab] ${JSON.stringify(newCrontab)} `);
 
   const initiateJob = pipe(
     setRunning,
@@ -53,15 +58,15 @@ function scheduleTick(prev, cur) {
   );
 
   /* Set scheduled jobs as running + lastRun-timestamp */
-  const jobs = map(j => (j.scheduled ? initiateJob(j) : j), schedCrontab);
+  const jobs = map(j => (j.scheduled ? initiateJob(j) : j), newCrontab);
 
   /* Update state with new crontab */
   const newState = assoc('crontab', jobs, cur);
 
-  console.log(`<${scheduledJobIds(newState.crontab).length}> jobs scheduled.`);
-  console.log(`<${runningJobIds(newState.crontab).length}> jobs running.`);
-
-  console.log(`[finalSchedule]: ${JSON.stringify(newState.crontab)}`);
+  /* DEBUGGING */
+  // console.log(`<${scheduledJobIds(newState.crontab).length}> jobs scheduled.`);
+  // console.log(`<${runningJobIds(newState.crontab).length}> jobs running.`);
+  // console.log(`[finalSchedule]: ${JSON.stringify(newState.crontab)}`);
 
   return newState;
 }
