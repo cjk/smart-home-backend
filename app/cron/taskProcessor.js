@@ -1,5 +1,5 @@
 import K from 'kefir';
-import {EventEmitter} from 'events';
+import EventEmitter from 'events';
 import R, {assoc, compose} from 'ramda';
 import dispatch from './taskDispatcher';
 import {scheduledJobIds, runningJobIds} from './util';

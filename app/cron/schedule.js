@@ -1,5 +1,5 @@
-import {assoc, find, isNil, map, not, pipe, pick, prop, propEq, merge} from 'ramda';
-import {scheduledJobIds, runningJobIds, setLastRun, setRunning} from './util';
+import R, {assoc, find, isEmpty, isNil, map, not, pipe, pick, prop, propEq, merge} from 'ramda';
+import {scheduledJobIds, runningJobIds, setLastRun, setRunning, updateTaskFromEvent} from './util';
 
 const jobShouldRun = (j) => {
   const isDaily = propEq('repeat', 'daily', j);
@@ -32,12 +32,20 @@ function schedule(crontab) {
 function scheduleTick(prev, cur) {
   const {crontab, state, taskEvents} = cur;
 
-  /* Synchronize crontab with previous state and schedule jobs that can/should run */
-  const schedCrontab = schedule(syncWithPrevJobs(prev.crontab)(crontab));
-
   /* DEBUGGING */
   console.log(`[taskEvents-in-stream] ${JSON.stringify(taskEvents)}`);
+
+  /* Synchronize crontab with previous state and schedule jobs that can/should run */
+  const schedCrontab = schedule(syncWithPrevJobs(prev.crontab)(crontab));
+  /* DEBUGGING */
   console.log(`[synced] ${JSON.stringify(schedCrontab)}`);
+
+  const newCrontab = R.reduce((ct, e) => {
+    if (isEmpty(e)) return ct;
+
+    return updateTaskFromEvent(e, ct);
+  }, schedCrontab, taskEvents);
+  console.log(`[event-new-crontab] ${JSON.stringify(newCrontab)} `);
 
   const initiateJob = pipe(
     setRunning,
