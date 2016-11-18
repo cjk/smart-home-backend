@@ -1,8 +1,10 @@
 /* General purpose functions */
 import {__, all, assoc, curry, indexOf, filter, compose, eqProps, find, findIndex, pipe, pluck, propEq, update} from 'ramda';
 
-const scheduled = j => j.scheduled;
-const running = j => j.running;
+import type {CronJob, Crontab, TaskEvent} from '../../smart-home-backend.js.flow';
+
+const scheduled = (j: CronJob) => j.scheduled;
+const running = (j: CronJob) => j.running;
 
 const setRunning = assoc('running', true);
 const setLastRun = assoc('lastRun', Date.now());
@@ -25,7 +27,7 @@ function _getJob(jobId, crontab) {
 }
 const getJob = curry(_getJob);
 
-function updateTaskFromEvent(event, crontab) {
+function updateTaskFromEvent(event: TaskEvent, crontab: Crontab) {
   const {jobId, ...task} = event;
   const job = find(propEq('jobId', jobId), crontab);
 

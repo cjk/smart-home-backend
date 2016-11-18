@@ -1,8 +1,10 @@
+// @flow
 import R from 'ramda';
+import type {Crontab, TaskMeta} from '../../smart-home-backend.js.flow';
 
 let idIdx = 0;
 
-const crontab = [
+const crontab: Crontab = [
   {
     jobId: 1,
     name: 'sample-1',
@@ -30,7 +32,7 @@ const crontab = [
   }
 ];
 
-const taskMeta = {id: 10, status: null, startedAt: null, endedAt: null};
+const taskMeta: TaskMeta = {id: 10, status: 'idle', startedAt: null, endedAt: null};
 
 /* Normalizes crontab-structure
  *

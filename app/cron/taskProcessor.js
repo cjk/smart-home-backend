@@ -1,8 +1,11 @@
+// @flow
 import K from 'kefir';
 import EventEmitter from 'events';
 import R, {assoc, compose} from 'ramda';
 import dispatch from './taskDispatcher';
 import {scheduledJobIds, runningJobIds} from './util';
+
+import type {Crontab, Task, Callback} from '../../smart-home-backend.js.flow';
 
 const eventEmitter = new EventEmitter();
 
@@ -15,7 +18,7 @@ function createTaskEventStream() {
 }
 
 /* Taskrunner: What a task is actually doing - your sideeffects go here! */
-function runTask(task, callback) {
+function runTask(task: Task, callback: Callback) {
   /* PENDING: Simulated fake async operation */
   console.log(`Started task ${JSON.stringify(task)}...`);
   eventEmitter.emit('taskStarted', [task]);
@@ -30,7 +33,7 @@ function runTask(task, callback) {
 
 /* Cron side-effects routine */
 function processTaskEvents() {
-  return ({crontab}) => {
+  return ({crontab}: {crontab: Crontab}) => {
     console.log(`[onValue] Job(s) <${scheduledJobIds(crontab)}> scheduled.`);
     console.log(`[onValue] Job(s) <${runningJobIds(crontab)}> running.`);
 

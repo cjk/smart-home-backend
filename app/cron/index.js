@@ -9,7 +9,8 @@ console.log(`Loaded crontab:\n <${JSON.stringify(_crontab)}>`);
 
 function init(busState$) {
   const cron$ = K.withInterval(1000, (emitter) => {
-    emitter.emit(_crontab);
+    emitter.value(_crontab);
+    /* NOTE: emitter.end() not defined yet! */
   });
 
   const taskEvent$ = createTaskEventStream();
