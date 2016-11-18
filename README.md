@@ -12,4 +12,24 @@
 
 Still in early development right now. Pull requests welcome of course.
 
+## Usage
+
+### For development, start build-process and watcher with hot-reloading enabled using gulp:
+
+```js
+gulp
+```
+
+…then start the server:
+
+```js
+npm start
+```
+
+For production, skip the gulp-task and simply run using
+
+```js
+env NODE_ENV='production' npm run start
+```
+
 Made by [CjK](https://twitter.com/cjk)

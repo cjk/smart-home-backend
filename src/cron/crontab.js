@@ -1,5 +1,7 @@
 // @flow
+
 import R from 'ramda';
+
 import type {Crontab, TaskMeta} from '../../smart-home-backend.js.flow';
 
 let idIdx = 0;

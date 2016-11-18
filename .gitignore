@@ -3,14 +3,12 @@
 # compiled output
 build
 coverage
-dist
+app
 
 # dependencies
 node_modules
-bower_components
 
 # misc
-/.sass-cache
 npm-debug.log
 .tern-port
 .DS_Store
@@ -22,4 +20,4 @@ GTAGS
 .projectile
 
 # Credentials or sensitive information
-app/config/group-address-list.js
+src/config/group-address-list.js

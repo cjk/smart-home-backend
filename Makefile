@@ -1,6 +1,6 @@
 .PHONY: _pwd_prompt decrypt_conf encrypt_conf
 
-CONF_FILE=app/config/group-address-list.js
+CONF_FILE=src/config/group-address-list.js
 
 # 'private' task for echoing instructions
 _pwd_prompt:
