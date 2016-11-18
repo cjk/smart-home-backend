@@ -1,5 +1,5 @@
 /* General purpose functions */
-import {__, all, assoc, curry, empty, indexOf, filter, compose, eqProps, find, findIndex, pluck, propEq, update} from 'ramda';
+import {__, all, assoc, curry, indexOf, filter, compose, eqProps, find, findIndex, pipe, pluck, propEq, update} from 'ramda';
 
 const scheduled = j => j.scheduled;
 const running = j => j.running;
@@ -28,13 +28,19 @@ const getJob = curry(_getJob);
 function updateTaskFromEvent(event, crontab) {
   const {jobId, ...task} = event;
   const job = find(propEq('jobId', jobId), crontab);
-  if (!job)
-    return crontab;
 
-  const idx = findIndex(propEq('id', task.id))(job.tasks);
-  const newTasks = update(idx, task)(job.tasks);
-  const newJob = assoc('tasks', newTasks)(job);
-  return update(indexOf(job, crontab), newJob, crontab);
+  if (!job) return crontab;
+
+  const withId = propEq('id');
+
+  /* Find the old task in the job, replace it with updated task and update job with new tasks. Then update job in given
+     crontab and return it back */
+  return pipe(
+    findIndex(withId(task.id)),
+    update(__, task, job.tasks),
+    assoc('tasks', __, job),
+    update(indexOf(job, crontab), __, crontab)
+  )(job.tasks);
 }
 
 export {
