@@ -10,7 +10,7 @@ import type {Crontab} from '../../smart-home-backend.js.flow';
 /* Given a crontab returns a stream of dispatched tasks */
 function dispatch(crontab: Crontab) {
   if (isEmpty(scheduledJobIds(crontab))) {
-    return K.constant({});/* immediately return a stream holding an empty class if no jobs are scheduled */
+    return K.never(); /* Make sure we create no events if there are no scheduled tasks */
   }
 
   const createAddrWriteStream = scheduledTasks =>
