@@ -42,17 +42,17 @@ const updateTaskFromEvent = (event: TaskEvent, crontab: Crontab) => {
 };
 
 /* Merge one or more task-events into it's corresponding job's tasks */
-const updateFromTaskEvents = (crontab: Crontab, taskEvents: TaskEvent) =>
-  R.reduce((tab, event) => {
+function _updateFromTaskEvents(taskEvents: TaskEvent, crontab: Crontab) {
+  return R.reduce((tab, event) => {
     if (isEmpty(event)) return tab;
 
     return updateTaskFromEvent(event, tab);
   }, crontab, taskEvents);
-
-function schedule(crontab) {
-  const scheduledTab = map(j => assoc('scheduled', jobShouldRun(j), j));
-  return scheduledTab(crontab);
 }
+const updateFromTaskEvents = R.curry(_updateFromTaskEvents);
+
+const schedule = (crontab: Crontab) =>
+  map(j => assoc('scheduled', jobShouldRun(j), j))(crontab);
 
 /* TICK-function called on each cron-timer iteration.
  * Brings over job-state from last tick. */
@@ -62,16 +62,13 @@ function scheduleTick(prev, cur) {
   /* DEBUGGING */
   console.log(`[taskEvents-in-stream] ${JSON.stringify(taskEvents)}`);
 
-  /* Synchronize crontab with previous state and schedule jobs that can/should run */
-  const schedCrontab = schedule(syncWithPrevJobs(prev.crontab)(crontab));
+  const newCrontab = pipe(
+    syncWithPrevJobs(prev.crontab),
+    schedule,
+    updateFromTaskEvents(taskEvents)
+  )(crontab);
 
-  /* DEBUGGING */
-  console.log(`[synced] ${JSON.stringify(schedCrontab)}`);
-
-  const newCrontab = updateFromTaskEvents(schedCrontab, taskEvents);
-
-  /* DEBUGGING */
-  //   console.log(`[event-new-crontab] ${JSON.stringify(newCrontab)} `);
+  console.log(`[newCrontab] ${JSON.stringify(newCrontab)}`);
 
   const initiateJob = pipe(
     setRunning,
