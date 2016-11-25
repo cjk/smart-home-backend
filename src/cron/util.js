@@ -1,12 +1,13 @@
 /* General purpose functions */
-import {__, all, assoc, curry, indexOf, filter, compose, eqProps, find, findIndex, pipe, pluck, propEq, update} from 'ramda';
+import R, {all, any, assoc, compose, curry, isNil, map, merge, filter, find, pick, pipe, pluck, propEq, tap} from 'ramda';
 
-import type {CronJob, Crontab, TaskEvent} from '../../smart-home-backend.js.flow';
+import type {CronJob} from '../../smart-home-backend.js.flow';
 
 const scheduled = (j: CronJob) => j.scheduled;
 const running = (j: CronJob) => j.running;
 
 const setRunning = assoc('running', true);
+const setEnded = assoc('running', false);
 const setLastRun = assoc('lastRun', Date.now());
 
 const scheduledJobIds = compose(
@@ -19,39 +20,39 @@ const runningJobIds = compose(
   filter(scheduled)
 );
 
-const significantTaskProps = ['startedAt', 'endedAt', 'status'];
-const taskHasSameState = (taskA, taskB) => all(eqProps(__, taskA, taskB), significantTaskProps);
+const withId = propEq('id');
+
+const anyRunningTasks = (j: CronJob) => any(t => t.status === 'started', j.tasks);
+const onlyEndedTasks = (j: CronJob) => all(t => t.status === 'ended', j.tasks);
 
 function _getJob(jobId, crontab) {
   return find(propEq('jobId', jobId), crontab);
 }
 const getJob = curry(_getJob);
 
-function updateTaskFromEvent(event: TaskEvent, crontab: Crontab) {
-  const {jobId, ...task} = event;
-  const job = find(propEq('jobId', jobId), crontab);
-
-  if (!job) return crontab;
-
-  const withId = propEq('id');
-
-  /* Find the old task in the job, replace it with updated task and update job with new tasks. Then update job in given
-     crontab and return it back */
-  return pipe(
-    findIndex(withId(task.id)),
-    update(__, task, job.tasks),
-    assoc('tasks', __, job),
-    update(indexOf(job, crontab), __, crontab)
-  )(job.tasks);
+function syncWithPrevJobs(prevCrontab) {
+  return map((j) => { /* Map current crontab */
+    const syncedProps = ['running', 'scheduled', 'lastRun'];
+    const prevJob = find(propEq('jobId', j.jobId), prevCrontab);
+    if (isNil(prevJob)) {
+      console.warn(`No previous job <${j.jobId}> found.`);
+      return j;
+    }
+    return assoc('tasks', prevJob.tasks, merge(j, pick(syncedProps, prevJob)));
+  });
 }
 
 export {
-  scheduled,
+  anyRunningTasks,
+  onlyEndedTasks,
+  getJob,
   running,
   setLastRun,
   setRunning,
-  scheduledJobIds,
+  setEnded,
   runningJobIds,
-  getJob,
-  updateTaskFromEvent
+  scheduled,
+  scheduledJobIds,
+  syncWithPrevJobs,
+  withId
 };
