@@ -3,17 +3,23 @@
 import R, {__, assoc, cond, find, findIndex, indexOf, isEmpty, isNil, map, not, pipe, prop, propEq, update} from 'ramda';
 import {anyRunningTasks, onlyEndedTasks, setEnded, setLastRun, setRunning, syncWithPrevJobs, withId} from './util';
 
-import type {CronJob, Crontab, Task, TaskEvent} from '../../smart-home-backend.js.flow';
+import type {AppState, CronJob, Crontab, TaskMeta, TaskEvent} from '../../smart-home-backend.js.flow';
 
 const jobShouldRun = (j: CronJob) => {
   const isDaily = propEq('repeat', 'daily', j);
-  const isRunning = propEq('running', true, j);
+  const notRunning = propEq('running', false, j);
   const hasFixedTime = not(isNil(prop('at', j)));
   const hasRun = not(isNil(prop('lastRun', j)));
 
-  return not(hasRun) && not(isRunning) && isDaily && hasFixedTime;
+  return not(hasRun) && notRunning && isDaily && hasFixedTime;
   //   return not(isRunning);
 };
+
+/* TODO: Out of place here, move to dispatcher?! */
+const initiateJob = pipe(
+  setRunning,
+  setLastRun
+);
 
 const setJobStateFromTasksState = (j: CronJob) =>
   cond([
@@ -22,7 +28,7 @@ const setJobStateFromTasksState = (j: CronJob) =>
     [R.T, job => job]/* Default fallback: return job unchanged */
   ])(j);
 
-const updateTaskInJob = (job: CronJob, task: Task) => pipe(
+const updateTaskInJob = (job: CronJob, task: TaskMeta) => pipe(
   findIndex(withId(task.id)),
   update(__, task, job.tasks),
   assoc('tasks', __, job),
@@ -56,7 +62,7 @@ const schedule = (crontab: Crontab) =>
 
 /* TICK-function called on each cron-timer iteration.
  * Brings over job-state from last tick. */
-function scheduleTick(prev, cur) {
+function scheduleTick(prev: AppState, cur: AppState) {
   const {crontab, state, taskEvents} = cur;
 
   /* DEBUGGING */
@@ -69,11 +75,6 @@ function scheduleTick(prev, cur) {
   )(crontab);
 
   console.log(`[newCrontab] ${JSON.stringify(newCrontab)}`);
-
-  const initiateJob = pipe(
-    setRunning,
-    setLastRun
-  );
 
   /* Set scheduled jobs as running + lastRun-timestamp */
   const jobs = map(j => (j.scheduled ? initiateJob(j) : j), newCrontab);

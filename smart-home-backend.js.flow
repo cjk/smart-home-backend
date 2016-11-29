@@ -11,13 +11,13 @@ type TaskMin = {
 export type TaskMeta = {
   id: number,
   status: string,
-  startedAt: number | null,
-  endedAt: number | null
+  startedAt: ?number,
+  endedAt: ?number
 }
 
-export type TaskEvent = TaskMeta | {jobId: number}
+export type TaskEvent = TaskMeta & {jobId: number}
 
-export type Task = TaskMin | TaskMeta;
+export type Task = TaskMeta | TaskMin;
 
 export type CronJob = {
   jobId: number,
@@ -31,3 +31,12 @@ export type CronJob = {
 }
 
 export type Crontab = Array<CronJob>;
+
+// TODO: Describe in more detail
+export type HomeState = Object;
+
+export type AppState = {
+  crontab: Crontab,
+  state: HomeState,
+  taskEvents: Array<TaskEvent>
+};
