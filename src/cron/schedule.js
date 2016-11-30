@@ -1,18 +1,36 @@
 // @flow
 
-import R, {__, assoc, cond, find, findIndex, indexOf, isEmpty, isNil, map, not, pipe, prop, propEq, update} from 'ramda';
+import moment from 'moment';
+import instadate from 'instadate';
+
+import R, {__, assoc, cond, find, findIndex, indexOf, isEmpty, isNil,
+           map, pipe, prop, propEq, reduce, update} from 'ramda';
 import {anyRunningTasks, onlyEndedTasks, setEnded, setLastRun, setRunning, syncWithPrevJobs, withId} from './util';
 
 import type {AppState, CronJob, Crontab, TaskMeta, TaskEvent} from '../../smart-home-backend.js.flow';
 
+const fixedTimeIsNow = (j: CronJob) => {
+  const now = new Date();
+  const lastRunTs = new Date(prop('lastRun', j));
+  const noFixedTime = isNil(prop('at', j));
+  const hasRun = instadate.differenceInHours(lastRunTs, now) <= 23;
+
+  if (noFixedTime || hasRun)
+    return false;
+
+  const targetTs = moment(moment().format('YYYY-MM-DDT') + j.at).toDate();
+  const secondsToStart = instadate.differenceInSeconds(now, targetTs);
+
+  console.log(`>>>> next daily job will run in ${secondsToStart} seconds.`);
+
+  return secondsToStart >= 0 && secondsToStart <= 1;
+};
+
 const jobShouldRun = (j: CronJob) => {
   const isDaily = propEq('repeat', 'daily', j);
   const notRunning = propEq('running', false, j);
-  const hasFixedTime = not(isNil(prop('at', j)));
-  const hasRun = not(isNil(prop('lastRun', j)));
 
-  return not(hasRun) && notRunning && isDaily && hasFixedTime;
-  //   return not(isRunning);
+  return isDaily && notRunning && fixedTimeIsNow(j);
 };
 
 /* TODO: Out of place here, move to dispatcher?! */
@@ -25,7 +43,7 @@ const setJobStateFromTasksState = (j: CronJob) =>
   cond([
     [anyRunningTasks, setRunning],
     [onlyEndedTasks, setEnded],
-    [R.T, job => job]/* Default fallback: return job unchanged */
+    [R.T, job => job] /* Default fallback: return job unchanged */
   ])(j);
 
 const updateTaskInJob = (job: CronJob, task: TaskMeta) => pipe(
@@ -49,7 +67,7 @@ const updateTaskFromEvent = (event: TaskEvent, crontab: Crontab) => {
 
 /* Merge one or more task-events into it's corresponding job's tasks */
 function _updateFromTaskEvents(taskEvents: TaskEvent, crontab: Crontab) {
-  return R.reduce((tab, event) => {
+  return reduce((tab, event) => {
     if (isEmpty(event)) return tab;
 
     return updateTaskFromEvent(event, tab);
@@ -74,7 +92,7 @@ function scheduleTick(prev: AppState, cur: AppState) {
     updateFromTaskEvents(taskEvents)
   )(crontab);
 
-  console.log(`[newCrontab] ${JSON.stringify(newCrontab)}`);
+  //   console.log(`[newCrontab] ${JSON.stringify(newCrontab)}`);
 
   /* Set scheduled jobs as running + lastRun-timestamp */
   const jobs = map(j => (j.scheduled ? initiateJob(j) : j), newCrontab);
@@ -83,9 +101,7 @@ function scheduleTick(prev: AppState, cur: AppState) {
   const newState = assoc('crontab', jobs, cur);
 
   /* DEBUGGING */
-  // console.log(`<${scheduledJobIds(newState.crontab).length}> jobs scheduled.`);
-  // console.log(`<${runningJobIds(newState.crontab).length}> jobs running.`);
-  console.log(`[finalSchedule]: ${JSON.stringify(newState.crontab)}`);
+  console.log(`[schedule - final]: ${JSON.stringify(newState.crontab)}`);
 
   return newState;
 }

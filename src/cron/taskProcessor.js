@@ -3,7 +3,6 @@ import K from 'kefir';
 import EventEmitter from 'events';
 import R, {assoc, compose} from 'ramda';
 import dispatch from './taskDispatcher';
-import {scheduledJobIds, runningJobIds} from './util';
 
 import type {Crontab, Task, Callback} from '../../smart-home-backend.js.flow';
 
@@ -34,9 +33,6 @@ function runTask(task: Task, callback: Callback) {
 /* Cron side-effects routine */
 function processTaskEvents() {
   return ({crontab}: {crontab: Crontab}) => {
-    console.log(`[onValue] Job(s) <${scheduledJobIds(crontab)}> scheduled.`);
-    console.log(`[onValue] Job(s) <${runningJobIds(crontab)}> running.`);
-
     const event$ = dispatch(crontab);
 
     event$.onValue(

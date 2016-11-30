@@ -1,7 +1,7 @@
 /* General purpose functions */
-import R, {all, any, assoc, compose, curry, isNil, map, merge, filter, find, pick, pipe, pluck, propEq, tap} from 'ramda';
+import {all, any, assoc, compose, curry, isNil, map, merge, filter, find, pick, pluck, propEq} from 'ramda';
 
-import type {CronJob} from '../../smart-home-backend.js.flow';
+import type {Crontab, CronJob} from '../../smart-home-backend.js.flow';
 
 const scheduled = (j: CronJob) => j.scheduled;
 const running = (j: CronJob) => j.running;
@@ -30,7 +30,7 @@ function _getJob(jobId, crontab) {
 }
 const getJob = curry(_getJob);
 
-function syncWithPrevJobs(prevCrontab) {
+function syncWithPrevJobs(prevCrontab: Crontab) {
   return map((j) => { /* Map current crontab */
     const syncedProps = ['running', 'scheduled', 'lastRun'];
     const prevJob = find(propEq('jobId', j.jobId), prevCrontab);
