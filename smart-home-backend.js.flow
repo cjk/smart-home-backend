@@ -1,0 +1,42 @@
+// @flow
+
+export type Callback = (err: ?Error, res: Object) => void;
+
+// Cron types
+type TaskMin = {
+  targets: Array<string>,
+  act: string
+}
+
+export type TaskMeta = {
+  id: number,
+  status: string,
+  startedAt: ?number,
+  endedAt: ?number
+}
+
+export type TaskEvent = TaskMeta & {jobId: number}
+
+export type Task = TaskMeta | TaskMin;
+
+export type CronJob = {
+  jobId: number,
+  name: string,
+  at: string,
+  repeat: string,
+  scheduled: boolean,
+  running: boolean,
+  lastRun: Date | null,
+  tasks: Array<Task>
+}
+
+export type Crontab = Array<CronJob>;
+
+// TODO: Describe in more detail
+export type HomeState = Object;
+
+export type AppState = {
+  crontab: Crontab,
+  state: HomeState,
+  taskEvents: Array<TaskEvent>
+};

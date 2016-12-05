@@ -3,12 +3,34 @@
     "node": true
   },
   "parser": "babel-eslint",
+  "plugins": [
+    "flowtype",
+    "fp"
+  ],
   "rules": {
     "object-curly-spacing": ["error", "never"],
     "space-before-function-paren": ["error", "never"],
     "comma-dangle": ["error", "only-multiline"],
     "max-len": ["error", 120],
-    "no-underscore-dangle": "off"
+    "no-underscore-dangle": "off",
+    // Rules for functional programming. We do not need Object#freeze.
+    "fp/no-mutating-assign": 2,
+    "fp/no-mutating-methods": 2,
+    "fp/no-mutation": ["error", {
+      "commonjs": true,
+      "allowThis": true,
+      "exceptions": [
+        {"property": "propTypes"}
+      ]
+    }]
   },
-  "extends": "airbnb"
+  "extends": [
+    "airbnb",
+    "plugin:flowtype/recommended"
+  ],
+  "settings": {
+    "flowtype": {
+      "onlyFilesWithFlowAnnotation": true
+    }
+  }
 }

@@ -1,18 +1,37 @@
 import gulp from 'gulp';
-import gutil from 'gulp-util';
-import nodemon from 'gulp-nodemon';
+import babel from 'gulp-babel';
+import changed from 'gulp-changed';
+import preprocess from 'gulp-preprocess';
+import sourcemaps from 'gulp-sourcemaps';
+import watch from 'gulp-watch';
+import del from 'del';
 
-function serverWatch() {
-  gutil.log('-> Watching Server...');
+const SRC = './src/**/*.js';
+const DEST = 'app';
 
-  nodemon({
-    script: 'app/index.js',
-    ext: 'js jsx',
-    ignore: ['gulpfile.babel.js', 'dist/*', 'node_modules/*'],
-    watch: ['app/*']
-  });
+function build() {
+  gulp.src([SRC])
+      .pipe(changed(DEST))
+      .pipe(sourcemaps.init())
+      .pipe(preprocess())
+      .pipe(babel({
+        presets: ['latest'],
+        plugins: ['transform-flow-strip-types', 'transform-object-rest-spread']
+      }))
+      .pipe(sourcemaps.write())
+      .pipe(gulp.dest(DEST));
 }
 
-gulp.task('serverwatch', serverWatch);
+gulp.task('clean', () =>
+  del([
+    DEST,
+  ])
+);
 
-gulp.task('default', ['serverwatch']);
+gulp.task('build', build);
+
+gulp.task('hotupdate', () =>
+  watch(SRC, build, {ignoreInitial: false})
+);
+
+gulp.task('default', ['build', 'hotupdate']);

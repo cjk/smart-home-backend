@@ -1,8 +1,8 @@
 {
   "name": "home-automation-backend",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "Provides a real-time API for reading and writing to your home's devices",
-  "main": "index.js",
+  "main": "./app/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cjk/smart-home-backend.git"
@@ -24,33 +24,37 @@
   "dependencies": {
     "babel": "latest",
     "babel-core": "latest",
-    "babel-preset-es2015": "^6.16.0",
-    "babel-preset-stage-0": "^6.16.0",
-    "babel-register": "^6.16.3",
+    "babel-eslint": "latest",
+    "babel-plugin-transform-flow-strip-types": "^6.18.0",
+    "babel-preset-latest": "^6.16.0",
+    "babel-register": "latest",
+    "date-fns": "^1.12.0",
+    "del": "^2.2.2",
     "eibd": "^0.3.5",
+    "gulp": "latest",
+    "gulp-babel": "latest",
+    "gulp-changed": "latest",
+    "gulp-eslint": "latest",
+    "gulp-preprocess": "latest",
+    "gulp-sourcemaps": "latest",
+    "gulp-watch": "latest",
     "hapi": "latest",
     "immutable": "latest",
     "inert": "latest",
     "kefir": "latest",
-    "moment": "^2.15.1",
+    "nodemon": "latest",
     "ramda": "latest",
     "redis": "latest",
     "socket.io": "latest",
     "socket.io-client": "latest"
   },
   "devDependencies": {
-    "babel-eslint": "latest",
-    "gulp": "^3.9.1",
-    "gulp-nodemon": "^2.2.1",
-    "gulp-util": "^3.0.7",
-    "nodemon": "latest",
-    "piping": "latest",
-    "tape": "latest"
+    "piping": "latest"
   },
   "scripts": {
     "start": "PORT=8000 ./node_modules/.bin/nodemon ./app/index.js"
   },
   "engines": {
-    "node": ">=0.12"
+    "node": ">=7.1.0"
   }
 }
