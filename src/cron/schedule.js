@@ -1,7 +1,5 @@
 // @flow
-
-import moment from 'moment';
-import instadate from 'instadate';
+import {differenceInHours, differenceInSeconds, format, parse} from 'date-fns';
 
 import R, {__, assoc, cond, find, findIndex, indexOf, isEmpty, isNil,
            map, pipe, prop, propEq, reduce, update} from 'ramda';
@@ -13,13 +11,13 @@ const fixedTimeIsNow = (j: CronJob) => {
   const now = new Date();
   const lastRunTs = new Date(prop('lastRun', j));
   const noFixedTime = isNil(prop('at', j));
-  const hasRun = instadate.differenceInHours(lastRunTs, now) <= 23;
+  const hasRun = differenceInHours(now, lastRunTs) <= 23;
 
   if (noFixedTime || hasRun)
     return false;
 
-  const targetTs = moment(moment().format('YYYY-MM-DDT') + j.at).toDate();
-  const secondsToStart = instadate.differenceInSeconds(now, targetTs);
+  const targetTs = parse(format(now, `YYYY-MM-DDT${j.at}`));
+  const secondsToStart = differenceInSeconds(targetTs, now);
 
   console.log(`>>>> next daily job will run in ${secondsToStart} seconds.`);
 
