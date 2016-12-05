@@ -8,7 +8,7 @@ const tickInterval = 1000;
 
 /* Load and transform initial crontab entries */
 const _crontab = loadCrontab();
-console.log(`Loaded crontab:\n <${JSON.stringify(_crontab)}>`);
+console.log(`[CRON] Loaded crontab:\n <${JSON.stringify(_crontab)}>`);
 
 function init(busState$) {
   const cron$ = K.withInterval(tickInterval, (emitter) => {
@@ -19,11 +19,11 @@ function init(busState$) {
   const taskEvent$ = createTaskEventStream();
 
   return K
-    .combine([cron$, taskEvent$], [busState$], (crontab, taskEvents, state) => {
+    .combine([cron$, taskEvent$], [busState$], (crontab, taskEvents, state) => (
       /* PENDING: No logic here yet */
-      console.log(`[cron]: PING: ${Date.now()}`);
-      return {crontab, taskEvents, state};
-    })
+      //       console.log(`[cron]: PING: ${Date.now()}`);
+      {crontab, taskEvents, state}
+    ))
     .scan(scheduleTick)
     .observe(processTaskEvents());
 }

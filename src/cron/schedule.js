@@ -19,7 +19,8 @@ const fixedTimeIsNow = (j: CronJob) => {
   const targetTs = parse(format(now, `YYYY-MM-DDT${j.at}`));
   const secondsToStart = differenceInSeconds(targetTs, now);
 
-  console.log(`>>>> next daily job will run in ${secondsToStart} seconds.`);
+  if (secondsToStart > 0 && secondsToStart <= 60)
+    console.log(`[CRON] Next daily job will run in ${secondsToStart} seconds.`);
 
   return secondsToStart >= 0 && secondsToStart <= 1;
 };
@@ -82,7 +83,7 @@ function scheduleTick(prev: AppState, cur: AppState) {
   const {crontab, state, taskEvents} = cur;
 
   /* DEBUGGING */
-  console.log(`[taskEvents-in-stream] ${JSON.stringify(taskEvents)}`);
+  //   console.log(`[taskEvents-in-stream] ${JSON.stringify(taskEvents)}`);
 
   const newCrontab = pipe(
     syncWithPrevJobs(prev.crontab),
@@ -99,7 +100,7 @@ function scheduleTick(prev: AppState, cur: AppState) {
   const newState = assoc('crontab', jobs, cur);
 
   /* DEBUGGING */
-  console.log(`[schedule - final]: ${JSON.stringify(newState.crontab)}`);
+  //   console.log(`[schedule - final]: ${JSON.stringify(newState.crontab)}`);
 
   return newState;
 }

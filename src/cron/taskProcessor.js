@@ -19,7 +19,7 @@ function createTaskEventStream() {
 /* Taskrunner: What a task is actually doing - your sideeffects go here! */
 function runTask(task: Task, callback: Callback) {
   /* PENDING: Simulated fake async operation */
-  console.log(`Started task ${JSON.stringify(task)}...`);
+  console.log(`[CRON] Started task ${JSON.stringify(task)}...`);
   eventEmitter.emit('taskStarted', [task]);
 
   setTimeout(() => {
