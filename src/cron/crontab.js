@@ -10,7 +10,7 @@ const crontab: Crontab = [
   {
     jobId: 1,
     name: 'sample-1',
-    at: '14:03:00',
+    at: '15:13:00',
     repeat: 'daily',
     scheduled: false,
     running: false,
@@ -23,7 +23,7 @@ const crontab: Crontab = [
   {
     jobId: 2,
     name: 'sample-2',
-    at: null,
+    at: '00:00:00',
     repeat: 'hourly',
     scheduled: false,
     running: false,

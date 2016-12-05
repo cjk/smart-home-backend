@@ -22,7 +22,7 @@ export type Task = TaskMeta | TaskMin;
 export type CronJob = {
   jobId: number,
   name: string,
-  at: string | null,
+  at: string,
   repeat: string,
   scheduled: boolean,
   running: boolean,
