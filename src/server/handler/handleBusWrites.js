@@ -21,8 +21,12 @@ function errorHandler(error) {
 function handleBusWrites(io) {
   io.on('connection', (socket) => {
     function writeAddress(addr) {
-      console.log(`[DEBUG] Performing address-write on request for address: ${JSON.stringify(addr)}`);
-      writeGroupAddr(addr);
+      console.log(`[DEBUG] About to perform address-write on request for address: ${JSON.stringify(addr)}`);
+      if (addr.id) {
+        writeGroupAddr(addr);
+      } else {
+        console.error('[ERROR] Illegal KNX-address received for bus-writing - will not perform any bus action!');
+      }
     }
 
     const writeAddressStream = createRequestStream(socket);

@@ -25,13 +25,13 @@ function sendReqToBusFor(action, datatype, value, addrId, callback = defaultCall
   conn.socketRemote(conf, () => {
     conn.openTGroup(addr, isWriteOnly(action), (err) => {
       if (err) {
-        callback(err);
-      } else {
-        const msg = (action === 'read') ? /* as long as there is only read & write... */
-                    knxReadMsg(action) :
-                    knxWriteMsg(datatype, parseInt(value, 10));
-        conn.sendAPDU(msg, callback);
+        return callback(err);
       }
+      const msg = (action === 'read') ? /* as long as there is only read & write... */
+                  knxReadMsg(action) :
+                  knxWriteMsg(datatype, parseInt(value, 10));
+      conn.sendAPDU(msg, callback);
+      return callback(null);
     });
   });
 }
@@ -46,6 +46,11 @@ export function readGroupAddr(addrId, callback = defaultCallback) {
 }
 
 export function writeGroupAddr(address, callback = defaultCallback) {
-  console.log(`[INFO] Writing to address ${address} in format <${deriveAddrFormat(address)}>`);
-  return writeAddr(deriveAddrFormat(address), address.value, address.id, callback);
+  const fmt = deriveAddrFormat(address);
+  console.log(`[INFO] PerformBusAction: Writing to address ${address} in format <${fmt}>`);
+  if (!fmt) {
+    callback(new Error(`Unknown address-format for address <${address.id}>`));
+  } else {
+    writeAddr(fmt, address.value, address.id, callback);
+  }
 }
