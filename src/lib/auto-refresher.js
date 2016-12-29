@@ -19,8 +19,8 @@ function refreshStaleAddresses(stream) {
         .onValue((addresses) => {
           const now = Date.now();
           const staleAddresses = addresses
-            /* Exclude: Shutters (func=shut), Feedback (type=fb) */
-            .filter(addr => !(addr.func === 'shut' || addr.type === 'fb'))
+            /* Exclude: Shutters (func=shut), Feedback (type=fb) and Scenes (until we can properly handle them) */
+            .filter(addr => !(addr.func === 'shut' || addr.func === 'scene' || addr.type === 'fb'))
             /* Convert time-span to seconds and compare to max allowed age (600 = 10 min., 1200 = 20min. etc.) */
             .filter(addr => Math.floor((now - addr.get('updatedAt')) / 1000) > 1200)
             .sortBy(v => v.updatedAt);
