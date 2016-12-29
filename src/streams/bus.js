@@ -32,10 +32,13 @@ export default function createBusStreams() {
     const addressFilter = new List(readableAddr);
 
     return addresses
-             .filter((v, k) => addressFilter.contains(k));
+      .filter((v, k) => addressFilter.contains(k));
   }
 
   const initialstate = initialStateWithReadableAddr(addressMap());
+  /* DEBUGGING */
+  console.log(JSON.stringify(initialstate));
+
   const mutatingEvents = new List(['write', 'response']);
 
   /* Create BUS-state */
@@ -53,7 +56,7 @@ export default function createBusStreams() {
   const busState = mutatingBusEvents.scan(updateFromEvent, initialstate);
 
   /* Refresh address-values in state from time to time */
-  //   addressRefresher(busState);
+  addressRefresher(busState);
 
   /* for DEBUGGING: Also locally log each KNX-bus event to the console */
   if (config.logging.logBusEvents) {

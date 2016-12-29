@@ -52,7 +52,7 @@
     "piping": "latest"
   },
   "scripts": {
-    "start": "PORT=8000 ./node_modules/.bin/nodemon ./app/index.js"
+    "start": "PORT=8001 ./node_modules/.bin/nodemon ./app/index.js"
   },
   "engines": {
     "node": ">=7.1.0"

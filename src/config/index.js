@@ -11,7 +11,8 @@ config.server = {
 };
 
 config.knxd = {
-  host: 'localhost', /* like '192.168.0.28' or 'localhost'  */
+  host: '192.168.1.28', /* like '192.168.1.28' or 'localhost'  */
+  //   host: 'localhost', /* like '192.168.1.28' or 'localhost'  */
   port: '6720',
   isAvailable: true
 };
