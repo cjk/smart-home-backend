@@ -8,15 +8,13 @@
     "url": "git+https://github.com/cjk/smart-home-backend.git"
   },
   "keywords": [
-    "hapi",
-    "hapi.js",
     "node",
     "knx",
     "real-time",
-    "socket.io",
-    "redis",
+    "websockets",
     "pubsub",
-    "automation"
+    "automation",
+    "realtime"
   ],
   "author": "@cjk",
   "license": "GPL-2.0",
@@ -29,8 +27,11 @@
     "babel-preset-latest": "^6.16.0",
     "babel-register": "latest",
     "date-fns": "^1.12.0",
+    "deepstream.io-client-js": "latest",
     "del": "^2.2.2",
     "eibd": "^0.3.5",
+    "eslint-config-airbnb-base": "^11.0.0",
+    "eslint-plugin-import": "^2.2.0",
     "gulp": "latest",
     "gulp-babel": "latest",
     "gulp-changed": "latest",
@@ -38,17 +39,14 @@
     "gulp-preprocess": "latest",
     "gulp-sourcemaps": "latest",
     "gulp-watch": "latest",
-    "hapi": "latest",
     "immutable": "latest",
-    "inert": "latest",
     "kefir": "latest",
     "nodemon": "latest",
-    "ramda": "latest",
-    "redis": "latest",
-    "socket.io": "latest",
-    "socket.io-client": "latest"
+    "ramda": "latest"
   },
   "devDependencies": {
+    "eslint-plugin-flowtype": "^2.29.2",
+    "flow-bin": "^0.37.4",
     "piping": "latest"
   },
   "scripts": {
