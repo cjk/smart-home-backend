@@ -17,8 +17,8 @@ const config:Config = {
     isAvailable: true
   },
   wsServer: {
-    //     host: 'localhost',
     host: '192.168.1.28',
+    //     host: 'localhost',
     port: '6020',
     user: 'smartHomeBackend',
   },
@@ -32,7 +32,7 @@ const config:Config = {
   },
   /* Enable / disable some modules / functionality */
   modules: {
-    addressRefresher: false,
+    addressRefresher: true,
   },
   knx: {
     addresses,

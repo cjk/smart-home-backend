@@ -46,7 +46,7 @@
   },
   "devDependencies": {
     "eslint-plugin-flowtype": "^2.29.2",
-    "flow-bin": "^0.37.4",
+    "flow-bin": "^0.38.0",
     "piping": "latest"
   },
   "scripts": {

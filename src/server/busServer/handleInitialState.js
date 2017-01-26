@@ -33,7 +33,7 @@ function updateRemoteInitialState(client: any, busState: BusState) {
       console.log('[handleInitialState] Unsubscribing to delivering initial busState records');
       busState.offValue(putBusStateIntoEther);
       client.record.getRecord('knx/initialBusState').discard();
-      //       response.reject();
+      response.reject();
     }
   };
 
