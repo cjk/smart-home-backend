@@ -56,7 +56,9 @@ export default function createBusStreams() {
   const busState = mutatingBusEvents.scan(updateFromEvent, initialstate);
 
   /* Refresh address-values in state from time to time */
-  addressRefresher(busState);
+  if (config.modules.addressRefresher) {
+    addressRefresher(busState);
+  }
 
   /* for DEBUGGING: Also locally log each KNX-bus event to the console */
   if (config.logging.logBusEvents) {

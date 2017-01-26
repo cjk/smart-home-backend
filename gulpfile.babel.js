@@ -16,7 +16,7 @@ function build() {
       .pipe(preprocess())
       .pipe(babel({
         presets: ['latest'],
-        plugins: ['transform-flow-strip-types', 'transform-object-rest-spread']
+        plugins: ['transform-flow-strip-types'],
       }))
       .pipe(sourcemaps.write())
       .pipe(gulp.dest(DEST));

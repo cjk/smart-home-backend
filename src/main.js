@@ -1,3 +1,4 @@
+/* @flow */
 import config from './config';
 import createBusStreams from './streams/bus';
 import addrMapToConsole from './lib/debug';
@@ -12,7 +13,7 @@ cron(busState);
 /* Setup and configure (websocket-/http-) server and pass event-emitters along
    for use in plugins et. al. */
 server({
-  conf: config.server,
+  conf: config,
   streams: {
     busEvents,
     busState,
