@@ -1,3 +1,7 @@
 {
-  "presets": ["latest"]
+  "presets": ["env"],
+  "plugins": [
+    "transform-object-rest-spread",
+    "transform-flow-strip-types"
+  ]
 }
