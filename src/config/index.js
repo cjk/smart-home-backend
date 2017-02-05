@@ -78,6 +78,7 @@ const config:Config = {
       '10/1/0', /* EG Türen Haustür Kontakt via Binäreingang 1.1.47 Ausg. A-0  */
       '10/0/10', /* UG Fenster Keller-2 Kontakt via Binäreingang 1.1.39 Ausg. A-1  */
       '11/2/0', /* OG Kind-2 / Daniel Steckdose Ost 1/5 via Schaltaktor 1.1.45 Ausg. 7 */
+      '11/1/0', /* WZ Steckd.-Erker West 2+3 (Stehlampe, ...) */
     ]
   }
 };
