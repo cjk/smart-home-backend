@@ -1,6 +1,7 @@
 /* @flow */
 import type {BusState} from '../types';
 import Kefir from 'kefir';
+import {pipe, take, values} from 'ramda';
 import busScanner from './bus-scanner';
 import {List} from 'immutable';
 import {isNil} from 'ramda';
@@ -11,8 +12,9 @@ const maxRefreshLimit = 5;
 const maxAddressAge = 20; // Maxium age in minutes before an address gets refreshed
 
 const reduceAddressesToIds = (addrMap) =>
-  addrMap.reduce((lst, addr) => lst.push(addr.get('id')), new List());
-
+  addrMap
+    .reduce((lst, addr) => lst.push(addr.get('id')), new List())
+    .sort();
 
 function refreshStaleAddresses(stream:BusState) {
   /* Check address-timestamps every n seconds */
@@ -25,22 +27,26 @@ function refreshStaleAddresses(stream:BusState) {
     .onValue((addresses) => {
       const now = Date.now();
       const staleAddresses = addresses
-      /* Exclude: Shutters (func=shut) and Adresses with a Feedback-Address since the latter can cause ghost-traffic on the bus -
+      /* Exclude: Scenes (can be acciddentally switched by bus-responses) and Adresses with a Feedback-Address (can cause ghost-traffic on the bus??!) -
        * see https://knx-user-forum.de/forum/%C3%B6ffentlicher-bereich/knx-eib-forum/15169-lesen-einer-ga-f%C3%BChrt-zum-fahren-von-rolladen */
-        .filter(addr => !(addr.func === 'shut') && isNil(addr.fbAddr))
+        .filter(addr => !(addr.func === 'scene') && isNil(addr.fbAddr))
       /* Convert time-span to seconds and compare to max allowed age */
         .filter(addr => Math.floor((now - addr.get('updatedAt')) / 1000) > (maxAddressAge * 60))
         .sortBy(v => v.updatedAt);
 
       /* DEBUGGING: */
       if (staleAddresses.size > 0) {
-        console.log(`[${getTimestamp(Date.now())}]-[AddressRefresher]: We have ${staleAddresses.size} stale addresses: ${reduceAddressesToIds(staleAddresses).sort().join('|')} - refreshing a max of ${maxRefreshLimit} of these.`);
+        console.log(`[${getTimestamp(Date.now())}]-[AddressRefresher]: We have ${staleAddresses.size} stale addresses: ${reduceAddressesToIds(staleAddresses).join('|')} - refreshing a max of ${maxRefreshLimit} of these.`);
       } else {
-        console.log('[${getTimestamp(Date.now())}]-[AddressRefresher]: All addresses up to date - nothing to do :)');
+        console.log(`[${getTimestamp(Date.now())}]-[AddressRefresher]: All addresses up to date - nothing to do :)`);
       }
-      //           console.log(staleAddresses.map(a => a.get('id')).toJS());
+      //       console.log(staleAddresses.map(a => a.get('id')).toJS());
 
-      busScanner(reduceAddressesToIds(staleAddresses.take(maxRefreshLimit)).toJS());
+      pipe(
+        values,
+        take(maxRefreshLimit),
+        busScanner,
+      )(staleAddresses.toJS());
     })
   ;
 }

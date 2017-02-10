@@ -19,13 +19,13 @@ const isWriteOnly = action => action === 'write';
 const knxReadMsg = R.unary(knxd.createMessage);
 const knxWriteMsg = R.partial(knxd.createMessage, ['write']);
 
-function sendReqToBusFor(action, datatype, value, addrId, callback = defaultCallback) {
+function sendReqToBusFor(action, datatype, value, address, callback = defaultCallback) {
   const conn = knxd.Connection(); /* eslint new-cap: "off" */
-  const addr = knxd.str2addr(addrId);
+  const addrId = knxd.str2addr(address.id);
   const conf = config.knxd;
 
   conn.socketRemote(conf, () => {
-    conn.openTGroup(addr, isWriteOnly(action), (err) => {
+    conn.openTGroup(addrId, isWriteOnly(action), (err) => {
       if (err) {
         return callback(err);
       }
@@ -41,15 +41,13 @@ function sendReqToBusFor(action, datatype, value, addrId, callback = defaultCall
 const readAddr = R.partial(sendReqToBusFor, ['read', null, null]);
 const writeAddr = R.partial(sendReqToBusFor, ['write']);
 
-/* TODO: use address-record for `address` everywhere instead of text-string */
-
-export function readGroupAddr(addrId, callback:Function = defaultCallback) {
-  return readAddr(addrId, callback);
+export function readGroupAddr(address:Address, callback:Function = defaultCallback) {
+  return readAddr(address, callback);
 }
 
 export function writeGroupAddr(address:Address, callback:Function = defaultCallback) {
   const fmt = deriveAddrFormat(address);
-  console.log(`[INFO] PerformBusAction: Writing to address ${address} in format <${fmt}>`);
+  console.log(`[INFO] PerformBusAction: Writing to address ${address.id} in format <${fmt}>`);
   if (!fmt) {
     callback(new Error(`Unknown address-format for address <${address.id}>`));
   } else {
