@@ -19,7 +19,7 @@ const isWriteOnly = action => action === 'write';
 const knxReadMsg = R.unary(knxd.createMessage);
 const knxWriteMsg = R.partial(knxd.createMessage, ['write']);
 
-function sendReqToBusFor(action, datatype, value, address, callback = defaultCallback) {
+function sendReqToBusFor(action, datatype, address, callback = defaultCallback) {
   const conn = knxd.Connection(); /* eslint new-cap: "off" */
   const addrId = knxd.str2addr(address.id);
   const conf = config.knxd;
@@ -31,14 +31,14 @@ function sendReqToBusFor(action, datatype, value, address, callback = defaultCal
       }
       const msg = (action === 'read') ? /* as long as there is only read & write... */
                   knxReadMsg(action) :
-                  knxWriteMsg(datatype, parseInt(value, 10));
+                  knxWriteMsg(datatype, parseInt(address.value, 10));
       conn.sendAPDU(msg, callback);
       return callback(null);
     });
   });
 }
 
-const readAddr = R.partial(sendReqToBusFor, ['read', null, null]);
+const readAddr = R.partial(sendReqToBusFor, ['read', null]);
 const writeAddr = R.partial(sendReqToBusFor, ['write']);
 
 export function readGroupAddr(address:Address, callback:Function = defaultCallback) {
@@ -51,6 +51,6 @@ export function writeGroupAddr(address:Address, callback:Function = defaultCallb
   if (!fmt) {
     callback(new Error(`Unknown address-format for address <${address.id}>`));
   } else {
-    writeAddr(fmt, address.value, address.id, callback);
+    writeAddr(fmt, address, callback);
   }
 }
