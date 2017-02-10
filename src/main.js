@@ -1,7 +1,7 @@
 /* @flow */
 import config from './config';
 import createBusStreams from './streams/bus';
-import addrMapToConsole from './lib/debug';
+import {addrMapToConsole} from './lib/debug';
 import server from './server';
 import cron from './cron';
 

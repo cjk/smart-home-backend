@@ -8,14 +8,13 @@ import knxd from 'eibd';
 import R from 'ramda';
 import config from '../config';
 import Event from './event';
+import {getTimestamp} from '../lib/debug';
 
 /* Identify name of the event's associated address to make debug-output more
    readable */
 const addresses = config.knx.addressMap();
 
 const addressFor = addrId => addresses.get(addrId).name;
-
-const getTimestamp = () => new Date().toISOString().slice(0, 19);
 
 function createEvent(action, src, dest, type, val) {
   return new Event({

@@ -1,5 +1,7 @@
+/* @flow */
 /* eslint no-console: "off" */
 
+import type {Address} from '../types'
 import knxd from 'eibd';
 import R from 'ramda';
 import config from '../config';
@@ -41,11 +43,11 @@ const writeAddr = R.partial(sendReqToBusFor, ['write']);
 
 /* TODO: use address-record for `address` everywhere instead of text-string */
 
-export function readGroupAddr(addrId, callback = defaultCallback) {
+export function readGroupAddr(addrId, callback:Function = defaultCallback) {
   return readAddr(addrId, callback);
 }
 
-export function writeGroupAddr(address, callback = defaultCallback) {
+export function writeGroupAddr(address:Address, callback:Function = defaultCallback) {
   const fmt = deriveAddrFormat(address);
   console.log(`[INFO] PerformBusAction: Writing to address ${address} in format <${fmt}>`);
   if (!fmt) {
