@@ -1004,7 +1004,7 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
 
-eibd@^0.3.5:
+eibd@^0.3.7:
   version "0.3.7"
   resolved "https://registry.yarnpkg.com/eibd/-/eibd-0.3.7.tgz#e403ca2e669ce2a2137c0d4bcf503e28d4418e10"
 
