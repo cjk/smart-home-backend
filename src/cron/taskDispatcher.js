@@ -17,7 +17,7 @@ function dispatch(crontab: Crontab) {
     K.sequentially(250, scheduledTasks)
      .flatMap(task => K.fromNodeCallback(callback => runTask(task, callback)));
 
-  console.log(`[dispatcher] Scheduled jobs are: ${JSON.stringify(scheduledJobIds(crontab))}`);
+  console.log(`[dispatcher] Scheduled job-list: ${JSON.stringify(scheduledJobIds(crontab))}`);
 
   const taskStartProps = {status: 'started', startedAt: Date.now()};
   const scheduledTasks = pipe(
@@ -25,7 +25,7 @@ function dispatch(crontab: Crontab) {
     reduce((acc, j) => acc.concat(pickAll(['jobId', 'tasks'], j)), []),
     map(j => map(t => assoc('jobId', j.jobId, merge(t, taskStartProps)), j.tasks)),
     flatten,
-    tap(lst => console.log(`[dispatcher] dispatching tasks: ${JSON.stringify(lst)}`)),
+    tap(lst => !isEmpty(lst) ? console.log(`[dispatcher] dispatching tasks: ${JSON.stringify(lst)}`) : false),
   );
 
   return createAddrWriteStream(scheduledTasks(crontab));

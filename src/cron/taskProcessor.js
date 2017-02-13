@@ -1,7 +1,7 @@
 // @flow
 import K from 'kefir';
 import EventEmitter from 'events';
-import R, {assoc, compose} from 'ramda';
+import {assoc, compose, of} from 'ramda';
 import dispatch from './taskDispatcher';
 
 import type {Crontab, Task, Callback} from '../../smart-home-backend.js.flow';
@@ -13,7 +13,7 @@ function createTaskEventStream() {
   const endedEvents$ = K.fromEvents(eventEmitter, 'taskEnded');
 
   /* Create task-event-stream that returns task-events as they finished running */
-  return K.merge([startedEvents$, endedEvents$]).toProperty(() => R.of({}));
+  return K.merge([startedEvents$, endedEvents$]).toProperty(() => of({}));
 }
 
 /* Taskrunner: What a task is actually doing - your sideeffects go here! */

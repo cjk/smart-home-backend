@@ -1,4 +1,14 @@
 // @flow
+
+/* This module takes a look at the crontab / list of tasks and schedules them according to their metadata.
+ * Currently supported task-types:
+ * - Daily tasks with explicit start time
+ *
+ * NOT yet supported task-types:
+ * - Daily tasks without explicit start time (should automatically run at, let's say, midnight)
+ * - Monthly tasks
+ * - Dynamic tasks (created at runtime, like for ad-hoc actions)
+ */
 import {differenceInHours, differenceInSeconds, format, parse} from 'date-fns';
 
 import R, {__, assoc, cond, find, findIndex, indexOf, isEmpty, isNil,
@@ -13,6 +23,7 @@ const fixedTimeIsNow = (j: CronJob) => {
   const noFixedTime = isNil(prop('at', j));
   const hasRun = differenceInHours(now, lastRunTs) <= 23;
 
+  /* Bail on unsupported task-properties */
   if (noFixedTime || hasRun)
     return false;
 
@@ -20,7 +31,7 @@ const fixedTimeIsNow = (j: CronJob) => {
   const secondsToStart = differenceInSeconds(targetTs, now);
 
   if (secondsToStart > 0 && secondsToStart <= 60)
-    console.log(`[CRON] Next daily job will run in ${secondsToStart} seconds.`);
+    console.log(`[CRON] Daily job #${j.jobId} will run in ${secondsToStart} seconds.`);
 
   return secondsToStart >= 0 && secondsToStart <= 1;
 };
