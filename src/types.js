@@ -8,12 +8,12 @@ export type BusEvent = Observable<Object>;
 export type Address = {
   id: string,
   name: string,
-  value: ?number,
   room: ?string,
   story: ?string,
   type: ?string,
   func: ?string,
-  fbAddr: ?string,
+  fbAddr?: string,
+  value?: ?number,
 };
 
 export type AddressList = Array<Address>;

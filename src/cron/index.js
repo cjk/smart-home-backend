@@ -1,3 +1,4 @@
+import type {BusState} from '../types';
 import K from 'kefir';
 import loadCrontab from './crontab';
 import {createTaskEventStream, processTaskEvents} from './taskProcessor';
@@ -10,7 +11,7 @@ const tickInterval = 1000;
 const _crontab = loadCrontab();
 console.log(`[CRON] Loaded crontab:\n <${JSON.stringify(_crontab)}>`);
 
-function init(busState$) {
+function init(busState$ : BusState) {
   const cron$ = K.withInterval(tickInterval, (emitter) => {
     emitter.value(_crontab);
     /* NOTE: emitter.end() not defined yet! */
@@ -19,12 +20,13 @@ function init(busState$) {
   const taskEvent$ = createTaskEventStream();
 
   return K
-    .combine([cron$, taskEvent$], [busState$], (crontab, taskEvents, state) => (
+    .combine([cron$, taskEvent$], [busState$], (crontab, taskEvents, state) => ( /* $FlowFixMe */
       /* PENDING: No logic here yet */
       //       console.log(`[cron]: PING: ${Date.now()}`);
       {crontab, taskEvents, state}
     ))
     .scan(scheduleTick)
+  /* Subscribe to cron-stream and return a Subscription object for handling unsubscribe - see http://rpominov.github.io/kefir/#observe */
     .observe(processTaskEvents());
 }
 

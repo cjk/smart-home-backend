@@ -36,7 +36,7 @@ function busServer(props: ServerProps) {
       console.error(error);
     },
     end() {
-      console.info(`[busServer] deepstream-server connection-process done.`);
+      console.info(`[busServer] deepstream-server connection established`);
     }
   });
 
