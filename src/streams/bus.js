@@ -1,8 +1,10 @@
-import {List} from 'immutable';
+/* @flow weak */
 import Kefir from 'kefir';
 import config from '../config';
 import knxListener from '../knx';
 import addressRefresher from '../lib/auto-refresher';
+import {List} from 'immutable';
+import {equals} from 'ramda';
 
 /* Takes the current bus-state and an event, applies the changes the event
    implies and returns the new bus-state */
@@ -14,13 +16,17 @@ function updateFromEvent(currentState, event) {
     return currentState;
   }
 
-  /* DEBUGGING */
-  console.log(`~~ Updateing state for addr ${addrId} <${currentState.get(addrId).name}> from ${currentState.get(addrId).value} to ${event.value}`);
+  const lastValue = currentState.get(addrId).value;
+  const newValue = event.value;
 
-  return currentState.update(event.dest, addr => addr
-                         .set('value', event.value)
-                         .set('updatedAt', Date.now())
-  );
+  /* DEBUGGING */
+  console.log(`[bus-event-stream] Got new value <${event.value}> for addr ${addrId} "${currentState.get(addrId).name}" which was <${lastValue}>`);
+
+  return equals(newValue, lastValue) ?
+         currentState :
+         currentState.update(event.dest, addr => addr
+           .set('value', event.value)
+           .set('updatedAt', Date.now()));
 }
 
 export default function createBusStreams() {
