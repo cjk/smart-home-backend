@@ -1,5 +1,7 @@
+import type {Address, MinimalAddress} from '../types.js';
+
 /* Guess correct KNX-datatype / format from address-properties */
-function deriveAddrFormat(addr) {
+function deriveAddrFormat(addr : Address) {
   if (addr.type !== 'switch') {
     return null;
   }
@@ -37,4 +39,16 @@ function deriveAddrFormat(addr) {
   return undefined;
 }
 
-export {deriveAddrFormat};
+function createAddress(props: MinimalAddress): Address {
+  const addressDefaults = {
+    name: 'none',
+    room: 'none',
+    story: 'none',
+    type: 'switch',
+    func: 'light',
+  };
+
+  return Object.assign({}, addressDefaults, props);
+}
+
+export {createAddress, deriveAddrFormat};

@@ -1,11 +1,11 @@
 /* Given a crontab, filters all waiting tasks from scheduled jobs, starts the task(s) and returns a list of
    event-streams for each running task. */
+import type {Crontab} from '../types';
+
 import K from 'kefir';
 import {assoc, tap, isEmpty, filter, flatten, pipe, pickAll, merge, map, reduce} from 'ramda';
 import {scheduled, scheduledJobIds} from './util';
 import {runTask} from './taskProcessor';
-
-import type {Crontab} from '../../smart-home-backend.js.flow';
 
 /* Given a crontab returns a stream of dispatched tasks */
 function dispatch(crontab: Crontab) {
@@ -17,7 +17,8 @@ function dispatch(crontab: Crontab) {
     K.sequentially(250, scheduledTasks)
      .flatMap(task => K.fromNodeCallback(callback => runTask(task, callback)));
 
-  console.log(`[dispatcher] Scheduled job-list: ${JSON.stringify(scheduledJobIds(crontab))}`);
+  /* DEBUG */
+  //   console.log(`[dispatcher] Scheduled job-list: ${JSON.stringify(scheduledJobIds(crontab))}`);
 
   const taskStartProps = {status: 'started', startedAt: Date.now()};
   const scheduledTasks = pipe(

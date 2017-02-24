@@ -1,10 +1,13 @@
 // @flow
+import type {Crontab, Task, Callback} from '../types';
+
 import K from 'kefir';
 import EventEmitter from 'events';
-import {assoc, compose, of} from 'ramda';
 import dispatch from './taskDispatcher';
-
-import type {Crontab, Task, Callback} from '../../smart-home-backend.js.flow';
+import {__, assoc, compose, curry, identity, of, tap} from 'ramda';
+/* KNX-bus related */
+import {writeGroupAddr} from '../knx/performBusAction';
+import {createAddress} from '../knx/knx-lib';
 
 const eventEmitter = new EventEmitter();
 
@@ -18,16 +21,19 @@ function createTaskEventStream() {
 
 /* Taskrunner: What a task is actually doing - your sideeffects go here! */
 function runTask(task: Task, callback: Callback) {
-  /* PENDING: Simulated fake async operation */
-  console.log(`[CRON] Started task ${JSON.stringify(task)}...`);
+  console.log(`[CRON task-runner] Running task ${JSON.stringify(task)}...`);
   eventEmitter.emit('taskStarted', [task]);
 
-  setTimeout(() => {
-    //     console.log(`Completed task ${JSON.stringify(task)}.`);
-    const end = compose(assoc('endedAt', Date.now()), assoc('status', 'ended'));
+  const address = createAddress(
+    {id: task.target, func: 'light', type: 'switch', value: task.act === 'on' ? 1 : 0}
+  );
+  const markAsEnded = compose(assoc('endedAt', Date.now()), assoc('status', 'ended'));
 
-    callback(null, end(task));
-  }, 500);
+  /* Write to KNX-bus, then call our task-has-ended-callback with the ended task provided */
+  const onEnd = curry((task, err) => {
+    callback(err, markAsEnded(task));
+  })(task);
+  return writeGroupAddr(address, onEnd);
 }
 
 /* Cron side-effects routine */
@@ -35,9 +41,16 @@ function processTaskEvents() {
   return ({crontab}: {crontab: Crontab}) => {
     const event$ = dispatch(crontab);
 
-    event$.onValue(
-      taskState => eventEmitter.emit('taskEnded', [taskState])
-    );
+    /* This fires after task ran and is in completed / error state: */
+    event$.observe({
+      value(taskState) {
+        eventEmitter.emit('taskEnded', [taskState]);
+      },
+      error(taskState) {
+        console.error(`[CRON task-proc] Error while executing task: ${JSON.stringify(taskState)}`);
+        eventEmitter.emit('taskEnded', [taskState]);
+      }
+    })
   };
 }
 

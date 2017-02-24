@@ -49,8 +49,8 @@ export function writeGroupAddr(address:Address, callback:Function = defaultCallb
   const fmt = deriveAddrFormat(address);
   console.log(`[INFO] PerformBusAction: Writing to address ${address.id} in format <${fmt}>`);
   if (!fmt) {
-    callback(new Error(`Unknown address-format for address <${address.id}>`));
+    return callback(new Error(`Unknown address-format for address <${address.id}>`));
   } else {
-    writeAddr(fmt, address, callback);
+    return writeAddr(fmt, address, callback);
   }
 }

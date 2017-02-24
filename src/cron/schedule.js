@@ -9,13 +9,12 @@
  * - Monthly tasks
  * - Dynamic tasks (created at runtime, like for ad-hoc actions)
  */
-import {differenceInHours, differenceInSeconds, format, parse} from 'date-fns';
+import type {AppState, CronJob, Crontab, Task, TaskEvent} from '../types';
 
+import {differenceInHours, differenceInSeconds, format, parse} from 'date-fns';
 import R, {__, assoc, cond, find, findIndex, indexOf, isEmpty, isNil,
            map, pipe, prop, propEq, reduce, update} from 'ramda';
 import {anyRunningTasks, onlyEndedTasks, setEnded, setLastRun, setRunning, syncWithPrevJobs, withId} from './util';
-
-import type {AppState, CronJob, Crontab, TaskMeta, TaskEvent} from '../../smart-home-backend.js.flow';
 
 const fixedTimeIsNow = (j: CronJob) => {
   const now = new Date();
@@ -56,7 +55,7 @@ const setJobStateFromTasksState = (j: CronJob) =>
     [R.T, job => job] /* Default fallback: return job unchanged */
   ])(j);
 
-const updateTaskInJob = (job: CronJob, task: TaskMeta) => pipe(
+const updateTaskInJob = (job: CronJob, task: Task) => pipe(
   findIndex(withId(task.id)),
   update(__, task, job.tasks),
   assoc('tasks', __, job),
@@ -76,7 +75,7 @@ const updateTaskFromEvent = (event: TaskEvent, crontab: Crontab) => {
 };
 
 /* Merge one or more task-events into it's corresponding job's tasks */
-function _updateFromTaskEvents(taskEvents: TaskEvent, crontab: Crontab) {
+function _updateFromTaskEvents(taskEvents: Task, crontab: Crontab) {
   return reduce((tab, event) => {
     if (isEmpty(event)) return tab;
 
@@ -93,25 +92,17 @@ const schedule = (crontab: Crontab) =>
 function scheduleTick(prev: AppState, cur: AppState) {
   const {crontab, state, taskEvents} = cur;
 
-  /* DEBUGGING */
-  //   console.log(`[taskEvents-in-stream] ${JSON.stringify(taskEvents)}`);
-
   const newCrontab = pipe(
     syncWithPrevJobs(prev.crontab),
     schedule,
     updateFromTaskEvents(taskEvents)
   )(crontab);
 
-  //   console.log(`[newCrontab] ${JSON.stringify(newCrontab)}`);
-
   /* Set scheduled jobs as running + lastRun-timestamp */
   const jobs = map(j => (j.scheduled ? initiateJob(j) : j), newCrontab);
 
   /* Update state with new crontab */
   const newState = assoc('crontab', jobs, cur);
-
-  /* DEBUGGING */
-  //   console.log(`[schedule - final]: ${JSON.stringify(newState.crontab)}`);
 
   return newState;
 }

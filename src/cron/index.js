@@ -9,7 +9,7 @@ const tickInterval = 1000;
 
 /* Load and transform initial crontab entries */
 const _crontab = loadCrontab();
-console.log(`[CRON] Loaded crontab:\n <${JSON.stringify(_crontab)}>`);
+console.log(`[CRON] Loaded crontab with ${_crontab.length} entries`);
 
 function init(busState$ : BusState) {
   const cron$ = K.withInterval(tickInterval, (emitter) => {
@@ -20,14 +20,17 @@ function init(busState$ : BusState) {
   const taskEvent$ = createTaskEventStream();
 
   return K
-    .combine([cron$, taskEvent$], [busState$], (crontab, taskEvents, state) => ( /* $FlowFixMe */
+  /* $FlowFixMe */
+    .combine([cron$, taskEvent$], [busState$], (crontab, taskEvents, state) => (
       /* PENDING: No logic here yet */
       //       console.log(`[cron]: PING: ${Date.now()}`);
       {crontab, taskEvents, state}
     ))
     .scan(scheduleTick)
+  /* Enable for debugging the complete cron-state(s) */
+  //     .log()
   /* Subscribe to cron-stream and return a Subscription object for handling unsubscribe - see http://rpominov.github.io/kefir/#observe */
-    .observe(processTaskEvents());
+    .observe(processTaskEvents())
 }
 
 export default init;

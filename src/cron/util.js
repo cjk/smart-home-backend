@@ -1,7 +1,7 @@
 /* General purpose functions */
 import {all, any, assoc, compose, curry, isNil, map, merge, filter, find, pick, pluck, propEq} from 'ramda';
 
-import type {Crontab, CronJob} from '../../smart-home-backend.js.flow';
+import type {Crontab, CronJob} from '../types';
 
 const scheduled = (j: CronJob) => j.scheduled;
 const running = (j: CronJob) => j.running;
