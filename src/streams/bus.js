@@ -20,13 +20,17 @@ function updateFromEvent(currentState, event) {
   const newValue = event.value;
 
   /* DEBUGGING */
-  console.log(`[bus-event-stream] Got new value <${event.value}> for addr ${addrId} "${currentState.get(addrId).name}" which was <${lastValue}>`);
+  const message = `[bus-event-stream] Updating address ${addrId} (${currentState.get(addrId).name})`;
 
-  return equals(newValue, lastValue) ?
-         currentState :
-         currentState.update(event.dest, addr => addr
-           .set('value', event.value)
-           .set('updatedAt', Date.now()));
+  if (newValue === lastValue) {
+    console.info(`${message}: no update necessary, keeping last value: <${lastValue}>`)
+    return currentState;
+  } else {
+    console.info(`${message}: changed value from <${lastValue}> to <${event.value}>`)
+    return currentState.update(event.dest, addr => addr
+      .set('value', event.value)
+      .set('updatedAt', Date.now()));
+  }
 }
 
 export default function createBusStreams() {
