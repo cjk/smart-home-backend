@@ -1,11 +1,11 @@
 /* @flow */
 import config from './config';
 import createBusStreams from './streams/bus';
-import {addrMapToConsole} from './lib/debug';
+import { addrMapToConsole } from './lib/debug';
 import server from './server';
 import cron from './cron';
 
-const {busEvents, busState} = createBusStreams();
+const { busEvents, busState } = createBusStreams();
 
 /* Init + start chronologial rules engine */
 cron(busState);
@@ -17,7 +17,7 @@ server({
   streams: {
     busEvents,
     busState,
-  }
+  },
 });
 
 console.log('Server initialized and ready to run.');

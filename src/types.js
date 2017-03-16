@@ -1,6 +1,6 @@
 // @flow
 
-import type {Observable} from 'kefir';
+import type { Observable } from 'kefir';
 
 export type BusState = Observable<Object>;
 export type BusEvent = Observable<Object>;
@@ -37,7 +37,7 @@ export type Config = {
   knxd: {
     host: string,
     port: string,
-    isAvailable: true
+    isAvailable: true,
   },
   wsServer: {
     host: string,
@@ -58,7 +58,7 @@ export type Config = {
     addresses: AddressList,
     addressMap: () => {},
     readableAddr: Array<string>,
-  }
+  },
 };
 
 export type ServerProps = {
@@ -67,7 +67,7 @@ export type ServerProps = {
     busEvents: BusEvent,
     busState: BusState,
   },
-}
+};
 
 export type Callback = (err: ?Error, res: Object) => void;
 
@@ -80,14 +80,14 @@ export type Task = {
   endedAt: ?number,
   target: string,
   act: string,
-}
+};
 
-export type TaskEvent = Task & {jobId: number}
+export type TaskEvent = Task & { jobId: number };
 
 export type CrontabTask = {
   targets: Array<string>,
   act: string,
-}
+};
 
 export type CronJob = {
   jobId: number,
@@ -98,7 +98,7 @@ export type CronJob = {
   running: boolean,
   lastRun: Date | null,
   tasks: Array<CrontabTask>,
-}
+};
 
 export type Crontab = Array<CronJob>;
 

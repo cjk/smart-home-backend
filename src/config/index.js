@@ -1,4 +1,4 @@
-/* @flow */
+/* @flow weak */
 /* eslint max-len: 0 */
 
 import type {Config, AddressList} from '../types';

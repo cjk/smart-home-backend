@@ -66,7 +66,7 @@ function loadCrontab() {
   const incId = () => (idIdx += 1);
   const uniqueId = R.map(t => R.assoc('id', incId(), t));
 
-  const extractTasks = (task:CrontabTask) => uniqueId(
+  const extractTasks = (task: CrontabTask) => uniqueId(
     removeEmptyTasks(
       R.scan((acc, target) => R.merge(
         removeTaskTargets(task),

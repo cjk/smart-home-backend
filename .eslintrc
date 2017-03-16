@@ -8,11 +8,13 @@
     "fp"
   ],
   "rules": {
-    "object-curly-spacing": ["error", "never"],
-    "space-before-function-paren": ["error", "never"],
+    "arrow-parens": 0, // Does not work with Flow generic types.
+    "import/first": 0, // We sort by atom/sort lines natural order.
+    "import/prefer-default-export": 0, // No. Actions can have just one action.
     "comma-dangle": ["error", "only-multiline"],
     "max-len": ["error", 120],
     "no-underscore-dangle": "off",
+    "indent": 0, // It is jlongster/prettier responsibility.
     // Rules for functional programming. We do not need Object#freeze.
     "fp/no-mutating-assign": 2,
     "fp/no-mutating-methods": 2,

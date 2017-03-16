@@ -8,7 +8,7 @@ import knxd from 'eibd';
 import R from 'ramda';
 import config from '../config';
 import Event from './event';
-import {getTimestamp} from '../lib/debug';
+import { getTimestamp } from '../lib/debug';
 
 /* Identify name of the event's associated address to make debug-output more
    readable */
@@ -23,18 +23,24 @@ function createEvent(action, src, dest, type, val) {
     src,
     dest,
     type,
-    value: val
+    value: val,
   });
 }
 
 function _eventHandler(emitter, eventType, src, dest, type, val) {
   try {
-    console.log(`[${getTimestamp()}] <${eventType}> from ${src} to ${dest} (${addressFor(dest)}): ${val} [${type}]`);
+    console.log(
+      `[${getTimestamp()}] <${eventType}> from ${src} to ${dest} (${addressFor(dest)}): ${val} [${type}]`
+    );
   } catch (e) {
     if (e instanceof TypeError) {
-      console.log(`ERROR: Unknown or invalid knx-address <${dest}> - perhaps you need to add it to your address-list first?`);
+      console.log(
+        `ERROR: Unknown or invalid knx-address <${dest}> - perhaps you need to add it to your address-list first?`
+      );
     } else {
-      console.log(`ERROR: Unexpected exception on trying to parse knx-event of type <${type}> from source <${src}> for destination <${dest}>`);
+      console.log(
+        `ERROR: Unexpected exception on trying to parse knx-event of type <${type}> from source <${src}> for destination <${dest}>`
+      );
     }
     return;
   }
@@ -45,9 +51,13 @@ const eventHandler = R.curry(_eventHandler);
 
 function listener(emitter) {
   const emittingEventHandler = eventHandler(emitter);
-  const [writeHandler, responseHandler, readHandler] = [emittingEventHandler('write'), emittingEventHandler('response'), emittingEventHandler('read')];
+  const [writeHandler, responseHandler, readHandler] = [
+    emittingEventHandler('write'),
+    emittingEventHandler('response'),
+    emittingEventHandler('read'),
+  ];
 
-  return (parser) => {
+  return parser => {
     /* TODO: Once EIBd#openGroupSocket allows for an err-object, we can start
        emmiting errors when needed: */
     /* if (err) {
@@ -67,7 +77,7 @@ function listener(emitter) {
 function groupSocketListen(opts, callback) {
   const conn = knxd.Connection();
 
-  conn.socketRemote(opts, (err) => {
+  conn.socketRemote(opts, err => {
     if (err) {
       console.log('ERROR connecting to remote KNXd: ', err);
       return callback(err);

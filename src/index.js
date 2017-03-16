@@ -1,6 +1,6 @@
 function enablePiping(env) {
   if (env !== 'production') {
-    if (!require('piping')({hook: true})) {
+    if (!require('piping')({ hook: true })) {
       return;
     }
   }

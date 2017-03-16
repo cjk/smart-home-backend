@@ -1,4 +1,4 @@
-import {Record} from 'immutable';
+import { Record } from 'immutable';
 
 export default Record({
   created: null,
@@ -6,5 +6,5 @@ export default Record({
   type: null,
   src: null,
   dest: null,
-  value: null
+  value: null,
 });
