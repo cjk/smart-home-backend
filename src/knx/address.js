@@ -1,4 +1,4 @@
-import {Record} from 'immutable';
+import { Record } from 'immutable';
 
 export default Record({
   id: null,
@@ -9,5 +9,6 @@ export default Record({
   type: null,
   func: null,
   fbAddr: null,
-  updatedAt: 1451606400000 /* choose guaranteed expired default value so sorting later becomes predictable */
+  updatedAt: 1451606400000 /* choose guaranteed expired default value so sorting later becomes predictable */,
+  verifiedAt: 1451606400000,
 });

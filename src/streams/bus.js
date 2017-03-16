@@ -1,10 +1,9 @@
 /* @flow weak */
 import Kefir from 'kefir';
+import { List } from 'immutable';
 import config from '../config';
 import knxListener from '../knx';
 import addressRefresher from '../lib/auto-refresher';
-import {List} from 'immutable';
-import {equals} from 'ramda';
 
 /* Takes the current bus-state and an event, applies the changes the event
    implies and returns the new bus-state */
@@ -18,31 +17,39 @@ function updateFromEvent(currentState, event) {
 
   const lastValue = currentState.get(addrId).value;
   const newValue = event.value;
+  const currentTs = Date.now();
 
   /* DEBUGGING */
   const message = `[bus-event-stream] Updating address ${addrId} (${currentState.get(addrId).name})`;
 
   if (newValue === lastValue) {
-    console.info(`${message}: no update necessary, keeping last value: <${lastValue}>`)
-    return currentState;
-  } else {
-    console.info(`${message}: changed value from <${lastValue}> to <${event.value}>`)
-    return currentState.update(event.dest, addr => addr
-      .set('value', event.value)
-      .set('updatedAt', Date.now()));
+    console.info(
+      `${message}: no update necessary, keeping last value: <${lastValue}>`
+    );
+    return currentState.update(event.dest, addr =>
+      addr.set('verifiedAt', currentTs));
   }
+
+  console.info(
+    `${message}: changed value from <${lastValue}> to <${event.value}>`
+  );
+
+  return currentState.update(event.dest, addr =>
+    addr
+      .set('value', event.value)
+      .set('verifiedAt', currentTs)
+      .set('updatedAt', currentTs));
 }
 
 export default function createBusStreams() {
-  const {addressMap, readableAddr} = config.knx;
+  const { addressMap, readableAddr } = config.knx;
 
   /* From all groupaddresses, returns only those with a readable-flag set (see
      config.knx.readableAddr) */
   function initialStateWithReadableAddr(addresses) {
     const addressFilter = new List(readableAddr);
 
-    return addresses
-      .filter((v, k) => addressFilter.contains(k));
+    return addresses.filter((v, k) => addressFilter.contains(k));
   }
 
   const initialstate = initialStateWithReadableAddr(addressMap());
@@ -57,7 +64,8 @@ export default function createBusStreams() {
 
   /* 2. Create another (sub-) stream only for events that carry a value, i.e.
      mutate our bus-state */
-  const mutatingBusEvents = busEvents.filter(e => mutatingEvents.contains(e.action));
+  const mutatingBusEvents = busEvents.filter(e =>
+    mutatingEvents.contains(e.action));
 
   /* 3. Create a modified (property-) stream derived from busState by applying an
      event-delta when events come in from the bus-events-stream.
@@ -81,6 +89,6 @@ export default function createBusStreams() {
 
   return {
     busEvents,
-    busState
+    busState,
   };
 }
