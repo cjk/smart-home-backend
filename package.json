@@ -27,11 +27,12 @@
     "babel-plugin-transform-object-rest-spread": "^6.22.0",
     "babel-preset-env": "^1.2.2",
     "babel-register": "latest",
-    "date-fns": "^1.28.0",
+    "date-fns": "^1.28.2",
     "deepstream.io-client-js": "latest",
     "del": "^2.2.2",
     "eibd": "^0.3.7",
-    "eslint-config-airbnb-base": "^11.1.1",
+    "eslint": "^3.18.0",
+    "eslint-config-airbnb-base": "^11.1.2",
     "eslint-plugin-import": "^2.2.0",
     "gulp": "latest",
     "gulp-babel": "latest",
@@ -46,9 +47,9 @@
     "ramda": "latest"
   },
   "devDependencies": {
-    "eslint-plugin-flowtype": "^2.30.3",
+    "eslint-plugin-flowtype": "^2.30.4",
     "eslint-plugin-fp": "^2.3.0",
-    "flow-bin": "^0.39.0",
+    "flow-bin": "^0.42.0",
     "piping": "latest"
   },
   "scripts": {
