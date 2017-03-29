@@ -1,4 +1,4 @@
-import type { Address, MinimalAddress } from '../types.js';
+import type { Address, MinimalAddress } from '../types';
 
 /* Guess correct KNX-datatype / format from address-properties */
 function deriveAddrFormat(addr: Address) {
@@ -20,12 +20,16 @@ function deriveAddrFormat(addr: Address) {
       /* DPT1 - 1 bit (0,1) */
       return 'DPT1';
 
+    case 'inhibit':
+      /* DPT2 - 1 bit (0,1) + value (0,1) */
+      return 'DPT2';
+
     case 'scene':
       /* DPT17 or DPT5 - 1 byte unsigned (0-255) */
       return 'DPT5';
 
     case 'dim':
-      /* DPT 3 - (Position, Control, Value)	1 Bit, 4 Bit, 8 Bit [0,0]...[1,7] */
+      /* DPT 3 - (Position, Control, Value)  1 Bit, 4 Bit, 8 Bit [0,0]...[1,7] */
       /* PENDING: 1 byte is used for (physical) knx-switches?! */
       break;
 
