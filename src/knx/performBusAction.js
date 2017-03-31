@@ -44,8 +44,24 @@ function sendReqToBusFor(
   });
 }
 
+/* Do not really try to read/write to KNX-bus, just simulate it - good for testing / debugging */
+function fakeReqToBusFor(
+  action,
+  datatype,
+  address,
+  callback = defaultCallback
+) {
+  console.log(
+    `[DEBUG] *Fakeing* <${action}> bus-request to address ${address.id} with value [${address.value}] and datatype <${datatype}>`
+  );
+  setTimeout(() => callback(), 250);
+}
+
 const readAddr = R.partial(sendReqToBusFor, ['read', null]);
-const writeAddr = R.partial(sendReqToBusFor, ['write']);
+const writeAddr = R.partial(
+  config.commands.simulate ? fakeReqToBusFor : sendReqToBusFor,
+  ['write']
+);
 
 export function readGroupAddr(
   address: Address,

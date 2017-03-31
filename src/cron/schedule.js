@@ -9,12 +9,39 @@
  * - Monthly tasks
  * - Dynamic tasks (created at runtime, like for ad-hoc actions)
  */
-import type {AppState, CronJob, Crontab, Task, TaskEvent} from '../types';
+import type { AppState, CronJob, Crontab, Task, TaskEvent } from '../types';
 
-import {differenceInHours, differenceInSeconds, format, parse} from 'date-fns';
-import R, {__, assoc, cond, find, findIndex, indexOf, isEmpty, isNil,
-           map, pipe, prop, propEq, reduce, update} from 'ramda';
-import {anyRunningTasks, onlyEndedTasks, setEnded, setLastRun, setRunning, syncWithPrevJobs, withId} from './util';
+import {
+  differenceInHours,
+  differenceInSeconds,
+  format,
+  parse,
+} from 'date-fns';
+import R, {
+  __,
+  assoc,
+  cond,
+  find,
+  findIndex,
+  indexOf,
+  isEmpty,
+  isNil,
+  map,
+  pipe,
+  prop,
+  propEq,
+  reduce,
+  update,
+} from 'ramda';
+import {
+  anyRunningTasks,
+  onlyEndedTasks,
+  setEnded,
+  setLastRun,
+  setRunning,
+  syncWithPrevJobs,
+  withId,
+} from './util';
 
 const fixedTimeIsNow = (j: CronJob) => {
   const now = new Date();
@@ -23,14 +50,15 @@ const fixedTimeIsNow = (j: CronJob) => {
   const hasRun = differenceInHours(now, lastRunTs) <= 23;
 
   /* Bail on unsupported task-properties */
-  if (noFixedTime || hasRun)
-    return false;
+  if (noFixedTime || hasRun) return false;
 
   const targetTs = parse(format(now, `YYYY-MM-DDT${j.at}`));
   const secondsToStart = differenceInSeconds(targetTs, now);
 
   if (secondsToStart > 0 && secondsToStart <= 60)
-    console.log(`[CRON] Daily job #${j.jobId} will run in ${secondsToStart} seconds.`);
+    console.log(
+      `[CRON] Daily job #${j.jobId} will run in ${secondsToStart} seconds.`
+    );
 
   return secondsToStart >= 0 && secondsToStart <= 1;
 };
@@ -43,27 +71,25 @@ const jobShouldRun = (j: CronJob) => {
 };
 
 /* TODO: Out of place here, move to dispatcher?! */
-const initiateJob = pipe(
-  setRunning,
-  setLastRun
-);
+const initiateJob = pipe(setRunning, setLastRun);
 
 const setJobStateFromTasksState = (j: CronJob) =>
   cond([
     [anyRunningTasks, setRunning],
     [onlyEndedTasks, setEnded],
-    [R.T, job => job] /* Default fallback: return job unchanged */
+    [R.T, job => job] /* Default fallback: return job unchanged */,
   ])(j);
 
-const updateTaskInJob = (job: CronJob, task: Task) => pipe(
-  findIndex(withId(task.id)),
-  update(__, task, job.tasks),
-  assoc('tasks', __, job),
-  setJobStateFromTasksState,
-)(job.tasks);
+const updateTaskInJob = (job: CronJob, task: Task) =>
+  pipe(
+    findIndex(withId(task.id)),
+    update(__, task, job.tasks),
+    assoc('tasks', __, job),
+    setJobStateFromTasksState
+  )(job.tasks);
 
 const updateTaskFromEvent = (event: TaskEvent, crontab: Crontab) => {
-  const {jobId, ...task} = event;
+  const { jobId, ...task } = event;
   const job = find(propEq('jobId', jobId), crontab);
 
   if (!job) return crontab;
@@ -76,11 +102,15 @@ const updateTaskFromEvent = (event: TaskEvent, crontab: Crontab) => {
 
 /* Merge one or more task-events into it's corresponding job's tasks */
 function _updateFromTaskEvents(taskEvents: Task, crontab: Crontab) {
-  return reduce((tab, event) => {
-    if (isEmpty(event)) return tab;
+  return reduce(
+    (tab, event) => {
+      if (isEmpty(event)) return tab;
 
-    return updateTaskFromEvent(event, tab);
-  }, crontab, taskEvents);
+      return updateTaskFromEvent(event, tab);
+    },
+    crontab,
+    taskEvents
+  );
 }
 const updateFromTaskEvents = R.curry(_updateFromTaskEvents);
 
@@ -90,7 +120,7 @@ const schedule = (crontab: Crontab) =>
 /* TICK-function called on each cron-timer iteration.
  * Brings over job-state from last tick. */
 function scheduleTick(prev: AppState, cur: AppState) {
-  const {crontab, state, taskEvents} = cur;
+  const { crontab, state, taskEvents } = cur;
 
   const newCrontab = pipe(
     syncWithPrevJobs(prev.crontab),
@@ -99,7 +129,7 @@ function scheduleTick(prev: AppState, cur: AppState) {
   )(crontab);
 
   /* Set scheduled jobs as running + lastRun-timestamp */
-  const jobs = map(j => (j.scheduled ? initiateJob(j) : j), newCrontab);
+  const jobs = map(j => j.scheduled ? initiateJob(j) : j, newCrontab);
 
   /* Update state with new crontab */
   const newState = assoc('crontab', jobs, cur);
