@@ -12,30 +12,29 @@ const _crontab = loadCrontab();
 console.log(`[CRON] Loaded crontab with ${_crontab.length} entries`);
 
 function init(busState$: BusState) {
-  const cron$ = K.withInterval(tickInterval, emitter => {
+  const crontick$ = K.withInterval(tickInterval, emitter => {
     emitter.value(_crontab);
     /* NOTE: emitter.end() not defined yet! */
   });
 
   const taskEvent$ = createTaskEventStream();
 
-  return (
-    K
-    .combine(
-      /* $FlowFixMe */
-      [cron$, taskEvent$],
-      /* $FlowFixMe */
-      [busState$],
-      (crontab, taskEvents, state) => ({ crontab, taskEvents, state })
-      /* PENDING: No logic here yet */
-      //       console.log(`[cron]: PING: ${Date.now()}`);
-    )
-      .scan(scheduleTick)
-      /* Enable for debugging the complete cron-state(s) */
-      //     .log()
+  const cronEvents$ = K.combine(
+    /* $FlowFixMe */
+    [crontick$, taskEvent$],
+    /* $FlowFixMe */
+    [busState$],
+    (crontab, taskEvents, state) => ({ crontab, taskEvents, state })
+    /* PENDING: No logic here yet */
+    //       console.log(`[cron]: PING: ${Date.now()}`);
+  ).scan(scheduleTick);
+  /* Enable for debugging the complete cron-state(s) */
+  //     .log()
 
+  return (
+    cronEvents$
       /* Subscribe to cron-stream and return a Subscription object for handling unsubscribe - see
-         http://rpominov.github.io/kefir/#observe */
+       http://rpominov.github.io/kefir/#observe */
       .observe(processTaskEvents())
   );
 }
