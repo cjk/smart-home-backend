@@ -1,15 +1,14 @@
 /* @flow */
 import type { BusState } from '../../types';
-import K from 'kefir';
 import R from 'ramda';
 
 /* Handles initial-bus-state requests */
-function updateRemoteInitialState(client: any, busState: BusState) {
+function updateRemoteInitialState(conn: any, busState: BusState) {
   /* TODO: Need better state-management and cleanup here.
-   * Also handle unlistening-case: client.record.unlisten('knx/initialBusState', callback) */
+   * Also handle unlistening-case: conn.record.unlisten('knx/initialBusState', callback) */
 
   // const isSubscribed$ = K.fromCallback((subscriptionChanged) => {
-  //   client.record.listen('busState', )
+  //   conn.record.listen('busState', )
   // });
 
   const putBusStateIntoEther = R.curry((bsRecord, state) => {
@@ -17,7 +16,7 @@ function updateRemoteInitialState(client: any, busState: BusState) {
     bsRecord.set(state.toJS());
   });
 
-  client.record.getRecord('knx/initialBusState').whenReady(bsRecord => {
+  conn.record.getRecord('knx/initialBusState').whenReady(bsRecord => {
     busState.onValue(putBusStateIntoEther(bsRecord));
   });
 
@@ -33,14 +32,14 @@ function updateRemoteInitialState(client: any, busState: BusState) {
         '[handleInitialState] Unsubscribing to delivering initial busState records'
       );
       busState.offValue(putBusStateIntoEther);
-      client.record.getRecord('knx/initialBusState').discard();
+      conn.record.getRecord('knx/initialBusState').discard();
       response.reject();
     }
   };
 
   /* PENDING: Due to a bug in Deepstream-server <= v2.1.2 a error is emitted when subscribing here - see
      https://github.com/deepstreamIO/deepstream.io/issues/531 */
-  //   client.record.listen('knx/initialBusState', callback);
+  //   conn.record.listen('knx/initialBusState', callback);
 }
 
 export default updateRemoteInitialState;

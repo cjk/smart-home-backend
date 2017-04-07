@@ -1,4 +1,4 @@
-/* @flow weak */
+/* @flow */
 import Kefir from 'kefir';
 import { List } from 'immutable';
 import config from '../config';
@@ -48,7 +48,7 @@ export default function createBusStreams() {
      config.knx.readableAddr) */
   function initialStateWithReadableAddr(addresses) {
     const addressFilter = new List(readableAddr);
-
+    /* $FlowFixMe */
     return addresses.filter((v, k) => addressFilter.contains(k));
   }
 
@@ -60,35 +60,35 @@ export default function createBusStreams() {
 
   /* Create BUS-state */
   /* 1. Create stream to capture *all* KNX-bus events */
-  const busEvents = Kefir.stream(emitter => knxListener(emitter));
+  const busEvent$ = Kefir.stream(emitter => knxListener(emitter));
 
   /* 2. Create another (sub-) stream only for events that carry a value, i.e.
      mutate our bus-state */
-  const mutatingBusEvents = busEvents.filter(e =>
+  const mutatingBusEvents = busEvent$.filter(e =>
     mutatingEvents.contains(e.action));
 
   /* 3. Create a modified (property-) stream derived from busState by applying an
      event-delta when events come in from the bus-events-stream.
      This reflects our bus-state changing over time.
    */
-  const busState = mutatingBusEvents.scan(updateFromEvent, initialstate);
+  const busState$ = mutatingBusEvents.scan(updateFromEvent, initialstate);
 
   /* Refresh address-values in state from time to time */
   if (config.modules.addressRefresher) {
-    addressRefresher(busState);
+    addressRefresher(busState$);
   }
 
   /* for DEBUGGING: Also locally log each KNX-bus event to the console */
   if (config.logging.logBusEvents) {
-    busEvents.log();
+    busEvent$.log();
   }
 
   if (config.logging.logBusStateOnEvent) {
-    busState.log();
+    busState$.log();
   }
 
   return {
-    busEvents,
-    busState,
+    busEvent$,
+    busState$,
   };
 }

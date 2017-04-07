@@ -64,9 +64,10 @@ export type Config = {
 export type ServerProps = {
   conf: Config,
   streams: {
-    busEvents: BusEvent,
-    busState: BusState,
+    busEvent$: BusEvent,
+    busState$: BusState,
   },
+  connection: Function,
 };
 
 export type Callback = (err: ?Error, res: Object) => void;

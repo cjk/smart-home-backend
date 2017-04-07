@@ -33,8 +33,8 @@ function errorHandler(error) {
   console.warn(error);
 }
 
-function handleBusWrites(client: any) {
-  const busWriteHandler = createBusWriteEventSubStream(client);
+function handleBusWrites(conn: Function) {
+  const busWriteHandler = createBusWriteEventSubStream(conn);
 
   return busWriteHandler.observe({
     value(addr) {

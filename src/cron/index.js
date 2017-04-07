@@ -1,42 +1,39 @@
 import type { BusState } from '../types';
 import K from 'kefir';
-import loadCrontab from './crontab';
 import { createTaskEventStream, processTaskEvents } from './taskProcessor';
 import scheduleTick from './schedule';
+import streamFromCloud from './streamFromCloud';
 
 /* How often to check crontab and schedule / dispatch jobs */
 const tickInterval = 1000;
 
-/* Load and transform initial crontab entries */
-const _crontab = loadCrontab();
-console.log(`[CRON] Loaded crontab with ${_crontab.length} entries`);
+export default function init(
+  { busState$, connection }: { busState$: BusState, connection: Function }
+) {
+  const tick$ = K.interval(tickInterval, 1);
+  const crontabFromCloud$ = streamFromCloud(connection);
 
-function init(busState$: BusState) {
-  const crontick$ = K.withInterval(tickInterval, emitter => {
-    emitter.value(_crontab);
-    /* NOTE: emitter.end() not defined yet! */
-  });
+  const crontick$ = K.combine(
+    /* $FlowFixMe */
+    [tick$],
+    /* $FlowFixMe */
+    [crontabFromCloud$],
+    (tick, crontab) => crontab
+  );
 
   const taskEvent$ = createTaskEventStream();
 
-  const cronEvents$ = K.combine(
-    /* $FlowFixMe */
-    [crontick$, taskEvent$],
-    /* $FlowFixMe */
-    [busState$],
-    (crontab, taskEvents, state) => ({ crontab, taskEvents, state })
-    /* PENDING: No logic here yet */
-    //       console.log(`[cron]: PING: ${Date.now()}`);
-  ).scan(scheduleTick);
-  /* Enable for debugging the complete cron-state(s) */
-  //     .log()
-
   return (
-    cronEvents$
-      /* Subscribe to cron-stream and return a Subscription object for handling unsubscribe - see
+    K.combine(
+      /* $FlowFixMe */
+      [crontick$, taskEvent$],
+      /* $FlowFixMe */
+      [busState$],
+      (crontab, taskEvents, state) => ({ crontab, taskEvents, state })
+    )
+     .scan(scheduleTick)
+    /* Subscribe to cron-stream and return a Subscription object for handling unsubscribe - see
        http://rpominov.github.io/kefir/#observe */
-      .observe(processTaskEvents())
+     .observe(processTaskEvents())
   );
 }
-
-export default init;

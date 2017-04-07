@@ -28,7 +28,7 @@
     "babel-preset-env": "^1.2.2",
     "babel-register": "latest",
     "date-fns": "^1.28.2",
-    "deepstream.io-client-js": "latest",
+    "deepstream.io-client-js": "^2.1.2",
     "del": "^2.2.2",
     "eibd": "^0.3.7",
     "eslint": "^3.18.0",
