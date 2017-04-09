@@ -31,9 +31,10 @@ export default function init(
       [busState$],
       (crontab, taskEvents, state) => ({ crontab, taskEvents, state })
     )
-     .scan(scheduleTick)
-    /* Subscribe to cron-stream and return a Subscription object for handling unsubscribe - see
+      /* Jobs and tasks get synced (from last tick), scheduled and (indirectly) run from here: */
+      .scan(scheduleTick)
+      /* Subscribe to cron-stream and return a Subscription object for handling unsubscribe - see
        http://rpominov.github.io/kefir/#observe */
-     .observe(processTaskEvents())
+      .observe(processTaskEvents())
   );
 }

@@ -16,7 +16,7 @@ const { busEvent$, busState$ } = createBusStreams();
 /* Should be connected to backend / deepstreamIO before continuing... */
 clientConnect$.observe({
   value(connection) {
-    /* Init + start chronological rules engine */
+    /* Init + start chronological rules engine, including syncing with cloud */
     setupCron({ busState$, connection });
 
     /* Setup and configure (websocket-/http-) server and pass event-emitters along
@@ -30,7 +30,7 @@ clientConnect$.observe({
       connection,
     });
 
-    console.log('Server initialized and ready to run.');
+    console.info('Server initialized and up running');
 
     /* Start the stream by logging from it */
     if (config.knxd.isAvailable) {

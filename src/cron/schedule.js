@@ -119,7 +119,7 @@ const schedule = (crontab: Crontab) =>
 
 /* TICK-function called on each cron-timer iteration.
  * Brings over job-state from last tick. */
-function scheduleTick(prev: AppState, cur: AppState) {
+export default function scheduleTick(prev: AppState, cur: AppState) {
   const { crontab, state, taskEvents } = cur;
 
   const newCrontab = pipe(
@@ -129,12 +129,10 @@ function scheduleTick(prev: AppState, cur: AppState) {
   )(crontab);
 
   /* Set scheduled jobs as running + lastRun-timestamp */
-  const jobs = map(j => j.scheduled ? initiateJob(j) : j, newCrontab);
+  const jobs = map(j => (j.scheduled ? initiateJob(j) : j), newCrontab);
 
   /* Update state with new crontab */
   const newState = assoc('crontab', jobs, cur);
 
   return newState;
 }
-
-export default scheduleTick;

@@ -1,7 +1,21 @@
 /* General purpose functions */
-import {all, any, assoc, compose, curry, isNil, map, merge, filter, find, pick, pluck, propEq} from 'ramda';
+import {
+  all,
+  any,
+  assoc,
+  compose,
+  curry,
+  isNil,
+  map,
+  merge,
+  filter,
+  find,
+  pick,
+  pluck,
+  propEq,
+} from 'ramda';
 
-import type {Crontab, CronJob} from '../types';
+import type { Crontab, CronJob } from '../types';
 
 const scheduled = (j: CronJob) => j.scheduled;
 const running = (j: CronJob) => j.running;
@@ -10,19 +24,14 @@ const setRunning = assoc('running', true);
 const setEnded = assoc('running', false);
 const setLastRun = assoc('lastRun', Date.now());
 
-const scheduledJobIds = compose(
-  pluck('jobId'),
-  filter(running)
-);
+const scheduledJobIds = compose(pluck('jobId'), filter(running));
 
-const runningJobIds = compose(
-  pluck('jobId'),
-  filter(scheduled)
-);
+const runningJobIds = compose(pluck('jobId'), filter(scheduled));
 
 const withId = propEq('id');
 
-const anyRunningTasks = (j: CronJob) => any(t => t.status === 'started', j.tasks);
+const anyRunningTasks = (j: CronJob) =>
+  any(t => t.status === 'started', j.tasks);
 const onlyEndedTasks = (j: CronJob) => all(t => t.status === 'ended', j.tasks);
 
 function _getJob(jobId, crontab) {
@@ -31,7 +40,8 @@ function _getJob(jobId, crontab) {
 const getJob = curry(_getJob);
 
 function syncWithPrevJobs(prevCrontab: Crontab) {
-  return map((j) => { /* Map current crontab */
+  return map(j => {
+    /* Map current crontab */
     const syncedProps = ['running', 'scheduled', 'lastRun'];
     const prevJob = find(propEq('jobId', j.jobId), prevCrontab);
     if (isNil(prevJob)) {
@@ -54,5 +64,5 @@ export {
   scheduled,
   scheduledJobIds,
   syncWithPrevJobs,
-  withId
+  withId,
 };
