@@ -8,7 +8,10 @@ import streamFromCloud from './streamFromCloud';
 const tickInterval = 1000;
 
 export default function init(
-  { busState$, connection }: { busState$: BusState, connection: Function }
+  {
+    streams: { busState$ },
+    connection,
+  }: { streams: { busState$: BusState }, connection: Function }
 ) {
   const tick$ = K.interval(tickInterval, 1);
   const crontabFromCloud$ = streamFromCloud(connection);

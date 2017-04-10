@@ -16,19 +16,21 @@ const { busEvent$, busState$ } = createBusStreams();
 /* Should be connected to backend / deepstreamIO before continuing... */
 clientConnect$.observe({
   value(connection) {
-    /* Init + start chronological rules engine, including syncing with cloud */
-    setupCron({ busState$, connection });
-
-    /* Setup and configure (websocket-/http-) server and pass event-emitters along
-       for use in plugins et. al. */
-    publish({
+    const appState = {
       conf: config,
       streams: {
         busEvent$,
         busState$,
       },
       connection,
-    });
+    };
+
+    /* Init + start chronological rules engine, including syncing with cloud */
+    setupCron(appState);
+
+    /* Setup and configure (websocket-/http-) server and pass event-emitters along
+       for use in plugins et. al. */
+    publish(appState);
 
     console.info('Server initialized and up running');
 
