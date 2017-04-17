@@ -6,7 +6,7 @@ import getClient from './client';
 import publish from './server';
 import setupCron from './cron';
 
-/* PENDING: Enable better debugging until we're stable here */
+/* PENDING / DEBUGGING: Enable better debugging until we're stable here */
 process.on('unhandledRejection', r => console.log(r));
 
 const clientConnect$ = getClient(config);
@@ -15,14 +15,14 @@ const { busEvent$, busState$ } = createBusStreams();
 
 /* Should be connected to backend / deepstreamIO before continuing... */
 clientConnect$.observe({
-  value(connection) {
+  value(client) {
     const appState = {
       conf: config,
       streams: {
         busEvent$,
         busState$,
       },
-      connection,
+      client,
     };
 
     /* Init + start chronological rules engine, including syncing with cloud */

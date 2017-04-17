@@ -67,7 +67,7 @@ export type ServerProps = {
     busEvent$: BusEvent,
     busState$: BusState,
   },
-  connection: Function,
+  client: Function,
 };
 
 export type Callback = (err: ?Error, res: Object) => void;
@@ -83,7 +83,7 @@ export type Task = {
   act: string,
 };
 
-export type TaskEvent = Task & { jobId: number };
+export type TaskEvent = Task & { jobId: string };
 
 export type CrontabTask = {
   targets: Array<string>,
@@ -91,7 +91,7 @@ export type CrontabTask = {
 };
 
 export type CronJob = {
-  jobId: number,
+  jobId: string,
   name: string,
   at: string,
   repeat: string,

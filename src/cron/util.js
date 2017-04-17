@@ -48,6 +48,7 @@ function syncWithPrevJobs(prevCrontab: Crontab) {
       console.warn(`No previous job <${j.jobId}> found.`);
       return j;
     }
+    //     console.log(`[Cron] - SYNC-WITH-PREV-JOB: ${JSON.stringify(j)}`);
     return assoc('tasks', prevJob.tasks, merge(j, pick(syncedProps, prevJob)));
   });
 }

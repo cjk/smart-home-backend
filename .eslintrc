@@ -13,6 +13,7 @@
     "import/prefer-default-export": 0, // No. Actions can have just one action.
     "comma-dangle": ["error", "only-multiline"],
     "max-len": ["error", 120],
+    "no-console": "off",
     "no-underscore-dangle": "off",
     "indent": 0, // It is jlongster/prettier responsibility.
     // Rules for functional programming. We do not need Object#freeze.

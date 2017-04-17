@@ -8,7 +8,7 @@ let idIdx = 0;
 
 const crontab: Crontab = [
   {
-    jobId: 1,
+    jobId: 'cronjobs/j1esevoj-1bcxxoucnq2',
     name: 'sample-1',
     at: '18:07:00',
     repeat: 'none',
@@ -21,7 +21,7 @@ const crontab: Crontab = [
     ],
   },
   {
-    jobId: 2,
+    jobId: 'cronjobs/j1esevoj-2nhotlynd8i',
     name: 'sample-2',
     at: '13:35:30',
     repeat: 'none',
@@ -31,14 +31,14 @@ const crontab: Crontab = [
     tasks: [{ targets: ['3/3/3', '3/3/4'], act: 'off' }],
   },
   {
-    jobId: 3,
+    jobId: 'cronjobs/j1esevoj-3pf3chcujrg',
     name: 'Hobby-Licht Auto',
-    at: '11:11:00',
-    repeat: 'none',
+    at: '17:26:00',
+    repeat: 'daily',
     scheduled: false,
     running: false,
     lastRun: null,
-    tasks: [{ targets: ['1/1/7'], act: 'on' }],
+    tasks: [{ targets: ['1/1/7'], act: 'off' }],
   },
 ];
 
@@ -59,7 +59,7 @@ function loadCrontab() {
   const removeEmptyTasks = R.reject(R.isEmpty);
 
   /* Make sure all task-IDs are unique */
-  const incId = () => (idIdx += 1);
+  const incId = () => idIdx += 1;
   const uniqueId = R.map(t => R.assoc('id', incId(), t));
 
   const extractTasks = (task: CrontabTask) =>

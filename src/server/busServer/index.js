@@ -7,12 +7,12 @@ import handleBusEvents from './handleBusEvents';
 import updateRemoteInitialState from './handleInitialState';
 
 function busServer(props: ServerProps) {
-  const { streams, connection } = props;
+  const { streams, client } = props;
   const { busEvent$, busState$ } = streams;
 
-  updateRemoteInitialState(connection, busState$);
-  handleBusWrites(connection);
-  handleBusEvents(connection, busEvent$);
+  updateRemoteInitialState(client, busState$);
+  handleBusWrites(client);
+  handleBusEvents(client, busEvent$);
 }
 
 export default busServer;
