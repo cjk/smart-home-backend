@@ -1,3 +1,4 @@
+/* @flow */
 /* General purpose functions */
 import {
   all,

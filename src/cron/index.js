@@ -1,4 +1,6 @@
-import type { BusState } from '../types';
+/* @flow */
+import type { Observable } from 'kefir';
+import type { BusState, Crontab } from '../types';
 import K from 'kefir';
 import { createTaskEventStream, processTaskEvents } from './taskProcessor';
 import scheduleTick from './schedule';
@@ -11,8 +13,8 @@ export default function init({
   streams: { busState$ },
   client,
 }: { streams: { busState$: BusState }, client: Function }) {
-  const tick$ = K.interval(tickInterval, 1);
-  const crontabFromCloud$ = streamFromCloud(client);
+  const tick$: Observable<number> = K.interval(tickInterval, 1);
+  const crontabFromCloud$: Observable<Crontab> = streamFromCloud(client);
 
   const crontick$ = K.combine(
     /* $FlowFixMe */
