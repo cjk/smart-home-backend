@@ -33,7 +33,7 @@ const crontab: Crontab = [
   {
     jobId: 'cronjobs/j1esevoj-3pf3chcujrg',
     name: 'Hobby-Licht Auto',
-    at: '17:26:00',
+    at: '15:30:00',
     repeat: 'daily',
     scheduled: false,
     running: false,

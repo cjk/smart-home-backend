@@ -12,19 +12,19 @@ const config: Config = {
   },
   knxd: {
     host: '192.168.1.28', /* like '192.168.1.28' or 'localhost'  */
-    //     host: 'localhost', /* like '192.168.1.28' or 'localhost'  */
+    //     host: 'localhost' /* like '192.168.1.28' or 'localhost'  */,
     port: '6720',
     isAvailable: true,
   },
   wsServer: {
-    host: '192.168.1.28',
-    //     host: 'localhost',
+    //     host: '192.168.1.28',
+    host: 'localhost',
     port: '6020',
     user: 'smartHomeBackend',
   },
-  /* WIP */
+  /* Do not really access KNX-bus */
   commands: {
-    simulate: false,
+    simulate: true,
   },
   logging: {
     logBusStateOnEvent: false,
@@ -32,7 +32,7 @@ const config: Config = {
   },
   /* Enable / disable some modules / functionality */
   modules: {
-    addressRefresher: true,
+    addressRefresher: false,
   },
   knx: {
     addresses,
