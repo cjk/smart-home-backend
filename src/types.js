@@ -37,7 +37,7 @@ export type Config = {
   knxd: {
     host: string,
     port: string,
-    isAvailable: true,
+    isAvailable: boolean,
   },
   wsServer: {
     host: string,
