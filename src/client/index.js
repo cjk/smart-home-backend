@@ -9,7 +9,7 @@ function getClient$(config: Config) {
     new Promise((resolve, reject) => {
       const client = deepstream(`${wsServer.host}:${wsServer.port}`).login(
         { username: wsServer.user },
-        (success, data) => {
+        (success, _data) => {
           if (success) {
             resolve(client);
           } else {

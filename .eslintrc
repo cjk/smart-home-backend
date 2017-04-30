@@ -15,6 +15,7 @@
     "max-len": ["error", 120],
     "no-console": "off",
     "no-underscore-dangle": "off",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }], // Allow unused function-args starting with an underscore
     "indent": 0, // It is jlongster/prettier responsibility.
     // Rules for functional programming. We do not need Object#freeze.
     "fp/no-mutating-assign": 2,
