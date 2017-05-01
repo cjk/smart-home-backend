@@ -11,8 +11,8 @@ const config: Config = {
     port: process.env.PORT || '3005' /* TODO: no longer used?! */,
   },
   knxd: {
-    host: '192.168.1.28', /* like '192.168.1.28' or 'localhost'  */
-    //     host: 'localhost' /* like '192.168.1.28' or 'localhost'  */,
+    //     host: '192.168.1.28', /* like '192.168.1.28' or 'localhost'  */
+    host: 'localhost' /* like '192.168.1.28' or 'localhost'  */,
     port: '6720',
     isAvailable: true,
   },
@@ -24,7 +24,7 @@ const config: Config = {
   },
   /* Do not really access KNX-bus */
   commands: {
-    simulate: true,
+    simulate: false,
   },
   logging: {
     logBusStateOnEvent: false,
@@ -32,7 +32,7 @@ const config: Config = {
   },
   /* Enable / disable some modules / functionality */
   modules: {
-    addressRefresher: false,
+    addressRefresher: true,
   },
   knx: {
     addresses,
