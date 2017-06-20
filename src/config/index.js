@@ -1,7 +1,8 @@
-/* @flow weak */
+/* @flow */
 /* eslint max-len: 0 */
 
-import type { Config } from '../types';
+import type { Address, Config } from '../types';
+
 import { Map } from 'immutable';
 import Addr from '../knx/address';
 import addresses from './group-address-list';
@@ -36,12 +37,13 @@ const config: Config = {
   },
   knx: {
     addresses,
-    addressMap: () => new Map(
-      addresses.reduce((col = {}, addr) => {
-        col[addr.id] = new Addr(addr);
-        return col;
-      })
-    ),
+    addressMap: () =>
+      new Map(
+        addresses.reduce((col = {}, addr: Address): { [string]: Address } => {
+          col[addr.id] = new Addr(addr);
+          return col;
+        })
+      ),
     readableAddr: [
       '1/1/0' /* UG Hobby1 Präsenzmelder Sperre f. Schaltung Licht Hobby-Keller-1+2 */,
       '1/1/5' /* UG Keller-1-2 + Hobby1 via Tasterrückmeldung */,
