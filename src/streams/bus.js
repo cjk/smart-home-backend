@@ -20,14 +20,17 @@ function updateFromEvent(currentState, event) {
   const currentTs = Date.now();
 
   /* DEBUGGING */
-  const message = `[bus-event-stream] Updating address ${addrId} (${currentState.get(addrId).name})`;
+  const message = `[bus-event-stream] Updating address ${addrId} (${currentState.get(
+    addrId
+  ).name})`;
 
   if (newValue === lastValue) {
     console.info(
       `${message}: no update necessary, keeping last value: <${lastValue}>`
     );
     return currentState.update(event.dest, addr =>
-      addr.set('verifiedAt', currentTs));
+      addr.set('verifiedAt', currentTs)
+    );
   }
 
   console.info(
@@ -38,17 +41,20 @@ function updateFromEvent(currentState, event) {
     addr
       .set('value', event.value)
       .set('verifiedAt', currentTs)
-      .set('updatedAt', currentTs));
+      .set('updatedAt', currentTs)
+  );
 }
 
 export default function createBusStreams() {
-  const { addressMap, readableAddr } = config.knx;
+  const {
+    addressMap,
+    readableAddr,
+  }: { addressMap: () => any, readableAddr: Array<string> } = config.knx;
 
   /* From all groupaddresses, returns only those with a readable-flag set (see
      config.knx.readableAddr) */
   function initialStateWithReadableAddr(addresses) {
     const addressFilter = new List(readableAddr);
-    /* $FlowFixMe */
     return addresses.filter((v, k) => addressFilter.contains(k));
   }
 
@@ -65,7 +71,8 @@ export default function createBusStreams() {
   /* 2. Create another (sub-) stream only for events that carry a value, i.e.
      mutate our bus-state */
   const mutatingBusEvents = busEvent$.filter(e =>
-    mutatingEvents.contains(e.action));
+    mutatingEvents.contains(e.action)
+  );
 
   /* 3. Create a modified (property-) stream derived from busState by applying an
      event-delta when events come in from the bus-events-stream.

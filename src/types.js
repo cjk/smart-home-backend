@@ -29,6 +29,7 @@ export type MinimalAddress = {
   value: number,
 };
 
+export type AddressMap = { [id: string]: Address };
 export type AddressList = Array<Address>;
 
 export type Config = {
@@ -65,8 +66,7 @@ export type Config = {
 export type ServerProps = {
   conf: Config,
   streams: {
-    busEvent$: BusEvent,
-    busState$: BusState,
+    [string]: [BusEvent, BusState]
   },
   client: Function,
 };
