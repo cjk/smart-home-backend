@@ -49,7 +49,7 @@
   "devDependencies": {
     "eslint-plugin-flowtype": "^2.30.4",
     "eslint-plugin-fp": "^2.3.0",
-    "flow-bin": "^0.42.0",
+    "flow-bin": "^0.50.0",
     "piping": "latest"
   },
   "scripts": {
