@@ -1,4 +1,7 @@
 import { format } from 'date-fns';
+// import germanLocale from 'date-fns/locale/de';
+
+const tsFormat = 'YYYY-MM-DDTHH:mm:ss';
 
 function addrMapToConsole(addrMap: any) {
   return addrMap.map(
@@ -11,7 +14,7 @@ function getTimeFrom(ts: number) {
 }
 
 function getTimestamp() {
-  return new Date().toISOString().slice(0, 19);
+  return format(new Date(), tsFormat);
 }
 
 export { addrMapToConsole, getTimeFrom, getTimestamp };
