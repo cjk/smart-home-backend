@@ -61,6 +61,7 @@ const config: Config = {
       '1/2/11' /* EG Flur Wandlampe via Schaltaktor 1.1.2 Ausg. 13 */,
       '1/2/13' /* EG Wohnzimmer Wandlampen via Schaltaktor 1.1.1 Ausg. 11 */,
       '1/2/14' /* WL/Leuchtstoffleuchte WZ Nordwand 1.42.1 1.1.1 Ausg. 14 */,
+      '1/2/15' /* DL Wohnzimmer Mitte 1.1.45 Ausg. 3 */,
       '1/2/12' /* EG Büro/Emma Hängeleuchte via Schaltaktor 1.1.45 Ausg. 5 */,
       '1/3/1' /* OG Kind-2 Deckenleuchte via Schaltaktor [TODO] */,
       '1/3/2' /* OG Kind-3 Deckenleuchte via Schaltaktor 1.1.1 Ausg. 13 */,

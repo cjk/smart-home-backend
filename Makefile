@@ -11,6 +11,6 @@ decrypt_conf: _pwd_prompt
 	openssl cast5-cbc -d -in ${CONF_FILE}.cast5 -out ${CONF_FILE}
 	chmod 600 ${CONF_FILE}
 
-# for updating conf/settings.json
+# for updating src/config/group-address-list.js.cast5
 encrypt_conf: _pwd_prompt
 	openssl cast5-cbc -e -in ${CONF_FILE} -out ${CONF_FILE}.cast5
