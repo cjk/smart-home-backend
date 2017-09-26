@@ -6,6 +6,9 @@ import {
   assoc,
   compose,
   curry,
+  dissoc,
+  flatten,
+  isEmpty,
   isNil,
   map,
   merge,
@@ -14,9 +17,11 @@ import {
   pick,
   pluck,
   propEq,
+  reject,
+  scan,
 } from 'ramda';
 
-import type { Crontab, CronJob } from '../types';
+import type { Crontab, CronJob, CrontabTask } from '../types';
 
 const scheduled = (j: CronJob) => j.scheduled;
 const running = (j: CronJob) => j.running;
@@ -54,7 +59,42 @@ function syncWithPrevJobs(prevCrontab: Crontab) {
   });
 }
 
+function expandTasks(taskArray: Array<CrontabTask>) {
+  let idIdx: number = 0;
+  // attributes all tasks share
+  const taskMeta = { id: 10, status: 'idle', startedAt: null, endedAt: null };
+  /* Each unfolded task get's it own, single task-property */
+  const addTargetPropToTask = assoc('target');
+  /* Targets-array is removed from task in favour of single target-property for each unfolded task */
+  const removeTaskTargets = dissoc('targets');
+
+  /* Not sure how to prevent this for now, but R.scan leaves it's initial object as is :( */
+  const removeEmptyTasks = reject(isEmpty);
+
+  /* Make sure all task-IDs are unique */
+  const incId = () => (idIdx += 1);
+  const uniqueId = map(t => assoc('id', incId(), t));
+
+  const extractTask = (task: CrontabTask) =>
+    uniqueId(
+      removeEmptyTasks(
+        scan(
+          (acc, target) =>
+            merge(
+              removeTaskTargets(task),
+              merge(taskMeta, addTargetPropToTask(target, acc))
+            ),
+          {},
+          task.targets
+        )
+      )
+    );
+
+  return flatten(map(extractTask, taskArray));
+}
+
 export {
+  expandTasks,
   anyRunningTasks,
   onlyEndedTasks,
   getJob,
