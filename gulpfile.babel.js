@@ -10,28 +10,25 @@ const SRC = './src/**/*.js';
 const DEST = 'app';
 
 function build() {
-  gulp.src([SRC])
-      .pipe(changed(DEST))
-      .pipe(sourcemaps.init())
-      .pipe(preprocess())
-      .pipe(babel({
+  gulp
+    .src([SRC])
+    .pipe(changed(DEST))
+    .pipe(sourcemaps.init())
+    .pipe(preprocess())
+    .pipe(
+      babel({
         presets: ['env'],
         plugins: ['transform-flow-strip-types', 'transform-object-rest-spread'],
-      }))
-      .pipe(sourcemaps.write())
-      .pipe(gulp.dest(DEST));
+      })
+    )
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest(DEST));
 }
 
-gulp.task('clean', () =>
-  del([
-    DEST,
-  ])
-);
+gulp.task('clean', () => del([DEST]));
 
 gulp.task('build', build);
 
-gulp.task('hotupdate', () =>
-  watch(SRC, build, {ignoreInitial: false})
-);
+gulp.task('hotupdate', () => watch(SRC, build, { ignoreInitial: false }));
 
 gulp.task('default', ['build', 'hotupdate']);

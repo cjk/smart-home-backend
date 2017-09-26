@@ -56,5 +56,9 @@
     "dev": "env PORT=8001 NODE_ENV=development ./node_modules/.bin/nodemon ./app/index.js",
     "prod": "env PORT=8001 NODE_ENV=production node ./app/index.js",
     "start": "env PORT=8001 ./app/index.js"
+  },
+  "nodemonConfig": {
+    "ignore": ["src/*"],
+    "delay": "2000"
   }
 }
