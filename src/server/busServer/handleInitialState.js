@@ -12,7 +12,7 @@ function updateRemoteInitialState(conn: any, busState: BusState) {
   // });
 
   const putBusStateIntoEther = R.curry((bsRecord, state) => {
-    console.info('[busServer] Setting initial bus-state on deepstream-server');
+    console.info('[busServer] Pushing full bus-state to deepstream-server');
     bsRecord.set(state.toJS());
   });
 

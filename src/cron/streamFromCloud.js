@@ -58,7 +58,7 @@ export default function createStream(client: Function) {
         record.set(j);
         lst.addEntry(j.jobId);
         // DEBUG
-        //         console.log(`[CronCloud] Record set to ${JSON.stringify(j)} `);
+        // console.log(`[CronCloud] Record set to ${JSON.stringify(j)} `);
       });
       return j;
     })(initialCrontab);
@@ -72,7 +72,6 @@ export default function createStream(client: Function) {
   }).flatMap(
     lst =>
       /* Handle added / remove job-list entries */
-      /* $FlowFixMe */
       K.merge([
         addLstAddHndl(),
         addLstRemoveHndl(),
