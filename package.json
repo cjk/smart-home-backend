@@ -22,7 +22,7 @@
   "dependencies": {
     "babel": "latest",
     "babel-core": "latest",
-    "babel-eslint": "latest",
+    "babel-eslint": "^8.0.1",
     "babel-plugin-transform-flow-strip-types": "^6.18.0",
     "babel-plugin-transform-object-rest-spread": "^6.22.0",
     "babel-preset-env": "^1.2.2",
@@ -31,25 +31,21 @@
     "deepstream.io-client-js": "^2.1.2",
     "del": "^2.2.2",
     "eibd": "^0.3.7",
-    "eslint": "^3.18.0",
-    "eslint-config-airbnb-base": "^11.1.2",
-    "eslint-plugin-import": "^2.2.0",
     "gulp": "latest",
     "gulp-babel": "latest",
     "gulp-changed": "latest",
     "gulp-eslint": "latest",
     "gulp-preprocess": "latest",
-    "gulp-sourcemaps": "latest",
+    "gulp-sourcemaps": "^2.6.1",
     "gulp-watch": "latest",
     "immutable": "latest",
-    "kefir": "latest",
-    "nodemon": "latest",
+    "kefir": "^3.7.4",
+    "nodemon": "^1.12.1",
     "ramda": "latest"
   },
   "devDependencies": {
     "eslint-plugin-flowtype": "^2.30.4",
     "eslint-plugin-fp": "^2.3.0",
-    "flow-bin": "^0.50.0",
     "piping": "latest"
   },
   "scripts": {
@@ -58,7 +54,9 @@
     "start": "env PORT=8001 ./app/index.js"
   },
   "nodemonConfig": {
-    "ignore": ["src/*"],
+    "ignore": [
+      "src/*"
+    ],
     "delay": "2000"
   }
 }
