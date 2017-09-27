@@ -3,7 +3,7 @@
 import { assoc, map } from 'ramda';
 
 import type { Crontab } from '../types';
-import { expandTasks } from './util';
+import { normalizeTasks } from './util';
 
 const crontab: Crontab = [
   {
@@ -47,7 +47,7 @@ const crontab: Crontab = [
  *
  */
 function loadCrontab() {
-  return map(j => assoc('tasks', expandTasks(j.tasks), j), crontab);
+  return map(j => assoc('tasks', normalizeTasks(j.tasks), j), crontab);
 }
 
 export default loadCrontab;

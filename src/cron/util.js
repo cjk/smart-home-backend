@@ -59,7 +59,7 @@ function syncWithPrevJobs(prevCrontab: Crontab) {
   });
 }
 
-function expandTasks(taskArray: Array<CrontabTask>) {
+function normalizeTasks(taskArray: Array<CrontabTask>) {
   let idIdx: number = 0;
   // attributes all tasks share
   const taskMeta = { id: 10, status: 'idle', startedAt: null, endedAt: null };
@@ -75,7 +75,7 @@ function expandTasks(taskArray: Array<CrontabTask>) {
   const incId = () => (idIdx += 1);
   const uniqueId = map(t => assoc('id', incId(), t));
 
-  const extractTask = (task: CrontabTask) =>
+  const normalizeTask = (task: CrontabTask) =>
     uniqueId(
       removeEmptyTasks(
         scan(
@@ -90,11 +90,11 @@ function expandTasks(taskArray: Array<CrontabTask>) {
       )
     );
 
-  return flatten(map(extractTask, taskArray));
+  return flatten(map(normalizeTask, taskArray));
 }
 
 export {
-  expandTasks,
+  normalizeTasks,
   anyRunningTasks,
   onlyEndedTasks,
   getJob,
