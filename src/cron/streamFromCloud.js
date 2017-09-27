@@ -57,7 +57,8 @@ export default function createStream(client: Function) {
       newJobRecord.whenReady(record => {
         record.set(j);
         lst.addEntry(j.jobId);
-        console.log(`[CronCloud] Record set to ${JSON.stringify(j)} `);
+        // DEBUG
+        //         console.log(`[CronCloud] Record set to ${JSON.stringify(j)} `);
       });
       return j;
     })(initialCrontab);
