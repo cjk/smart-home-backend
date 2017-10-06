@@ -58,7 +58,7 @@ export type Config = {
   },
   knx: {
     addresses: AddressList,
-    addressMap: (null) => KeyedCollection<string, Address>,
+    addressMap: null => KeyedCollection<string, Address>,
     readableAddr: Array<string>,
   },
 };
@@ -66,7 +66,7 @@ export type Config = {
 export type ServerProps = {
   conf: Config,
   streams: {
-    [string]: [BusEvent, BusState]
+    [string]: [BusEvent, BusState],
   },
   client: Function,
 };
@@ -103,6 +103,14 @@ export type CronJob = {
 };
 
 export type Crontab = Array<CronJob>;
+
+export type Scene = {
+  id: string,
+  name: string,
+  lastRun: ?number,
+  tasks: Array<CrontabTask>,
+};
+export type Scenes = Array<Scene>;
 
 // TODO: Describe in more detail
 export type HomeState = Object;
