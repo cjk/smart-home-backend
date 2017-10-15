@@ -1,5 +1,4 @@
 // @flow
-
 import type { Scenes } from '../types';
 
 import { map } from 'ramda';

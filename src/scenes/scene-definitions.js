@@ -6,12 +6,21 @@ import { normalizeTasks } from '../cron/util';
 
 const scenes: Scenes = [
   {
-    id: 'scenes/Pdah1nw0',
-    name: 'Test-Scene #1',
+    id: 'scene/Abendessen-1',
+    name: 'Abendessen #1',
     lastRun: null,
     tasks: [
       { targets: ['10/1/1', '10/1/2'], act: 'off' },
       { targets: ['20/1/1', '20/1/2'], act: 'on' },
+    ],
+  },
+  {
+    id: 'scene/Frühstück-1',
+    name: 'Frühstück #1',
+    lastRun: null,
+    tasks: [
+      { targets: ['80/1/1', '80/1/2'], act: 'off' },
+      { targets: ['90/1/1', '90/1/2'], act: 'off' },
     ],
   },
 ];
