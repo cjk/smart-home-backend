@@ -41,7 +41,7 @@ clientConnect$.observe({
 
     /* Start the stream by logging from it */
     if (config.knxd.isAvailable) {
-      busState$.map(addrMapToConsole).log();
+      busState$.map(addrMapToConsole);
     }
   },
   error(error) {

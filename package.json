@@ -28,6 +28,7 @@
     "babel-preset-env": "^1.2.2",
     "babel-register": "latest",
     "date-fns": "^1.28.2",
+    "debug": "^3.1.0",
     "deepstream.io-client-js": "^2.1.2",
     "del": "^2.2.2",
     "eibd": "^0.3.7",
@@ -38,10 +39,11 @@
     "gulp-preprocess": "latest",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-watch": "latest",
-    "immutable": "latest",
+    "immutable": "^3.8.2",
     "kefir": "^3.7.4",
     "nodemon": "^1.12.1",
-    "ramda": "latest"
+    "ramda": "^0.25.0",
+    "supports-color": "^4.4.0"
   },
   "devDependencies": {
     "eslint-plugin-flowtype": "^2.30.4",
