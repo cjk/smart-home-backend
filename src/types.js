@@ -32,15 +32,23 @@ export type MinimalAddress = {
 export type AddressMap = { [id: string]: Address };
 export type AddressList = Array<Address>;
 
+export type KnxdOpts = {
+  host: string,
+  port: string,
+  isAvailable: boolean,
+};
+
+export type KnxConf = {
+  addresses: AddressList,
+  addressMap: null => KeyedCollection<string, Address>,
+  readableAddr: Array<string>,
+};
+
 export type Config = {
   server: {
     port: string,
   },
-  knxd: {
-    host: string,
-    port: string,
-    isAvailable: boolean,
-  },
+  knxd: KnxdOpts,
   wsServer: {
     host: string,
     port: string,
@@ -56,11 +64,7 @@ export type Config = {
   modules: {
     addressRefresher: boolean,
   },
-  knx: {
-    addresses: AddressList,
-    addressMap: null => KeyedCollection<string, Address>,
-    readableAddr: Array<string>,
-  },
+  knx: KnxConf,
 };
 
 export type ServerProps = {

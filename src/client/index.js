@@ -1,3 +1,4 @@
+// @flow
 import type { Config } from '../types';
 import deepstream from 'deepstream.io-client-js';
 import K from 'kefir';
