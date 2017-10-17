@@ -1,5 +1,9 @@
 /* @flow */
+
+import type { Crontab, CronJob, CrontabTask } from '../types';
+
 /* General purpose functions */
+import logger from 'debug';
 import {
   all,
   any,
@@ -21,7 +25,7 @@ import {
   scan,
 } from 'ramda';
 
-import type { Crontab, CronJob, CrontabTask } from '../types';
+const debug = logger('smt');
 
 const scheduled = (j: CronJob) => j.scheduled;
 const running = (j: CronJob) => j.running;
@@ -51,10 +55,10 @@ function syncWithPrevJobs(prevCrontab: Crontab) {
     const syncedProps = ['running', 'scheduled', 'lastRun'];
     const prevJob = find(propEq('jobId', j.jobId), prevCrontab);
     if (isNil(prevJob)) {
-      console.warn(`No previous job <${j.jobId}> found.`);
+      debug(`No previous job <${j.jobId}> found.`);
       return j;
     }
-    //     console.log(`[Cron] - SYNC-WITH-PREV-JOB: ${JSON.stringify(j)}`);
+    //     debug(`SYNC-WITH-PREV-JOB: ${JSON.stringify(j)}`);
     return assoc('tasks', prevJob.tasks, merge(j, pick(syncedProps, prevJob)));
   });
 }

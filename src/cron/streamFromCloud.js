@@ -1,4 +1,5 @@
 /* @flow */
+import logger from 'debug';
 import K from 'kefir';
 import loadCrontab from './crontab';
 import { append, map, prop, propEq, reject } from 'ramda';
@@ -20,9 +21,11 @@ type CrontabChanges = {
   crontab: Crontab,
 };
 
+const debug = logger('smt-cron');
+
 /* Load and transform initial crontab entries */
 const initialCrontab = loadCrontab();
-console.log(`[CronCloud] Loaded crontab with ${initialCrontab.length} entries`);
+debug(`Loaded crontab with ${initialCrontab.length} entries`);
 
 export default function createStream(client: Function) {
   const cronjobLst = client.record.getList('smartHome/cronjobs');
@@ -31,9 +34,7 @@ export default function createStream(client: Function) {
   const addLstAddHndl = () =>
     K.stream(emitter => {
       cronjobLst.on('entry-added', jobId => {
-        console.log(
-          `[CronCloud] ADD of new cronjob with jobId <${jobId}> detected`
-        );
+        debug(`ADD of new cronjob with jobId <${jobId}> detected`);
         const newJobRec = client.record.getRecord(jobId);
         newJobRec.whenReady(record => emitter.emit({ added: record.get() }));
       });
@@ -43,22 +44,20 @@ export default function createStream(client: Function) {
   const addLstRemoveHndl = () =>
     K.stream(emitter => {
       cronjobLst.on('entry-removed', jobId => {
-        console.log(
-          `[CronCloud] REMOVE of new cronjob with jobId <${jobId}> detected`
-        );
+        debug(`REMOVE of new cronjob with jobId <${jobId}> detected`);
         emitter.emit({ removed: jobId });
       });
     });
 
   const syncToCloud = lst => {
-    console.log('[CronCloud] Now syncing local crontab to cloud!');
+    debug('Now syncing local crontab to cloud!');
     map(j => {
       const newJobRecord = client.record.getRecord(j.jobId);
       newJobRecord.whenReady(record => {
         record.set(j);
         lst.addEntry(j.jobId);
         // DEBUG
-        // console.log(`[CronCloud] Record set to ${JSON.stringify(j)} `);
+        // debug(`Record set to ${JSON.stringify(j)} `);
       });
       return j;
     })(initialCrontab);
@@ -95,8 +94,8 @@ export default function createStream(client: Function) {
   //   newJobRecord.whenReady(record => {
   //     record.set({ jobId: 'fake/111', type: 'tester' });
   //     cronjobLst.addEntry('fake/111');
-  //     console.log(
-  //       `[CronCloud] FAKE-Record set to ${JSON.stringify(newJobRecord.get())} `
+  //     debug(
+  //       `FAKE-Record set to ${JSON.stringify(newJobRecord.get())} `
   //     );
   //   });
   // }, 2000);
@@ -105,14 +104,14 @@ export default function createStream(client: Function) {
   //   newJobRecord.whenReady(record => {
   //     record.set({ jobId: 'fake/222', type: 'tester' });
   //     cronjobLst.addEntry('fake/222');
-  //     console.log(
-  //       `[CronCloud] FAKE-Record set to ${JSON.stringify(newJobRecord.get())} `
+  //     debug(
+  //       `FAKE-Record set to ${JSON.stringify(newJobRecord.get())} `
   //     );
   //   });
   // }, 3000);
   // setTimeout(() => {
   //   cronjobLst.removeEntry('fake/111');
-  //   console.log('[CronCloud] FAKE-Record removed from list');
+  //   debug('FAKE-Record removed from list');
   // }, 5500);
 
   return cron$;

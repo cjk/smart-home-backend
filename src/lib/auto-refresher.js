@@ -1,10 +1,14 @@
 /* @flow */
 import type { BusState } from '../types';
+
+import logger from 'debug';
 import Kefir from 'kefir';
 import { isNil, pipe, take, values } from 'ramda';
 import busScanner from './bus-scanner';
 import { List } from 'immutable';
 import { getTimestamp } from './debug';
+
+const debug = logger('smt-refresher');
 
 const runDelaySeconds = 60; // sane default is 60
 const maxRefreshLimit = 6;
@@ -34,15 +38,21 @@ function refreshStaleAddresses(stream: BusState) {
 
     /* DEBUGGING: */
     if (staleAddresses.size > 0) {
-      console.log(
-        `[${getTimestamp(Date.now())}]-[AddressRefresher]: We have ${staleAddresses.size} stale addresses: ${reduceAddressesToIds(staleAddresses).join('|')} - refreshing a max of ${maxRefreshLimit} of these.`
+      debug(
+        `[${getTimestamp(
+          Date.now()
+        )}]: We have ${staleAddresses.size} stale addresses: ${reduceAddressesToIds(
+          staleAddresses
+        ).join('|')} - refreshing a max of ${maxRefreshLimit} of these.`
       );
     } else {
-      console.log(
-        `[${getTimestamp(Date.now())}]-[AddressRefresher]: All addresses up to date - nothing to do :)`
+      debug(
+        `[${getTimestamp(
+          Date.now()
+        )}]: All addresses up to date - nothing to do :)`
       );
     }
-    //       console.log(staleAddresses.map(a => a.get('id')).toJS());
+    //       debug(staleAddresses.map(a => a.get('id')).toJS());
 
     pipe(values, take(maxRefreshLimit), busScanner)(staleAddresses.toJS());
   });

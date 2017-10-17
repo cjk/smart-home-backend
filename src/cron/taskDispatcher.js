@@ -1,7 +1,10 @@
+// @flow
+
 /* Given a crontab, filters all waiting tasks from scheduled jobs, starts the task(s) and returns a list of
    event-streams for each running task. */
 import type { Crontab } from '../types';
 
+import logger from 'debug';
 import K from 'kefir';
 import {
   assoc,
@@ -18,6 +21,8 @@ import {
 import { scheduled, scheduledJobIds } from './util';
 import { runTask } from './taskProcessor';
 
+const debug = logger('smt-dispatcher');
+
 /* Given a crontab returns a stream of dispatched tasks */
 export default function dispatch(crontab: Crontab) {
   if (isEmpty(scheduledJobIds(crontab))) {
@@ -30,7 +35,7 @@ export default function dispatch(crontab: Crontab) {
     );
 
   /* DEBUG */
-  //   console.log(`[dispatcher] Scheduled job-list: ${JSON.stringify(scheduledJobIds(crontab))}`);
+  //   debug(`Scheduled job-list: ${JSON.stringify(scheduledJobIds(crontab))}`);
 
   const taskStartProps = { status: 'started', startedAt: Date.now() };
   const scheduledTasks = pipe(
@@ -42,11 +47,9 @@ export default function dispatch(crontab: Crontab) {
     flatten,
     tap(
       lst =>
-        (!isEmpty(lst)
-          ? console.log(
-              `[dispatcher] dispatching tasks: ${JSON.stringify(lst)}`
-            )
-          : false)
+        !isEmpty(lst)
+          ? debug(`dispatching tasks: ${JSON.stringify(lst)}`)
+          : false
     )
   );
 

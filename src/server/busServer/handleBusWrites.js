@@ -1,10 +1,13 @@
 /* @flow */
-/* eslint no-console: "off" */
 
 /* Subscribes to / handle busWriteRequests from other clients */
+import logger from 'debug';
 import K from 'kefir';
 import Address from '../../knx/address';
 import { writeGroupAddr } from '../../knx/performBusAction';
+
+const debug = logger('smt-backend'),
+  error = logger('error');
 
 const createBusWriteEventSubStream = client =>
   K.stream(emitter => {
@@ -18,8 +21,8 @@ const createBusWriteEventSubStream = client =>
   });
 
 function writeAddressToBus(addr) {
-  console.log(
-    `[handleBusWrites] About to perform address-write on request for address: ${JSON.stringify(
+  debug(
+    `About to perform address-write on request for address: ${JSON.stringify(
       addr
     )}`
   );
@@ -28,19 +31,19 @@ function writeAddressToBus(addr) {
     try {
       writeGroupAddr(new Address(addr));
     } catch (e) {
-      console.error(
+      error(
         `Failed to write to KNX-bus for address ${addr.id}. Check the address-type and format.`
       );
     }
   } else {
-    console.error(
+    error(
       '[handleBusWrites] ERROR - Illegal KNX-address received for bus-writing - will not perform any bus action!'
     );
   }
 }
 
-function errorHandler(error) {
-  console.warn(error);
+function errorHandler(err) {
+  error(err);
 }
 
 function handleBusWrites(conn: Function) {

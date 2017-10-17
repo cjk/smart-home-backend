@@ -1,18 +1,21 @@
 /* @flow */
-/* eslint no-console: "off" */
 
+import logger from 'debug';
 import type { Address } from '../types';
 import knxd from 'eibd';
 import R from 'ramda';
 import config from '../config';
 import { deriveAddrFormat } from './knx-lib';
 
+const debug = logger('smt-bus'),
+  error = logger('error');
+
 function defaultCallback(err) {
   if (err) {
-    console.error('[performBusAction] Error communicating with KNXd.');
+    error('Error communicating with KNXd.');
     throw err;
   }
-  console.log('[performBusAction] Success sending APDU to KNXd.');
+  debug('Success sending APDU to KNXd.');
 }
 
 const isWriteOnly = action => action === 'write';
@@ -34,10 +37,10 @@ function sendReqToBusFor(
       if (err) {
         return callback(err);
       }
-      const msg = action ===
-        'read' /* as long as there is only read & write... */
-        ? knxReadMsg(action)
-        : knxWriteMsg(datatype, parseInt(address.value, 10));
+      const msg =
+        action === 'read' /* as long as there is only read & write... */
+          ? knxReadMsg(action)
+          : knxWriteMsg(datatype, parseInt(address.value, 10));
       conn.sendAPDU(msg, callback);
       return callback(null);
     });
@@ -51,8 +54,8 @@ function fakeReqToBusFor(
   address,
   callback = defaultCallback
 ) {
-  console.log(
-    `[DEBUG] *Fakeing* <${action}> bus-request to address ${address.id} with value [${address.value}] and datatype <${datatype}>`
+  debug(
+    `*Fakeing* <${action}> bus-request to address ${address.id} with value [${address.value}] and datatype <${datatype}>`
   );
   setTimeout(() => callback(), 250);
 }
@@ -75,8 +78,8 @@ export function writeGroupAddr(
   callback: Function = defaultCallback
 ) {
   const fmt = deriveAddrFormat(address);
-  console.log(
-    `[INFO] PerformBusAction: Writing to address ${address.id} in format <${fmt}>`
+  debug(
+    `PerformBusAction: Writing to address ${address.id} in format <${fmt}>`
   );
   if (!fmt) {
     return callback(

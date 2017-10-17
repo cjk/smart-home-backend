@@ -1,9 +1,16 @@
 /* @flow */
+
+import type { KnxConf } from '../types';
+
+import logger from 'debug';
 import Kefir from 'kefir';
 import { List } from 'immutable';
 import config from '../config';
 import knxListener from '../knx';
 import addressRefresher from '../lib/auto-refresher';
+
+const debug = logger('smt-bus-state'),
+  warn = logger('warn');
 
 /* Takes the current bus-state and an event, applies the changes the event
    implies and returns the new bus-state */
@@ -11,7 +18,7 @@ function updateFromEvent(currentState, event) {
   const addrId = event.dest;
 
   if (!currentState.has(addrId)) {
-    console.warn(`No matching address found for key ${addrId} - ignoring!`);
+    warn(`No matching address found for key ${addrId} - ignoring!`);
     return currentState;
   }
 
@@ -25,7 +32,7 @@ function updateFromEvent(currentState, event) {
   ).name})`;
 
   if (newValue === lastValue) {
-    console.info(
+    debug(
       `${message}: no update necessary, keeping last value: <${lastValue}>`
     );
     return currentState.update(event.dest, addr =>
@@ -33,9 +40,7 @@ function updateFromEvent(currentState, event) {
     );
   }
 
-  console.info(
-    `${message}: changed value from <${lastValue}> to <${event.value}>`
-  );
+  debug(`${message}: changed value from <${lastValue}> to <${event.value}>`);
 
   return currentState.update(event.dest, addr =>
     addr
@@ -46,10 +51,7 @@ function updateFromEvent(currentState, event) {
 }
 
 export default function createBusStreams() {
-  const {
-    addressMap,
-    readableAddr,
-  }: { addressMap: () => any, readableAddr: Array<string> } = config.knx;
+  const { addressMap, readableAddr } = (config.knx: KnxConf);
 
   /* From all groupaddresses, returns only those with a readable-flag set (see
      config.knx.readableAddr) */
@@ -60,7 +62,7 @@ export default function createBusStreams() {
 
   const initialstate = initialStateWithReadableAddr(addressMap());
   /* DEBUGGING */
-  console.log(JSON.stringify(initialstate));
+  debug(JSON.stringify(initialstate));
 
   const mutatingEvents = new List(['write', 'response']);
 

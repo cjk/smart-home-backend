@@ -9,6 +9,7 @@
  * - Monthly tasks
  * - Dynamic tasks (created at runtime, like for ad-hoc actions)
  */
+import logger from 'debug';
 import type { AppState, CronJob, Crontab, Task, TaskEvent } from '../types';
 
 import {
@@ -43,6 +44,9 @@ import {
   withId,
 } from './util';
 
+const debug = logger('smt-cron'),
+  error = logger('error');
+
 const fixedTimeIsNow = (j: CronJob) => {
   const now = new Date();
   const lastRunTs = new Date(prop('lastRun', j));
@@ -56,9 +60,7 @@ const fixedTimeIsNow = (j: CronJob) => {
   const secondsToStart = differenceInSeconds(targetTs, now);
 
   if (secondsToStart > 0 && secondsToStart <= 60)
-    console.log(
-      `[CRON] Daily job #${j.jobId} will run in ${secondsToStart} seconds.`
-    );
+    debug(`Daily job #${j.jobId} will run in ${secondsToStart} seconds.`);
 
   return secondsToStart >= 0 && secondsToStart <= 1;
 };

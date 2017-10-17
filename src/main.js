@@ -3,12 +3,16 @@ import config from './config';
 import createBusStreams from './streams/bus';
 import { addrMapToConsole } from './lib/debug';
 import getClient from './client';
+import logger from 'debug';
 import publish from './server';
 import setupCron from './cron';
 import setupScenes from './scenes';
 
+const debug = logger('smt-backend'),
+  error = logger('error');
+
 /* PENDING / DEBUGGING: Enable better debugging until we're stable here */
-process.on('unhandledRejection', r => console.log(r));
+process.on('unhandledRejection', r => error(r));
 
 const clientConnect$ = getClient(config);
 
@@ -37,7 +41,7 @@ clientConnect$.observe({
        for use in plugins et. al. */
     publish(appState);
 
-    console.info('Server initialized and up running');
+    debug('Server initialized and up running');
 
     /* Start the stream by logging from it */
     if (config.knxd.isAvailable) {
@@ -45,10 +49,10 @@ clientConnect$.observe({
     }
   },
   error(error) {
-    console.error('[busServer] Connection error to deepstream-server occured:');
-    console.error(error);
+    error('Connection error to deepstream-server occured:');
+    error(error);
   },
   end() {
-    console.info('[busServer] deepstream-server connection established');
+    debug('deepstream-server connection established');
   },
 });

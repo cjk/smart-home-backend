@@ -3,30 +3,30 @@
 /* Determines whether there are clients interested in our bus-events, if so, activates sending out those events when
    they occur */
 
+import logger from 'debug';
 import type { BusEvent } from '../../types';
 
-function errorHandler(error) {
-  console.error(error);
+const debug = logger('smt-busevents'),
+  error = logger('error');
+
+function errorHandler(err) {
+  error(err);
 }
 
 function handleBusEvents(conn: any, busEvents: BusEvent) {
   /* Sends out bus-events to interested clients */
   const sendBusEvent = event => {
-    console.log('[busServer] Sending out bus event.');
+    debug('Sending out bus event.');
     conn.event.emit('knx/event', event);
   };
 
   conn.event.listen('knx/event', (eventName, isSubscribed, response) => {
     if (isSubscribed) {
-      console.log(
-        `[knx-event-handler] Some client subscribed to <${eventName}>`
-      );
+      debug(`Some client subscribed to <${eventName}>`);
       response.accept();
       busEvents.onValue(sendBusEvent);
     } else {
-      console.log(
-        `[knx-event-handler] Some client unsubscribed to <${eventName}>`
-      );
+      debug(`Some client unsubscribed to <${eventName}>`);
       //           response.reject();
       busEvents.offValue(sendBusEvent);
     }

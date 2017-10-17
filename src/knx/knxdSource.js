@@ -1,18 +1,25 @@
-/* eslint no-console: "off" */
+// @flow
 
 /* Implements a (knx-) event-source for the KNXd. This requires you have KNXd
    running somewhere on your network.
  */
 
+import type { Emitter } from 'kefir';
+import type { AddressMap, KnxdOpts } from '../types';
+
+import logger from 'debug';
 import knxd from 'eibd';
 import R from 'ramda';
 import config from '../config';
 import Event from './event';
 import { getTimestamp } from '../lib/debug';
 
+const debug = logger('smt-knx'),
+  error = logger('error');
+
 /* Identify name of the event's associated address to make debug-output more
    readable */
-const addresses = config.knx.addressMap();
+const addresses: AddressMap = config.knx.addressMap();
 
 const addressFor = addrId => addresses.get(addrId).name;
 
@@ -29,16 +36,18 @@ function createEvent(action, src, dest, type, val) {
 
 function _eventHandler(emitter, eventType, src, dest, type, val) {
   try {
-    console.log(
-      `[${getTimestamp()}] <${eventType}> from ${src} to ${dest} (${addressFor(dest)}): ${val} [${type}]`
+    debug(
+      `[${getTimestamp()}] <${eventType}> from ${src} to ${dest} (${addressFor(
+        dest
+      )}): ${val} [${type}]`
     );
   } catch (e) {
     if (e instanceof TypeError) {
-      console.log(
+      error(
         `ERROR: Unknown or invalid knx-address <${dest}> - perhaps you need to add it to your address-list first?`
       );
     } else {
-      console.log(
+      error(
         `ERROR: Unexpected exception on trying to parse knx-event of type <${type}> from source <${src}> for destination <${dest}>`
       );
     }
@@ -79,7 +88,7 @@ function groupSocketListen(opts, callback) {
 
   conn.socketRemote(opts, err => {
     if (err) {
-      console.log('ERROR connecting to remote KNXd: ', err);
+      error('ERROR connecting to remote KNXd: ', err);
       return callback(err);
     }
 
@@ -87,6 +96,6 @@ function groupSocketListen(opts, callback) {
   });
 }
 
-export default function knxdSource(opts) {
-  return emitter => groupSocketListen(opts, listener(emitter));
+export default function knxdSource(opts: KnxdOpts) {
+  return (emitter: Emitter<>) => groupSocketListen(opts, listener(emitter));
 }
