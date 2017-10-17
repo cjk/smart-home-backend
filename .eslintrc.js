@@ -3,7 +3,7 @@ module.exports = {
   parserOptions: { ecmaVersion: 6 },
   env: {
     browser: false,
-    node: true
+    node: true,
   },
   extends: ['airbnb-base', 'plugin:flowtype/recommended'],
   plugins: ['flowtype'],
@@ -15,7 +15,7 @@ module.exports = {
     $Keys: true,
     $Exact: true,
     Event: true,
-    EventHandler: true
+    EventHandler: true,
   },
   // AirBnb is great, but very strict. Feel free to add anything.
   rules: {
@@ -24,6 +24,7 @@ module.exports = {
     'import/first': 0, // Este sorts by atom/sort lines natural order.
     'import/prefer-default-export': 0, // Actions can have just one action.
     indent: 0, // Prettier.
+    'function-paren-newline': 0, // Prettier.
     'no-confusing-arrow': 0, // This rule is confusing.
     'no-mixed-operators': 0, // Prettier.
     'no-nested-ternary': 0, // Buggy for functional componenents.
@@ -32,6 +33,7 @@ module.exports = {
     'no-underscore-dangle': 0, // Control freaky.
     // misc (CjK)
     'comma-dangle': ['error', 'only-multiline'],
-    'max-len': ['error', 120, { ignoreComments: true }]
-  }
+    'max-len': ['error', 120, { ignoreComments: true }],
+    'one-var': 0,
+  },
 };
