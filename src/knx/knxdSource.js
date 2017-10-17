@@ -14,7 +14,7 @@ import config from '../config';
 import Event from './event';
 import { getTimestamp } from '../lib/debug';
 
-const debug = logger('smt-knx'),
+const debug = logger('smt:knx'),
   error = logger('error');
 
 /* Identify name of the event's associated address to make debug-output more

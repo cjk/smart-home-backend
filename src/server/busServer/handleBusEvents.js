@@ -6,7 +6,7 @@
 import logger from 'debug';
 import type { BusEvent } from '../../types';
 
-const debug = logger('smt-busevents'),
+const debug = logger('smt:busevents'),
   error = logger('error');
 
 function errorHandler(err) {

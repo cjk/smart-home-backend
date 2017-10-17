@@ -4,7 +4,7 @@ import type { BusState } from '../../types';
 import logger from 'debug';
 import R from 'ramda';
 
-const debug = logger('smt-state-sync');
+const debug = logger('smt:state-sync');
 
 /* Handles initial-bus-state requests */
 function updateRemoteInitialState(conn: any, busState: BusState) {

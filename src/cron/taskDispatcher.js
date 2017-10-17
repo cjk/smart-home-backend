@@ -21,7 +21,7 @@ import {
 import { scheduled, scheduledJobIds } from './util';
 import { runTask } from './taskProcessor';
 
-const debug = logger('smt-dispatcher');
+const debug = logger('smt:dispatcher');
 
 /* Given a crontab returns a stream of dispatched tasks */
 export default function dispatch(crontab: Crontab) {

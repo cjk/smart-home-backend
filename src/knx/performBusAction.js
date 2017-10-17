@@ -7,7 +7,7 @@ import R from 'ramda';
 import config from '../config';
 import { deriveAddrFormat } from './knx-lib';
 
-const debug = logger('smt-bus'),
+const debug = logger('smt:bus'),
   error = logger('error');
 
 function defaultCallback(err) {

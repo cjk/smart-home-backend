@@ -44,7 +44,7 @@ import {
   withId,
 } from './util';
 
-const debug = logger('smt-cron'),
+const debug = logger('smt:cron'),
   error = logger('error');
 
 const fixedTimeIsNow = (j: CronJob) => {

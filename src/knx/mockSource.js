@@ -11,7 +11,7 @@ import logger from 'debug';
 import Kefir from 'kefir';
 import Event from './event';
 
-const debug = logger('smt-backend');
+const debug = logger('smt:backend');
 
 const getTimestamp = () => new Date().toISOString().slice(0, 19);
 

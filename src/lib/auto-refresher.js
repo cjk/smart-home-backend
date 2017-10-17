@@ -8,7 +8,7 @@ import busScanner from './bus-scanner';
 import { List } from 'immutable';
 import { getTimestamp } from './debug';
 
-const debug = logger('smt-refresher');
+const debug = logger('smt:refresher');
 
 const runDelaySeconds = 60; // sane default is 60
 const maxRefreshLimit = 6;

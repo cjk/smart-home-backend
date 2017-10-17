@@ -8,7 +8,7 @@ import publish from './server';
 import setupCron from './cron';
 import setupScenes from './scenes';
 
-const debug = logger('smt-backend'),
+const debug = logger('smt:backend'),
   error = logger('error');
 
 /* PENDING / DEBUGGING: Enable better debugging until we're stable here */

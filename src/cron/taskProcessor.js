@@ -10,7 +10,7 @@ import { assoc, compose, curry, of } from 'ramda';
 import { writeGroupAddr } from '../knx/performBusAction';
 import { createAddress } from '../knx/knx-lib';
 
-const debug = logger('smt-cron-runner'),
+const debug = logger('smt:cron-runner'),
   error = logger('error');
 
 const eventEmitter = new EventEmitter();

@@ -9,7 +9,7 @@ import config from '../config';
 import knxListener from '../knx';
 import addressRefresher from '../lib/auto-refresher';
 
-const debug = logger('smt-bus-state'),
+const debug = logger('smt:bus-state'),
   warn = logger('warn');
 
 /* Takes the current bus-state and an event, applies the changes the event

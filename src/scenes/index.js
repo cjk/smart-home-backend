@@ -6,7 +6,7 @@ import syncToCloud from './syncToCloud';
 
 import type { Scenes } from '../types';
 
-const debug = logger('smt-scenes');
+const debug = logger('smt:scenes');
 
 /* Load and transform initial scenes entries */
 function setupScenes(client: Function): Scenes {

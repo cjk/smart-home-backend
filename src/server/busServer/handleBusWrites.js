@@ -6,7 +6,7 @@ import K from 'kefir';
 import Address from '../../knx/address';
 import { writeGroupAddr } from '../../knx/performBusAction';
 
-const debug = logger('smt-backend'),
+const debug = logger('smt:backend'),
   error = logger('error');
 
 const createBusWriteEventSubStream = client =>

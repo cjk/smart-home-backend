@@ -21,7 +21,7 @@ type CrontabChanges = {
   crontab: Crontab,
 };
 
-const debug = logger('smt-cron');
+const debug = logger('smt:cron');
 
 /* Load and transform initial crontab entries */
 const initialCrontab = loadCrontab();
