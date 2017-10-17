@@ -37,7 +37,7 @@ function writeAddressToBus(addr) {
     }
   } else {
     error(
-      '[handleBusWrites] ERROR - Illegal KNX-address received for bus-writing - will not perform any bus action!'
+      'Illegal KNX-address received for bus-writing - will not perform any bus action!'
     );
   }
 }

@@ -6,12 +6,7 @@
 import logger from 'debug';
 import type { BusEvent } from '../../types';
 
-const debug = logger('smt:busevents'),
-  error = logger('error');
-
-function errorHandler(err) {
-  error(err);
-}
+const debug = logger('smt:busevents');
 
 function handleBusEvents(conn: any, busEvents: BusEvent) {
   /* Sends out bus-events to interested clients */
