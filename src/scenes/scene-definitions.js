@@ -19,7 +19,7 @@ const scenes: Scenes = [
     name: 'Frühstück #1',
     lastRun: null,
     tasks: [
-      { targets: ['80/1/1', '80/1/2'], act: 'off' },
+      { targets: ['80/1/1', '80/1/2'], act: 'on' },
       { targets: ['90/1/1', '90/1/2'], act: 'off' },
     ],
   },

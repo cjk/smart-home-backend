@@ -12,7 +12,10 @@ const tickInterval = 1000;
 export default function init({
   streams: { busState$ },
   client,
-}: { streams: { busState$: BusState }, client: Function }) {
+}: {
+  streams: { busState$: BusState },
+  client: Function,
+}) {
   const tick$: Observable<number> = K.interval(tickInterval, 1);
   const crontabFromCloud$: Observable<Crontab> = streamFromCloud(client);
 

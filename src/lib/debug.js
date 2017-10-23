@@ -1,3 +1,4 @@
+// @flow
 import { format } from 'date-fns';
 // import germanLocale from 'date-fns/locale/de';
 

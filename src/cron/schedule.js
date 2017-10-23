@@ -10,7 +10,7 @@
  * - Dynamic tasks (created at runtime, like for ad-hoc actions)
  */
 import logger from 'debug';
-import type { AppState, CronJob, Crontab, Task, TaskEvent } from '../types';
+import type { TickState, CronJob, Crontab, Task, TaskEvent } from '../types';
 
 import {
   differenceInHours,
@@ -18,10 +18,11 @@ import {
   format,
   parse,
 } from 'date-fns';
-import R, {
+import {
   __,
   assoc,
   cond,
+  curry,
   find,
   findIndex,
   indexOf,
@@ -32,6 +33,7 @@ import R, {
   prop,
   propEq,
   reduce,
+  T,
   update,
 } from 'ramda';
 import {
@@ -67,9 +69,10 @@ const fixedTimeIsNow = (j: CronJob) => {
 
 const jobShouldRun = (j: CronJob) => {
   const isDaily = propEq('repeat', 'daily', j);
+  const isOneShot = propEq('repeat', 'oneShot', j);
   const notRunning = propEq('running', false, j);
 
-  return isDaily && notRunning && fixedTimeIsNow(j);
+  return (isDaily || isOneShot) && notRunning && fixedTimeIsNow(j);
 };
 
 /* TODO: Out of place here, move to dispatcher?! */
@@ -79,7 +82,7 @@ const setJobStateFromTasksState = (j: CronJob) =>
   cond([
     [anyRunningTasks, setRunning],
     [onlyEndedTasks, setEnded],
-    [R.T, job => job] /* Default fallback: return job unchanged */,
+    [T, job => job] /* Default fallback: return job unchanged */,
   ])(j);
 
 const updateTaskInJob = (job: CronJob, task: Task) =>
@@ -114,14 +117,14 @@ function _updateFromTaskEvents(taskEvents: Task, crontab: Crontab) {
     taskEvents
   );
 }
-const updateFromTaskEvents = R.curry(_updateFromTaskEvents);
+const updateFromTaskEvents = curry(_updateFromTaskEvents);
 
 const schedule = (crontab: Crontab) =>
   map(j => assoc('scheduled', jobShouldRun(j), j))(crontab);
 
 /* TICK-function called on each cron-timer iteration.
  * Brings over job-state from last tick. */
-export default function scheduleTick(prev: AppState, cur: AppState) {
+export default function scheduleTick(prev: TickState, cur: TickState) {
   const { crontab, state, taskEvents } = cur;
 
   const newCrontab = pipe(

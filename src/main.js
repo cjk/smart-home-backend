@@ -1,4 +1,6 @@
 /* @flow */
+import type { ServerState } from './types';
+
 import config from './config';
 import createBusStreams from './streams/bus';
 import { addrMapToConsole } from './lib/debug';
@@ -24,7 +26,7 @@ clientConnect$.observe({
     // Load scenes from definitions-file and sync them to cloud, so other clients/frontends may use and invoke them
     const scenes = setupScenes(client);
 
-    const appState = {
+    const serverState: ServerState = {
       conf: config,
       streams: {
         busEvent$,
@@ -35,11 +37,11 @@ clientConnect$.observe({
     };
 
     /* Init + start chronological rules engine, including syncing with cloud */
-    setupCron(appState);
+    setupCron(serverState);
 
     /* Setup and configure (websocket-/http-) server and pass event-emitters along
        for use in plugins et. al. */
-    publish(appState);
+    publish(serverState);
 
     debug('Server initialized and up running');
 

@@ -67,14 +67,6 @@ export type Config = {
   knx: KnxConf,
 };
 
-export type ServerProps = {
-  conf: Config,
-  streams: {
-    [string]: [BusEvent, BusState],
-  },
-  client: Function,
-};
-
 export type Callback = (err: ?Error, res: Object) => void;
 
 // Cron types
@@ -103,10 +95,19 @@ export type CronJob = {
   scheduled: boolean,
   running: boolean,
   lastRun: Date | null,
-  tasks: Array<CrontabTask>,
+  tasks: ?CrontabTask[] | ?Task[],
 };
 
 export type Crontab = Array<CronJob>;
+
+// TODO: Describe in more detail
+export type HomeState = Object;
+
+export type TickState = {
+  crontab: Crontab,
+  state: HomeState,
+  taskEvents: Array<Task>,
+};
 
 export type Scene = {
   id: string,
@@ -116,11 +117,12 @@ export type Scene = {
 };
 export type Scenes = Array<Scene>;
 
-// TODO: Describe in more detail
-export type HomeState = Object;
-
-export type AppState = {
-  crontab: Crontab,
-  state: HomeState,
-  taskEvents: Array<Task>,
+export type ServerState = {
+  conf: Config,
+  streams: {
+    busState$: BusState,
+    busEvent$: BusEvent,
+  },
+  client: Function,
+  scenes: Scenes,
 };

@@ -5,6 +5,11 @@ import { assoc, map } from 'ramda';
 import type { Crontab } from '../types';
 import { normalizeTasks } from './util';
 
+// Some default / example tasks
+// The following task-types are scheduled and dispatched automatically:
+// - Tasks with repeat='daily' and at='<current date+time>' - task remains in crontab and is executed every 24h
+// - Tasks with repeat='oneShot' and at='<current date+time>' - task is removed from crontab after expiration
+
 const crontab: Crontab = [
   {
     jobId: 'cronjobs/j1esevoj-1bcxxoucnq2',
