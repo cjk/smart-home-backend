@@ -1,10 +1,12 @@
 /* @flow */
 import type { Observable } from 'kefir';
-import type { BusState, Crontab } from '../types';
+import type { BusState, Crontab, TickState } from '../types';
+
 import K from 'kefir';
 import { createTaskEventStream, processTaskEvents } from './taskProcessor';
 import scheduleTick from './schedule';
 import streamFromCloud from './streamFromCloud';
+import garbageCollect from './garbageCollector';
 
 /* How often to check crontab and schedule / dispatch jobs */
 const tickInterval = 1000;
@@ -35,12 +37,16 @@ export default function init({
       [crontick$, taskEvent$],
       /* $FlowFixMe */
       [busState$],
-      (crontab, taskEvents, state) => ({ crontab, taskEvents, state })
+      (crontab, taskEvents, state: TickState) => ({
+        crontab,
+        taskEvents,
+        state,
+      })
     )
       /* Jobs and tasks get synced (from last tick), scheduled and (indirectly) run from here: */
       .scan(scheduleTick)
-      /* Subscribe to cron-stream and return a Subscription object for handling unsubscribe - see
-       http://rpominov.github.io/kefir/#observe */
+      .scan(garbageCollect)
+      /* Subscribe to cron-stream and return a subscription object (for handling unsubscribe) */
       .observe(processTaskEvents())
   );
 }
