@@ -57,7 +57,7 @@ function fakeReqToBusFor(
   debug(
     `*Fakeing* <${action}> bus-request to address ${address.id} with value [${address.value}] and datatype <${datatype}>`
   );
-  setTimeout(() => callback(), 250);
+  setTimeout(callback, 250, null);
 }
 
 const readAddr = R.partial(sendReqToBusFor, ['read', null]);
