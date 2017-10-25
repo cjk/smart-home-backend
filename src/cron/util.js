@@ -97,6 +97,12 @@ function normalizeTasks(taskArray: Array<CrontabTask>) {
   return flatten(map(normalizeTask, taskArray));
 }
 
+function debugPrettyCrontab(ct: Crontab) {
+  return map(
+    pick(['jobId', 'repeat', 'at', 'scheduled', 'running', 'lastRun'])
+  )(ct);
+}
+
 export {
   normalizeTasks,
   anyRunningTasks,
@@ -111,4 +117,5 @@ export {
   scheduledJobIds,
   syncWithPrevJobs,
   withId,
+  debugPrettyCrontab,
 };

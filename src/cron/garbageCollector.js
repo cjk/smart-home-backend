@@ -1,4 +1,9 @@
 // @flow
+
+// Our garbage collector works by finding "dead" (=ended) one-off jobs in our crontab and removes them "in the cloud",
+// i.e. deepstream, our distributed network-data-store.
+// This change then automatically propagates through our #syncWithCloud routines that execute those changes to our local crontab-stream!
+
 import type { TickState } from '../types';
 
 import logger from 'debug';
@@ -6,21 +11,21 @@ import R, {
   and,
   compose,
   converge,
-  head,
-  isEmpty,
   filter,
+  isEmpty,
+  join,
   map,
   pick,
   prop,
   propEq,
-  reject,
 } from 'ramda';
 
-const debug = logger('smt:cron');
+const debug = logger('smt:cron-gc');
 
 export default function garbageCollect(prev: TickState, next: TickState) {
   const p = prev.crontab;
   const c = next.crontab;
+  const { client } = next;
 
   // Was there a running job in last tick?
   const isTempJob = propEq('repeat', 'oneShot');
@@ -46,20 +51,19 @@ export default function garbageCollect(prev: TickState, next: TickState) {
     filter(endedTemporaryJobs)
   )(c);
 
-  debug(
-    compose(reject(R.__, next), propEq('jobId'), head)(
-      R.intersection(pastRunningJobIds, presentEndedOneshots)
-    )
-  );
-
   const garbageJobIds = map(
     prop('jobId'),
     R.intersection(pastRunningJobIds, presentEndedOneshots)
   );
 
   if (isEmpty(garbageJobIds)) return next;
-  // debug(presentEndedOneshots(c));
 
-  // TODO: map((j => any(propEq('jobId', j.jobId), result)))(d)
+  debug(`Removing task(s) <${join('|', garbageJobIds)}> from crontab`);
+
+  // Propagate crontab-changes to network-data-store aka "cloud":
+  client.record.getList('smartHome/cronjobs').whenReady(lst => {
+    lst.removeEntry(R.head(garbageJobIds));
+  });
+
   return next;
 }

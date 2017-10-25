@@ -2,11 +2,16 @@
 import type { Observable } from 'kefir';
 import type { BusState, Crontab, TickState } from '../types';
 
+import logger from 'debug';
+import { debugPrettyCrontab } from './util';
+
 import K from 'kefir';
 import { createTaskEventStream, processTaskEvents } from './taskProcessor';
 import scheduleTick from './schedule';
 import streamFromCloud from './streamFromCloud';
 import garbageCollect from './garbageCollector';
+
+const debug = logger('smt:cron-tick');
 
 /* How often to check crontab and schedule / dispatch jobs */
 const tickInterval = 1000;
@@ -41,12 +46,18 @@ export default function init({
         crontab,
         taskEvents,
         state,
+        client,
       })
     )
       /* Jobs and tasks get synced (from last tick), scheduled and (indirectly) run from here: */
       .scan(scheduleTick)
-      // .spy('cron-debug')
+
+      // Run garbage collector to remove ended one-shot jobs (like scene-actions, ...)
       .scan(garbageCollect)
+
+      // DEBUG
+      // .onValue(({ crontab }) => debug(debugPrettyCrontab(crontab)))
+
       /* Subscribe to cron-stream and return a subscription object (for handling unsubscribe) */
       .observe(processTaskEvents())
   );

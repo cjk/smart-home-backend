@@ -95,7 +95,7 @@ export type CronJob = {
   scheduled: boolean,
   running: boolean,
   lastRun: Date | null,
-  tasks: ?CrontabTask[] | ?Task[],
+  tasks: ?(CrontabTask[]) | ?(Task[]),
 };
 
 export type Crontab = Array<CronJob>;
@@ -107,6 +107,7 @@ export type TickState = {
   crontab: Crontab,
   state: HomeState,
   taskEvents: Array<Task>,
+  client: Function,
 };
 
 export type Scene = {

@@ -1,9 +1,12 @@
 /* @flow */
+
+import type { CronJob, Crontab } from '../types';
 import logger from 'debug';
+
 import K from 'kefir';
 import loadCrontab from './crontab';
+import { debugPrettyCrontab } from './util';
 import { append, map, prop, propEq, reject } from 'ramda';
-import type { CronJob, Crontab } from '../types';
 
 /* Flowtype definitions */
 type NewJob = {
@@ -78,9 +81,11 @@ export default function createStream(client: Function) {
         const jobAdded = prop('added', cur);
         const jobIdRemoved = prop('removed', cur);
         if (jobAdded) {
+          //  debug(`Pre-added crontab is: ${JSON.stringify(debugPrettyCrontab(prev))}`);
           return append(jobAdded, prev);
         }
         if (jobIdRemoved) {
+          //  debug(`Pre-removed crontab is: ${JSON.stringify(debugPrettyCrontab(prev))}`);
           return reject(j => propEq('jobId', jobIdRemoved, j), prev);
         }
         return prev;

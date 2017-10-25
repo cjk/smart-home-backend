@@ -61,6 +61,7 @@ const fixedTimeIsNow = (j: CronJob) => {
   const targetTs = parse(format(now, `YYYY-MM-DDT${j.at}`));
   const secondsToStart = differenceInSeconds(targetTs, now);
 
+  debug(`Job start-time delta for job <${j.jobId}> with TS <${targetTs}> is ${secondsToStart} seconds`);
   if (secondsToStart > 0 && secondsToStart <= 60)
     debug(`Daily job #${j.jobId} will run in ${secondsToStart} seconds.`);
 
