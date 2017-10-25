@@ -45,6 +45,7 @@ export default function init({
     )
       /* Jobs and tasks get synced (from last tick), scheduled and (indirectly) run from here: */
       .scan(scheduleTick)
+      // .spy('cron-debug')
       .scan(garbageCollect)
       /* Subscribe to cron-stream and return a subscription object (for handling unsubscribe) */
       .observe(processTaskEvents())
