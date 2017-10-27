@@ -113,7 +113,6 @@ export type TickState = {
 export type Scene = {
   id: string,
   name: string,
-  lastRun: ?number,
   tasks: Array<CrontabTask>,
 };
 export type Scenes = Array<Scene>;

@@ -51,13 +51,10 @@ export default function init({
     )
       /* Jobs and tasks get synced (from last tick), scheduled and (indirectly) run from here: */
       .scan(scheduleTick)
-
       // Run garbage collector to remove ended one-shot jobs (like scene-actions, ...)
       .scan(garbageCollect)
-
       // DEBUG
-      // .onValue(({ crontab }) => debug(debugPrettyCrontab(crontab)))
-
+      //       .onValue(({ crontab }) => debug(debugPrettyCrontab(crontab)))
       /* Subscribe to cron-stream and return a subscription object (for handling unsubscribe) */
       .observe(processTaskEvents())
   );
