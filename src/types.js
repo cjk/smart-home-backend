@@ -33,8 +33,8 @@ export type AddressMap = { [id: string]: Address };
 export type AddressList = Array<Address>;
 
 export type KnxdOpts = {
-  host: string,
-  port: string,
+  host: ?string, // NOTE: only optional because taking them from environment is not guaranteed to be non-empty
+  port: ?string, // NOTE: only optional because taking them from environment is not guaranteed to be non-empty
   isAvailable: boolean,
 };
 
@@ -50,8 +50,8 @@ export type Config = {
   },
   knxd: KnxdOpts,
   wsServer: {
-    host: string,
-    port: string,
+    host: ?string, // NOTE: only optional because taking them from environment is not guaranteed to be non-empty
+    port: ?string, // NOTE: only optional because taking them from environment is not guaranteed to be non-empty
     user: string,
   },
   commands: {

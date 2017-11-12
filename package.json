@@ -31,6 +31,7 @@
     "debug": "^3.1.0",
     "deepstream.io-client-js": "^2.1.2",
     "del": "^2.2.2",
+    "dotenv": "^4.0.0",
     "eibd": "^0.3.7",
     "gulp": "latest",
     "gulp-babel": "latest",

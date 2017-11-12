@@ -12,15 +12,13 @@ const config: Config = {
     port: process.env.PORT || '3005' /* TODO: no longer used?! */,
   },
   knxd: {
-    //     host: '192.168.1.28', /* like '192.168.1.28' or 'localhost'  */
-    host: 'localhost' /* like '192.168.1.28' or 'localhost'  */,
-    port: '6720',
+    host: process.env.KNXD_ADDR /* like '192.168.1.28' or 'localhost'  */,
+    port: process.env.KNXD_PORT,
     isAvailable: true,
   },
   wsServer: {
-    //     host: '192.168.1.28',
-    host: 'localhost',
-    port: '6020',
+    host: process.env.DEEPSTREAM_ADDR,
+    port: process.env.DEEPSTREAM_PORT,
     user: 'smartHomeBackend',
   },
   /* Do not really access KNX-bus */
