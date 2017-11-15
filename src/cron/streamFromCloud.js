@@ -5,7 +5,7 @@ import logger from 'debug';
 
 import K from 'kefir';
 import loadCrontab from './crontab';
-import { debugPrettyCrontab } from './util';
+// import { debugPrettyCrontab } from './util';
 import { append, map, prop, propEq, reject } from 'ramda';
 
 /* Flowtype definitions */
@@ -74,23 +74,23 @@ export default function createStream(client: Function) {
   }).flatMap(
     lst =>
       /* Handle added / remove job-list entries */
-      K.merge([
-        addLstAddHndl(),
-        addLstRemoveHndl(),
-      ]).scan((prev: Crontab, cur: CrontabChanges) => {
-        const jobAdded = prop('added', cur);
-        const jobIdRemoved = prop('removed', cur);
-        if (jobAdded) {
-          //  debug(`Pre-added crontab is: ${JSON.stringify(debugPrettyCrontab(prev))}`);
-          return append(jobAdded, prev);
-        }
-        if (jobIdRemoved) {
-          //  debug(`Pre-removed crontab is: ${JSON.stringify(debugPrettyCrontab(prev))}`);
-          return reject(j => propEq('jobId', jobIdRemoved, j), prev);
-        }
-        return prev;
-      }, [])
-    //     .spy('crontab')
+      K.merge([addLstAddHndl(), addLstRemoveHndl()]).scan(
+        (prev: Crontab, cur: CrontabChanges) => {
+          const jobAdded = prop('added', cur);
+          const jobIdRemoved = prop('removed', cur);
+          if (jobAdded) {
+            //           debug(`Adding job to crontab: ${JSON.stringify(jobAdded)}`);
+            return append(jobAdded, prev);
+          }
+          if (jobIdRemoved) {
+            //           debug(`Removing job from crontab: ${JSON.stringify(jobIdRemoved)}`);
+            return reject(j => propEq('jobId', jobIdRemoved, j), prev);
+          }
+          return prev;
+        },
+        []
+      )
+    //       .spy('crontab')
   );
 
   /* TESTING + DEBUGGING */

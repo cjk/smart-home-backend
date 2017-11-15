@@ -53,10 +53,14 @@ const fixedTimeIsNow = (j: CronJob) => {
   const now = new Date();
   const lastRunTs = new Date(prop('lastRun', j));
   const noFixedTime = isNil(prop('at', j));
+  const runNow = propEq('at', 'now', j);
   const hasRun = differenceInHours(now, lastRunTs) <= 23;
 
   /* Bail on unsupported task-properties */
   if (noFixedTime || hasRun) return false;
+
+  // Some jobs are meant to be run immediately
+  if (runNow) return true;
 
   const targetTs = parse(format(now, `YYYY-MM-DDT${j.at}`));
   const secondsToStart = differenceInSeconds(targetTs, now);

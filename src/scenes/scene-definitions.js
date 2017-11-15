@@ -13,11 +13,11 @@ const scenes: Scenes = [
     ],
   },
   {
-    id: 'scene/Frühstück',
-    name: 'Frühstück',
+    id: 'scene/Test001',
+    name: 'Test-Szene',
     tasks: [
-      { targets: ['80/1/1', '80/1/2'], act: 'on' },
-      { targets: ['90/1/1', '90/1/2'], act: 'off' },
+      { targets: ['1/1/5'], act: 'on' },
+      { targets: ['1/1/6'], act: 'off' },
     ],
   },
   {
