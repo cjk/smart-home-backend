@@ -44,7 +44,7 @@ function _eventHandler(emitter, eventType, src, dest, type, val) {
   } catch (e) {
     if (e instanceof TypeError) {
       error(
-        `ERROR: Unknown or invalid knx-address <${dest}> - perhaps you need to add it to your address-list first?`
+        `WARNING: Unknown or invalid knx-address <${dest}> with value <${val}>\n- consider updating your address-list.`
       );
     } else {
       error(
