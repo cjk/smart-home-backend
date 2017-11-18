@@ -31,7 +31,7 @@ const config: Config = {
   },
   /* Enable / disable some modules / functionality */
   modules: {
-    addressRefresher: false,
+    addressRefresher: true,
   },
   knx: {
     addresses,
