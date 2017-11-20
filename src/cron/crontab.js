@@ -27,7 +27,7 @@ const crontab: Crontab = [
   {
     jobId: 'cronjobs/j1esevoj-2nhotlynd8i',
     name: 'Auto-Aus Wohnzimmer Nachts',
-    at: '13:00:00',
+    at: '23:30:00',
     repeat: 'daily',
     scheduled: false,
     running: false,
