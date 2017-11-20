@@ -13,20 +13,17 @@ import { normalizeTasks } from './util';
 const crontab: Crontab = [
   {
     jobId: 'cronjobs/j1esevoj-1bcxxoucnq2',
-    name: 'sample-1',
-    at: '12:15:30',
+    name: 'Daniel Deckenleuchte - Nachts aus',
+    at: '22:15:00',
     repeat: 'daily',
     scheduled: false,
     running: false,
     lastRun: null,
-    tasks: [
-      { targets: ['1/1/1', '1/1/2'], act: 'off' },
-      { targets: ['2/2/2', '2/2/3'], act: 'on' },
-    ],
+    tasks: [{ targets: ['1/3/1'], act: 'off' }],
   },
   {
     jobId: 'cronjobs/j1esevoj-2nhotlynd8i',
-    name: 'Auto-Aus Wohnzimmer Nachts',
+    name: 'Wohnzimmer Lichter - Nachts aus',
     at: '23:30:00',
     repeat: 'daily',
     scheduled: false,
