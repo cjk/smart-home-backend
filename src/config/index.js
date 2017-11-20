@@ -47,6 +47,8 @@ const config: Config = {
       '1/1/5' /* UG Keller-1-2 + Hobby1 via Tasterrückmeldung */,
       '1/1/6' /* UG Keller-2 Deckenleuchte via Schaltaktor 1.1.2 Ausg. 14  */,
       '1/1/7' /* UG Keller-3 Deckenleuchte via Schaltaktor 1.1.2 Ausg. 5 */,
+      '1/1/9' /* UG Keller-1 Deckenleuchte manuell schalten via Schaltaktor 1.1.1 Schaltaktor 2 Ausg. 15 */,
+      '1/1/10' /* UG Keller-1 Deckenleuchte automatisch schalten per Präsenzmelder (Waschsituation) via Schaltaktor 1.1.1 Schaltaktor 2 Ausg. 15 */,
       '1/2/0' /* EG Technik Deckenleuchte via [TODO] */,
       '1/2/1' /* EG Küche Deckenleuchten via Schaltaktor 1.1.2 Ausg. 3 */,
       '1/2/2' /* EG/OG Treppenlicht LED via Schaltaktor 1.1.1 Ausg. 10 */,
