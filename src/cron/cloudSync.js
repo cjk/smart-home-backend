@@ -6,7 +6,7 @@ import logger from 'debug';
 import K from 'kefir';
 import loadCrontab from './crontab';
 // import { debugPrettyCrontab } from './util';
-import { append, map, prop, propEq, reject } from 'ramda';
+import { append, join, map, pluck, prop, propEq, reject } from 'ramda';
 
 /* Flowtype definitions */
 type NewJob = {
@@ -24,13 +24,13 @@ type CrontabChanges = {
   crontab: Crontab,
 };
 
-const debug = logger('smt:cron');
+const debug = logger('smt:cronCloudSync');
 
 /* Load and transform initial crontab entries */
 const initialCrontab = loadCrontab();
 debug(`Loaded crontab with ${initialCrontab.length} entries`);
 
-export default function createStream(client: Function) {
+function syncCrontabWithCloud(client: Function) {
   const cronjobLst = client.record.getList('smartHome/cronjobs');
   cronjobLst.setEntries([]);
 
@@ -121,3 +121,16 @@ export default function createStream(client: Function) {
 
   return cron$;
 }
+
+function pushJobToCloud(client: Function, jobs: Array<CronJob>) {
+  debug(`Syncing back job <${join(', ', pluck('name', jobs))}> to cloud.`);
+  map(
+    j =>
+      client.record.setData(j.jobId, j, err =>
+        debug(`Failed to update record ${j.name}: ${err}`)
+      ),
+    jobs
+  );
+}
+
+export { syncCrontabWithCloud, pushJobToCloud };

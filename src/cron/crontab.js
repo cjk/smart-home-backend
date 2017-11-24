@@ -52,12 +52,12 @@ const crontab: Crontab = [
   {
     jobId: 'cronjobs/j1esevoj-3pf3chcujrg',
     name: 'Hobby-Licht Auto',
-    at: '15:30:00',
+    at: '17:02:10',
     repeat: 'none',
     scheduled: false,
     running: false,
     lastRun: null,
-    tasks: [{ targets: ['1/1/7'], act: 'off' }],
+    tasks: [{ targets: ['99/1/7'], act: 'off' }],
   },
 ];
 
