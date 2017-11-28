@@ -77,6 +77,7 @@ const config: Config = {
       '4/2/0' /* Rollladen EG zentral lang via Schaltaktor 1.2.24 Taste 3 + 4 */,
       '4/2/1' /* Rollladen EG zentral kurz via Schaltaktor 1.2.24 Taste 3 + 4 */,
       '6/0/0' /* EG Außenbereich Westwand / Garten 1.1.41 Lichtsensor 107 - resultierender Istwert senden */,
+      '8/0/0' /* Zeit wohnen senden - sendet Zeitwert an Taster */,
       '9/0/1' /* EG Wohnzimmer/Esszimmer/Küche Rückmeldeobjekt für Szene "Abendessen" via Taster 1.1.24 Taste 7 (Rückmeldeobjekt Taste 7, Objekt A) */,
       '9/0/3' /* EG Küche Decke Nord+Ost Rückmeldeobjekt via Taster 1.1.24 Taste 5 */,
       '9/1/0' /* OG Kind-1 / Schlafzimmer Deckenleuchte Nord via Rückmeldeobjekt Taster 1.1.31 Taste 1 */,
