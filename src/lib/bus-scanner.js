@@ -1,3 +1,5 @@
+// @flow
+
 import type { AddressList } from '../types';
 import Kefir from 'kefir';
 import { readGroupAddr } from '../knx/performBusAction';

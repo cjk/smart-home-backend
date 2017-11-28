@@ -2,7 +2,7 @@
 import type { ServerState } from './types';
 
 import config from './config';
-import createBusStreams from './streams/bus';
+import createBusStreams from './busStreams';
 import { addrMapToConsole } from './lib/debug';
 import getClient from './client';
 import logger from 'debug';
