@@ -1,3 +1,5 @@
+// @flow
+
 import type { Address, MinimalAddress } from '../types';
 
 /* Guess correct KNX-datatype / format from address-properties */
@@ -36,6 +38,10 @@ function deriveAddrFormat(addr: Address) {
     case 'heat':
       /* DPT1 - 1 bit (0,1) */
       break;
+
+    case 'time':
+      /* DPT10 - 3 bytes (weekday+hour/minutes/seconds) */
+      return 'DPT10';
 
     default:
       return undefined;
