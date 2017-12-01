@@ -28,6 +28,7 @@ module.exports = {
     'object-curly-newline': 0, //Prettier.
     'no-confusing-arrow': 0, // This rule is confusing.
     'no-mixed-operators': 0, // Prettier.
+    'space-before-function-paren': 0, // Prettier.
     'no-nested-ternary': 0, // Buggy for functional componenents.
     'no-param-reassign': 0, // We love param reassignment. Naming is hard.
     'no-shadow': 0, // Shadowing is a nice language feature. Naming is hard.
