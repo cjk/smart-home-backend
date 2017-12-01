@@ -1,13 +1,10 @@
 // @flow
 
 import type { Address, MinimalAddress } from '../types';
+import getISODay from 'date-fns/get_iso_day';
 
 /* Guess correct KNX-datatype / format from address-properties */
 function deriveAddrFormat(addr: Address) {
-  if (addr.type !== 'switch') {
-    return null;
-  }
-
   /* For reference, see https://www.domotiga.nl/projects/selfbus-knx-eib/wiki/Datatypes */
   switch (addr.func) {
     case 'light':
@@ -61,4 +58,8 @@ function createAddress(props: MinimalAddress): Address {
   return Object.assign({}, addressDefaults, props);
 }
 
-export { createAddress, deriveAddrFormat };
+function dateTimeToDPT10Array(ts: Date): Array<number> {
+  return [getISODay(ts), ts.getHours(), ts.getMinutes(), ts.getSeconds()];
+}
+
+export { createAddress, dateTimeToDPT10Array, deriveAddrFormat };

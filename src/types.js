@@ -26,7 +26,7 @@ export type MinimalAddress = {
   type: ?string,
   func: ?string,
   fbAddr?: string,
-  value: number,
+  value: number | number[],
 };
 
 export type AddressMap = { [id: string]: Address };

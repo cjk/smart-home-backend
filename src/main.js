@@ -9,6 +9,7 @@ import logger from 'debug';
 import publish from './server';
 import setupCron from './cron';
 import setupScenes from './scenes';
+import automate from './automate';
 
 const debug = logger('smt:backend'),
   error = logger('error');
@@ -19,6 +20,8 @@ process.on('unhandledRejection', r => error(r));
 const clientConnect$ = getClient(config);
 
 const { busEvent$, busState$ } = createBusStreams();
+
+automate();
 
 /* Should be connected to backend / deepstreamIO before continuing... */
 clientConnect$.observe({

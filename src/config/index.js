@@ -12,7 +12,9 @@ const config: Config = {
     port: process.env.PORT || '3005' /* TODO: no longer used?! */,
   },
   knxd: {
-    host: process.env.KNXD_ADDR /* like '192.168.1.28' or 'localhost'  */,
+    host:
+      process.env
+        .KNXD_ADDR /* see your .env-file, e.g. '192.168.1.28' or 'localhost'  */,
     port: process.env.KNXD_PORT,
     isAvailable: true,
   },

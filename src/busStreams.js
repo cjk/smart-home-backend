@@ -1,13 +1,13 @@
 /* @flow */
 
-import type { KnxConf } from '../types';
+import type { KnxConf } from './types';
 
 import logger from 'debug';
 import Kefir from 'kefir';
 import { List } from 'immutable';
-import config from '../config';
-import knxListener from '../knx';
-import addressRefresher from '../lib/auto-refresher';
+import config from './config';
+import knxListener from './knx';
+import addressRefresher from './lib/auto-refresher';
 
 const debug = logger('smt:bus-state'),
   warn = logger('warn');
@@ -27,9 +27,9 @@ function updateFromEvent(currentState, event) {
   const currentTs = Date.now();
 
   /* DEBUGGING */
-  const message = `[bus-event-stream] Updating address ${addrId} (${currentState.get(
-    addrId
-  ).name})`;
+  const message = `[bus-event-stream] Updating address ${addrId} (${
+    currentState.get(addrId).name
+  })`;
 
   if (newValue === lastValue) {
     debug(

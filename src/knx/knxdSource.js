@@ -44,11 +44,15 @@ function _eventHandler(emitter, eventType, src, dest, type, val) {
   } catch (e) {
     if (e instanceof TypeError) {
       error(
-        `WARNING: Unknown or invalid knx-address <${dest}> with value <${val}>\n- consider updating your address-list.`
+        `WARNING: Unknown or invalid knx-address <${dest}> with value <${
+          val
+        }>\n- consider updating your address-list.`
       );
     } else {
       error(
-        `ERROR: Unexpected exception on trying to parse knx-event of type <${type}> from source <${src}> for destination <${dest}>`
+        `ERROR: Unexpected exception on trying to parse knx-event of type <${
+          type
+        }> from source <${src}> for destination <${dest}>`
       );
     }
     return;
@@ -75,6 +79,10 @@ function listener(emitter) {
     parser.on('write', writeHandler);
     parser.on('response', responseHandler);
     parser.on('read', readHandler);
+    // DEBUGGING
+    // parser.on('telegram', (eType, src, dest, val) => {
+    //   debug(`--> ${eType} / ${src}:${dest} - <${JSON.stringify(val)}>`);
+    // });
   };
 }
 
