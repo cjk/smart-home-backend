@@ -11,8 +11,8 @@ import { getTimestamp } from './debug';
 const debug = logger('smt:refresher');
 
 const runDelaySeconds = 60; // sane default is 60
-const maxRefreshLimit = 6;
-const maxAddressAge = 25; // Maxium age in minutes before an address gets refreshed
+const maxRefreshLimit = 3;
+const maxAddressAge = 50; // Maxium age in minutes before an address gets refreshed
 
 const reduceAddressesToIds = addrMap =>
   addrMap.reduce((lst, addr) => lst.push(addr.get('id')), new List()).sort();
