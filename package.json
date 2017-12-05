@@ -44,7 +44,7 @@
     "kefir": "^3.7.4",
     "nodemon": "^1.12.1",
     "ramda": "^0.25.0",
-    "supports-color": "^4.4.0"
+    "supports-color": "^5.0.1"
   },
   "devDependencies": {
     "eslint-plugin-flowtype": "^2.30.4",
