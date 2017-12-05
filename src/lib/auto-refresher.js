@@ -26,9 +26,14 @@ function refreshStaleAddresses(stream: BusState) {
   stream.sampledBy(timer).onValue(addresses => {
     const now = Date.now();
     const staleAddresses = addresses
-      /* Exclude: Scenes (can be acciddentally switched by bus-responses) and Adresses with a Feedback-Address (can cause ghost-traffic on the bus??!) -
+      /* Refresh only switches and sensors, exclude scenes and adresses with a feedback-address (can cause ghost-traffic on the bus??!) -
        * see https://knx-user-forum.de/forum/%C3%B6ffentlicher-bereich/knx-eib-forum/15169-lesen-einer-ga-f%C3%BChrt-zum-fahren-von-rolladen */
-      .filter(addr => !(addr.func === 'scene') && isNil(addr.fbAddr))
+      .filter(
+        addr =>
+          (addr.type === 'switch' || addr.type === 'sensor') &&
+          isNil(addr.fbAddr) &&
+          !(addr.func === 'scene')
+      )
       /* Convert time-span to seconds and compare to max allowed age */
       .filter(
         addr =>
@@ -39,11 +44,11 @@ function refreshStaleAddresses(stream: BusState) {
     /* DEBUGGING: */
     if (staleAddresses.size > 0) {
       debug(
-        `[${getTimestamp(
-          Date.now()
-        )}]: We have ${staleAddresses.size} stale addresses: ${reduceAddressesToIds(
-          staleAddresses
-        ).join('|')} - refreshing a max of ${maxRefreshLimit} of these.`
+        `[${getTimestamp(Date.now())}]: We have ${
+          staleAddresses.size
+        } stale addresses: ${reduceAddressesToIds(staleAddresses).join(
+          '|'
+        )} - refreshing a max of ${maxRefreshLimit} of these.`
       );
     } else {
       debug(
