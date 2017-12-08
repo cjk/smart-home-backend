@@ -41,7 +41,7 @@ function sendReqToBusFor(
         action === 'read' /* as long as there is only read & write... */
           ? knxReadMsg(action)
           : knxWriteMsg(datatype, address.value);
-      return conn.sendAPDU(msg, callback);
+      return conn.sendAPDU(msg, callback(null));
     });
   });
 }

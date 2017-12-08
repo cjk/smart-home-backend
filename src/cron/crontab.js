@@ -14,7 +14,7 @@ const crontab: Crontab = [
   {
     jobId: 'cronjobs/j1esevoj-1bcxxoucnq2',
     name: 'Daniel Deckenleuchte - Nachts aus',
-    at: '22:15:00',
+    at: '22:30:00',
     repeat: 'daily',
     scheduled: false,
     running: false,
