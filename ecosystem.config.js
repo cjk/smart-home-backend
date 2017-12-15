@@ -33,17 +33,5 @@ module.exports = {
       'post-deploy':
         'yarn install && gulp build && pm2 reload ecosystem.config.js --env production',
     },
-    dev: {
-      // TODO
-      user: 'cjk',
-      host: '212.83.163.1',
-      ref: 'origin/master',
-      repo: 'git@github.com:cjk/smart-home-backend.git',
-      path: '/home/cjk/apps/smarthome-backend',
-      'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env dev',
-      env: {
-        NODE_ENV: 'dev',
-      },
-    },
   },
 };
