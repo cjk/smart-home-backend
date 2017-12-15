@@ -10,10 +10,18 @@ module.exports = {
       kill_timeout: 3000,
       env: {
         PORT: 8001,
+        KNXD_ADDR: '192.168.1.28',
+        KNXD_PORT: 6720,
+        DEEPSTREAM_ADDR: 'localhost',
+        DEEPSTREAM_PORT: 6020,
         DEBUG: 'smt:*,error,debug',
       },
       env_production: {
         NODE_ENV: 'production',
+        KNXD_ADDR: 'localhost',
+        KNXD_PORT: 6720,
+        DEEPSTREAM_ADDR: 'localhost',
+        DEEPSTREAM_PORT: 6020,
         DEBUG: 'smt:*,error',
       },
     },

@@ -14,7 +14,7 @@ const config: Config = {
   knxd: {
     host:
       process.env
-        .KNXD_ADDR /* see your .env-file, e.g. '192.168.1.28' or 'localhost'  */,
+        .KNXD_ADDR /* see your .env- or ecosystem.config.js file, e.g. '192.168.1.28' or 'localhost'  */,
     port: process.env.KNXD_PORT,
     isAvailable: true,
   },
