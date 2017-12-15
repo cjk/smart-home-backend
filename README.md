@@ -32,4 +32,47 @@ For production:
 yarn run prod
 ```
 
+## Prerequisites
+
+You need a JSON-file containing your knx-addresses in `./src/config/group-address-list.js` in the following format:
+
+``` javascript
+import type { AddressList } from '../types';
+
+// Rooms: KIT=Küche, WZ=Wohnzimmer, EZ=Esszimmer, TEC=Technik, HBY=Hobby, CEL-[1-3]=Cellar, OFFICE=Büro, KND-[1-3]=Kind, BATH=Bad, REST=Gäste-WC
+// Types: switch, binary, fb (feedback-button), sensor, clock, ...
+// Functions: light, scene, dim, outlet, lux, shut (~shutters), heat, inhibit (~ Sperre/Zwangsführung), time, date
+//
+// Optional attribute 'fbAddr' contains an knx-groupaddress that provides a feedback-value for current address ('Rückmeldeobjekt')
+const addresses: AddressList = [
+  {
+    id: '0/0/1',
+    name: 'Zentral aus',
+    room: null,
+    story: 'C',
+    type: null,
+    func: null,
+  },
+  {
+    id: '1/1/0',
+    name: 'Lock automatic light switching in cellar',
+    room: 'hby',
+    story: 'UG',
+    type: 'switch',
+    func: 'inhibit',
+  },
+  […]
+```
+Since such an address-list contains sensitive information, the default file used for my local KNX-configuration is encrypted into `./src/config/group-address-list.js.cast5`.
+
+There’s a makefile task to encrypt and decrypt the KNX-address file. The needed password is taken from the environment-variable *SMARTHOME_ADDRESSLIST_SECRET*, so make sure you set this before using make to en-/decrypt your addresses.
+
+### Deploying and running using pm2
+
+Update `./ecosystem.config.js` to match your environment and run:
+
+`pm2 deploy ecosystem.config.js production setup`
+
+`pm2 deploy ecosystem.config.js production`
+
 Made by [CjK](https://twitter.com/cjk)

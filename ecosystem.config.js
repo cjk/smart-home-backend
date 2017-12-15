@@ -31,7 +31,7 @@ module.exports = {
       repo: 'git@github.com:cjk/smart-home-backend.git',
       path: '/home/cjk/apps/smarthome-backend',
       'post-deploy':
-        'yarn install && gulp build && pm2 reload ecosystem.config.js --env production',
+        'yarn install && make decrypt_conf && gulp build && pm2 reload ecosystem.config.js --env production',
     },
   },
 };
