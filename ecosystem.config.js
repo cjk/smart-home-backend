@@ -5,7 +5,7 @@ module.exports = {
    */
   apps: [
     {
-      name: 'SMARTHOME-BACKEND',
+      name: 'smthome-backend',
       script: './app/index.js',
       kill_timeout: 3000,
       env: {
