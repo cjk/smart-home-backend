@@ -11,16 +11,25 @@ import setupCron from './cron';
 import setupScenes from './scenes';
 import automate from './automate';
 
-const debug = logger('smt:backend'),
+const debug = logger('smt:backend:main'),
   error = logger('error');
+
+// Allow for clean restarts (e.g. when using pm2 or other process managers)
+const setupCleanupHandler = client => {
+  process.on('SIGINT', () => {
+    debug('Received SIGINT. Cleaning up and exiting...');
+    client.close();
+    process.exit();
+  });
+};
 
 /* PENDING / DEBUGGING: Enable better debugging until we're stable here */
 process.on('unhandledRejection', r => error(r));
-
 const clientConnect$ = getClient(config);
 
 const { busEvent$, busState$ } = createBusStreams();
 
+// Start knx-bus services
 automate();
 
 /* Should be connected to backend / deepstreamIO before continuing... */
@@ -45,6 +54,9 @@ clientConnect$.observe({
     /* Setup and configure (websocket-/http-) server and pass event-emitters along
        for use in plugins et. al. */
     publish(serverState);
+
+    // On reload/restarts/interrupt cleanup state
+    setupCleanupHandler(client);
 
     debug('Server initialized and up running');
 
