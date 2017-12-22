@@ -35,6 +35,9 @@ startServices();
 /* Should be connected to backend / deepstreamIO before continuing... */
 clientConnect$.observe({
   value(client) {
+    // On reload/restarts/interrupt cleanup state
+    setupCleanupHandler(client);
+
     // Load scenes from definitions-file and sync them to cloud, so other clients/frontends may use and invoke them
     const scenes = setupScenes(client);
 
@@ -54,9 +57,6 @@ clientConnect$.observe({
     /* Setup and configure (websocket-/http-) server and pass event-emitters along
        for use in plugins et. al. */
     publish(serverState);
-
-    // On reload/restarts/interrupt cleanup state
-    setupCleanupHandler(client);
 
     debug('Server initialized and up running');
 
