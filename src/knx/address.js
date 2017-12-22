@@ -9,6 +9,7 @@ export default Record({
   type: null,
   func: null,
   fbAddr: null,
+  control: null,
   updatedAt: 1451606400000 /* choose guaranteed expired default value so sorting later becomes predictable */,
   verifiedAt: 1451606400000,
 });

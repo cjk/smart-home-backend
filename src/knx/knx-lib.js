@@ -53,6 +53,7 @@ function createAddress(props: MinimalAddress): Address {
     story: 'none',
     type: 'switch',
     func: 'light',
+    control: 'none',
   };
 
   return Object.assign({}, addressDefaults, props);
