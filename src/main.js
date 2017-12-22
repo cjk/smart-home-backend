@@ -9,7 +9,7 @@ import logger from 'debug';
 import publish from './server';
 import setupCron from './cron';
 import setupScenes from './scenes';
-import automate from './automate';
+import startServices from './services';
 
 const debug = logger('smt:backend:main'),
   error = logger('error');
@@ -29,8 +29,8 @@ const clientConnect$ = getClient(config);
 
 const { busEvent$, busState$ } = createBusStreams();
 
-// Start knx-bus services
-automate();
+// Start bus-services, like setting the current time on the (knx-) bus
+startServices();
 
 /* Should be connected to backend / deepstreamIO before continuing... */
 clientConnect$.observe({
