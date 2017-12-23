@@ -1,9 +1,9 @@
 /* @flow */
 import type { Observable } from 'kefir';
-import type { BusState, Crontab, TickState } from '../types';
+import type { Crontab, ServerState, TickState } from '../types';
 
-import logger from 'debug';
-import { debugPrettyCrontab } from './util';
+// import logger from 'debug';
+// import { debugPrettyCrontab } from './util';
 
 import K from 'kefir';
 import { createTaskEventStream, processTaskEvents } from './taskProcessor';
@@ -12,7 +12,7 @@ import { syncCrontabWithCloud, pushJobToCloud } from './cloudSync';
 import garbageCollect from './garbageCollector';
 import { differenceWith, isEmpty } from 'ramda';
 
-const debug = logger('smt:cron-tick');
+// const debug = logger('smt:cron-tick');
 
 /* How often to check crontab and schedule / dispatch jobs */
 const tickInterval = 1000;
@@ -22,13 +22,7 @@ const eqJobs = (j1, j2) =>
   j1.running === j2.running &&
   j1.scheduled === j2.scheduled;
 
-export default function init({
-  streams: { busState$ },
-  client,
-}: {
-  streams: { busState$: BusState },
-  client: Function,
-}) {
+export default function init({ streams: { busState$ }, client }: ServerState) {
   const tick$: Observable<number> = K.interval(tickInterval, 1);
   const crontabFromCloud$: Observable<Crontab> = syncCrontabWithCloud(client);
 

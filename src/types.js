@@ -40,7 +40,7 @@ export type KnxdOpts = {
 
 export type KnxConf = {
   addresses: AddressList,
-  addressMap: null => KeyedCollection<string, Address>,
+  addressMap: void => KeyedCollection<string, Address>,
   readableAddr: Array<string>,
 };
 
@@ -50,8 +50,8 @@ export type Config = {
   },
   knxd: KnxdOpts,
   wsServer: {
-    host: ?string, // NOTE: only optional because taking them from environment is not guaranteed to be non-empty
-    port: ?string, // NOTE: only optional because taking them from environment is not guaranteed to be non-empty
+    host: string,
+    port: string,
     user: string,
   },
   commands: {
@@ -95,7 +95,7 @@ export type CronJob = {
   scheduled: boolean,
   running: boolean,
   lastRun: Date | null,
-  tasks: ?(CrontabTask[]) | ?(Task[]),
+  tasks: Array<CrontabTask | Task>,
 };
 
 export type Crontab = Array<CronJob>;

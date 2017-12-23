@@ -44,18 +44,14 @@ function refreshStaleAddresses(stream: BusState) {
     /* DEBUGGING: */
     if (staleAddresses.size > 0) {
       debug(
-        `[${getTimestamp(Date.now())}]: We have ${
+        `[${getTimestamp()}]: We have ${
           staleAddresses.size
         } stale addresses: ${reduceAddressesToIds(staleAddresses).join(
           '|'
         )} - refreshing a max of ${maxRefreshLimit} of these.`
       );
     } else {
-      debug(
-        `[${getTimestamp(
-          Date.now()
-        )}]: All addresses up to date - nothing to do :)`
-      );
+      debug(`[${getTimestamp()}]: All addresses up to date - nothing to do :)`);
     }
     //       debug(staleAddresses.map(a => a.get('id')).toJS());
 
