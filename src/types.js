@@ -13,6 +13,7 @@ export type Address = {
   story: ?string,
   type: ?string,
   func: ?string,
+  control: string,
   fbAddr?: string,
   value?: ?number,
 };
@@ -25,6 +26,7 @@ export type MinimalAddress = {
   story?: ?string,
   type: ?string,
   func: ?string,
+  control?: ?string,
   fbAddr?: string,
   value: number | number[],
 };

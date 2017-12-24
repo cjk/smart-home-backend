@@ -42,7 +42,7 @@ function deriveAddrFormat(addr: Address) {
   return undefined;
 }
 
-function createAddress(props: MinimalAddress): Address {
+function createAddress(props: MinimalAddress): MinimalAddress {
   const addressDefaults = {
     name: 'none',
     room: 'none',
