@@ -11,10 +11,6 @@ function deriveAddrFormat(addr: Address) {
       /* DPT1 - 1 bit (0,1) */
       return 'DPT1';
 
-    case 'outlet':
-      /* DPT1 - 1 bit (0,1) */
-      return 'DPT1';
-
     case 'shut':
       /* DPT1 - 1 bit (0,1) */
       return 'DPT1';
