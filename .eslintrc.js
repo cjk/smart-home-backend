@@ -36,6 +36,7 @@ module.exports = {
     // misc (CjK)
     'comma-dangle': ['error', 'only-multiline'],
     'max-len': ['error', 120, { ignoreComments: true }],
+    'no-return-assign': ['error', 'except-parens'],
     'one-var': 0,
   },
 };
