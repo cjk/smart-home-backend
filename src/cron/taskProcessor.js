@@ -1,5 +1,5 @@
 // @flow
-import type { Crontab, Task, Callback } from '../types';
+import type { MinimalAddress, Crontab, Task, Callback } from '../types';
 
 import logger from 'debug';
 import K from 'kefir';
@@ -28,14 +28,14 @@ function runTask(task: Task, callback: Callback) {
   debug(`Running task ${JSON.stringify(task)}...`);
   eventEmitter.emit('taskStarted', [task]);
 
-  const address = createAddress({
+  const address: MinimalAddress = createAddress({
     id: task.target,
     func: 'light',
     type: 'switch',
     value: task.act === 'on' ? 1 : 0,
   });
   const markAsEnded = compose(
-    assoc('endedAt', Date.now()),
+    (t: Task) => assoc('endedAt', Date.now(), t),
     assoc('status', 'ended')
   );
 

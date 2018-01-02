@@ -32,7 +32,7 @@ const running = (j: CronJob) => j.running;
 
 const setRunning = assoc('running', true);
 const setEnded = assoc('running', false);
-const setLastRun = assoc('lastRun', Date.now());
+const setLastRun = (j: CronJob) => assoc('lastRun', Date.now(), j);
 
 const scheduledJobIds = compose(pluck('jobId'), filter(running));
 

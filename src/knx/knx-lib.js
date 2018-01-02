@@ -1,10 +1,10 @@
 // @flow
 
-import type { Address, MinimalAddress } from '../types';
+import type { MinimalAddress } from '../types';
 import getISODay from 'date-fns/get_iso_day';
 
 /* Guess correct KNX-datatype / format from address-properties */
-function deriveAddrFormat(addr: Address) {
+function deriveAddrFormat(addr: MinimalAddress) {
   /* For reference, see https://www.domotiga.nl/projects/selfbus-knx-eib/wiki/Datatypes */
   switch (addr.func) {
     case 'light':

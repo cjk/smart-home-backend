@@ -1,14 +1,14 @@
 /* @flow */
 
 import logger from 'debug';
-import type { Address } from '../types';
+import type { MinimalAddress } from '../types';
 import knxd from 'eibd';
 import R from 'ramda';
 import config from '../config';
 import { deriveAddrFormat } from './knx-lib';
 
 const debug = logger('smt:bus'),
-  error = logger('error');
+      error = logger('error');
 
 function defaultCallback(err) {
   if (err) {
@@ -25,7 +25,7 @@ const knxWriteMsg = R.partial(knxd.createMessage, ['write']);
 function sendReqToBusFor(
   action,
   datatype,
-  address,
+  address: MinimalAddress,
   callback = defaultCallback
 ) {
   const conn = knxd.Connection(); /* eslint new-cap: "off" */
@@ -38,9 +38,9 @@ function sendReqToBusFor(
         return callback(err);
       }
       const msg =
-        action === 'read' /* as long as there is only read & write... */
-          ? knxReadMsg(action)
-          : knxWriteMsg(datatype, address.value);
+            action === 'read' /* as long as there is only read & write... */
+            ? knxReadMsg(action)
+            : knxWriteMsg(datatype, address.value);
       return conn.sendAPDU(msg, callback(null));
     });
   });
@@ -50,11 +50,13 @@ function sendReqToBusFor(
 function fakeReqToBusFor(
   action,
   datatype,
-  address,
+  address: MinimalAddress,
   callback = defaultCallback
 ) {
   debug(
-    `*Fakeing* <${action}> bus-request to address ${address.id} with value [${address.value}] and datatype <${datatype}>`
+    `*Fakeing* <${action}> bus-request to address ${address.id} with value [${
+      address.value
+    }] and datatype <${datatype}>`
   );
   setTimeout(callback, 250, null);
 }
@@ -66,14 +68,14 @@ const writeAddr = R.partial(
 );
 
 export function readGroupAddr(
-  address: Address,
+  address: MinimalAddress,
   callback: Function = defaultCallback
 ) {
   return readAddr(address, callback);
 }
 
 export function writeGroupAddr(
-  address: Address,
+  address: MinimalAddress,
   callback: Function = defaultCallback
 ) {
   const fmt = deriveAddrFormat(address);

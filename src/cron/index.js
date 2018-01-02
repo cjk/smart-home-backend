@@ -59,7 +59,7 @@ export default function init({ streams: { busState$ }, client }: ServerState) {
         return cur;
       })
       // DEBUG
-      //     .onValue(({ crontab }) => debug(debugPrettyCrontab(crontab)))
+      //       .onValue(({ crontab }) => debug(debugPrettyCrontab(crontab)))
       /* Subscribe to cron-stream and return a subscription object (for handling unsubscribe) */
       .observe(processTaskEvents())
   );

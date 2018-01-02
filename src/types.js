@@ -13,7 +13,7 @@ export type Address = {
   story: ?string,
   type: ?string,
   func: ?string,
-  control: string,
+  control?: ?string,
   fbAddr?: string,
   value?: ?number,
 };
