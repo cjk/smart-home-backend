@@ -71,5 +71,6 @@ clientConnect$.observe({
   },
   end() {
     debug('deepstream-server connection established');
+    process.send('ready');
   },
 });
