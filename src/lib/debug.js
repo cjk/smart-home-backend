@@ -1,12 +1,17 @@
 // @flow
 import { format } from 'date-fns';
 // import germanLocale from 'date-fns/locale/de';
+import logger from 'debug';
+
+const debug = logger('smt:debug');
 
 const tsFormat = 'YYYY-MM-DDTHH:mm:ss';
 
 function addrMapToConsole(addrMap: any) {
-  return addrMap.map(
-    a => `[${a.room}>${a.name}]: ${a.value} @${format(a.updatedAt, 'HH:mm:s')}|`
+  return addrMap.map(a =>
+    debug(
+      `[${a.room}>${a.name}]: ${a.value} @${format(a.updatedAt, 'HH:mm:s')}|`
+    )
   );
 }
 
