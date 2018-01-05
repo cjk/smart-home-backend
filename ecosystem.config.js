@@ -7,7 +7,8 @@ module.exports = {
     {
       name: 'smthome-backend',
       script: './app/index.js',
-      kill_timeout: 3000,
+      kill_timeout: 5000,
+      wait_ready: true,
       env: {
         PORT: 8001,
         KNXD_ADDR: '192.168.1.28',
