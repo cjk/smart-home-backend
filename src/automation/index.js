@@ -5,6 +5,7 @@ import K from 'kefir';
 import logger from 'debug';
 
 import env from './environment';
+import affectedEnvEntries from './events';
 import { assoc, filter, map, pipe } from 'ramda';
 
 const debug = logger('smt:automate');
@@ -27,10 +28,19 @@ function automation() {
       const { busEvent$, busState$ } = serverState.streams;
 
       K.combine([busEvent$], [busState$], (busEvent, busState) => {
-        debug(busEvent);
-        debug(busState);
-        eventLoop(busEvent);
-      }).log();
+        // debug(busEvent);
+        // debug(busState);
+        // eventLoop(busEvent);
+        const event = busEvent.toJS();
+        const state = busState.toJS();
+        return { event, state };
+      })
+        .scan((prev, next) => {
+          const { event } = next;
+          debug(`environment: \n ${JSON.stringify(environment)}`);
+          // map(entry => entry.on, affectedEnvEntries);
+        })
+        .log();
       debug('Automation started');
     },
   };
