@@ -6,10 +6,11 @@ import logger from 'debug';
 
 import env from './environment';
 import affectedEnvEntries from './events';
-import { assoc, filter, map, pipe } from 'ramda';
+import { assoc, filter, map, merge, pipe } from 'ramda';
 
 const debug = logger('smt:automate');
 
+// TODO: usefull?!
 const eventLoop = event => {
   pipe(
     filter(r => r.actSrc === '12/0/1'),
@@ -37,8 +38,12 @@ function automation() {
       })
         .scan((prev, next) => {
           const { event } = next;
-          debug(`environment: \n ${JSON.stringify(environment)}`);
-          // map(entry => entry.on, affectedEnvEntries);
+          debug(`environment: \n ${JSON.stringify(env)}`);
+          const envNext = map(
+            entry => entry.action(env, event.value),
+            affectedEnvEntries(event.dest)
+          );
+          debug(envNext);
         })
         .log();
       debug('Automation started');
