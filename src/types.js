@@ -3,8 +3,10 @@
 import type { Observable } from 'kefir';
 import type { KeyedCollection } from 'immutable';
 
-export type BusState = Observable<Object>;
-export type BusEvent = Observable<Object>;
+export type BusState$ = Observable<Object>;
+export type BusEvent$ = Observable<Object>;
+
+type AddressValue = number | number[];
 
 export type Address = {
   id: string,
@@ -15,7 +17,7 @@ export type Address = {
   func: ?string,
   control?: ?string,
   fbAddr?: string,
-  value?: ?number,
+  value?: ?AddressValue,
 };
 
 /* Minimal address with properties required e.g. for writing to the KNX-bus */
@@ -28,7 +30,7 @@ export type MinimalAddress = {
   func: ?string,
   control?: ?string,
   fbAddr?: string,
-  value: number | number[],
+  value: AddressValue,
 };
 
 export type AddressMap = { [id: string]: Address };
@@ -44,6 +46,15 @@ export type KnxConf = {
   addresses: AddressList,
   addressMap: void => KeyedCollection<string, Address>,
   readableAddr: Array<string>,
+};
+
+export type BusEvent = {
+  dest: string,
+  value: AddressValue,
+  src: string,
+  type: string,
+  action: string,
+  created: Date,
 };
 
 export type Config = {
@@ -122,9 +133,24 @@ export type Scenes = Array<Scene>;
 export type ServerState = {
   conf: Config,
   streams: {
-    busState$: BusState,
-    busEvent$: BusEvent,
+    busState$: BusState$,
+    busEvent$: BusEvent$,
   },
   client: Function,
   scenes: Scenes,
+};
+
+// Automate type, like environment and transforms
+export type Environment = {
+  dayTime: Object,
+  outside: Object,
+  rooms: Object,
+  doors: Object,
+  house: Object,
+};
+
+export type EnvTransform = {
+  name: string,
+  on: Array<string>,
+  action: (BusEvent, Environment) => Environment,
 };

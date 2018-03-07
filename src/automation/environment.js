@@ -1,10 +1,12 @@
+// @flow
+
 // Defines an environment-structure that is derived from sensor-data and the current bus-state
 
-// TODO: add flow declarations
+import type { Environment } from '../types';
 
-export default {
+const environment: Environment = {
   dayTime: {
-    outsideLight: 1000,
+    outsideLight: -1,
     itsDusk: false,
     itsDawn: false,
     itsDaylight: true,
@@ -16,17 +18,33 @@ export default {
   },
   rooms: {
     wz: {
-      actSrc: '0/0/0',
       temp: 21.5, // Room temperature
+      windowsOpen: 0,
       lastActivity: null, // Last time activity was detected
       hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10, // Someone in the room right now?
     },
     knd1: {
-      actSrc: '12/0/1',
       temp: 20,
+      windowsOpen: 0,
+      lastActivity: null,
+      hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10,
+    },
+    'cel-1': {
+      windowsOpen: 0,
+      lastActivity: null,
+      hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10,
+    },
+    'cel-2': {
+      windowsOpen: 0,
       lastActivity: null,
       hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10,
     },
   },
   doors: {}, // open and closed doors; TODO: need door-sensors for that (reed-contacts)
+  house: {
+    alarm: false,
+    empty: false,
+  },
 };
+
+export default environment;

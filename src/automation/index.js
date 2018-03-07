@@ -1,26 +1,14 @@
 // @flow
 
-import type { ServerState } from '../types';
+import type { HomeState, ServerState, BusEvent, Environment, EnvTransform } from '../types';
 import K from 'kefir';
 import logger from 'debug';
 
-import env from './environment';
-import affectedEnvEntries from './events';
-import { assoc, filter, map, merge, pipe } from 'ramda';
+import initialEnv from './environment';
+import affectedEnvEntries from './transforms';
+import * as R from 'ramda';
 
 const debug = logger('smt:automate');
-
-// TODO: usefull?!
-const eventLoop = event => {
-  pipe(
-    filter(r => r.actSrc === '12/0/1'),
-    map(room => {
-      const newR = assoc('lastActivity', Date.now(), room);
-      debug(newR);
-      debug(newR.hasActivity(newR.lastActivity));
-    })
-  )(env.rooms);
-};
 
 function automation() {
   return {
@@ -29,23 +17,27 @@ function automation() {
       const { busEvent$, busState$ } = serverState.streams;
 
       K.combine([busEvent$], [busState$], (busEvent, busState) => {
-        // debug(busEvent);
-        // debug(busState);
-        // eventLoop(busEvent);
-        const event = busEvent.toJS();
-        const state = busState.toJS();
-        return { event, state };
+        const event: BusEvent = busEvent.toJS();
+        const state: HomeState = busState.toJS();
+        return { event, state, env: initialEnv };
       })
         .scan((prev, next) => {
+          // Update environment from bus-state-events
           const { event } = next;
-          debug(`environment: \n ${JSON.stringify(env)}`);
-          const envNext = map(
-            entry => entry.action(env, event.value),
+          const env = R.merge(next.env, prev.env);
+
+          const transformEnvEntries = R.map((transform: EnvTransform): Environment =>
+            transform.action(event, env)
+          );
+          // TODO: R.reduce is not curried here - does this actually work for multiple environments?!
+          const updateEnvironment: Environment[] = R.reduce((acc, t) => R.merge(env, t), env);
+
+          const envNext = R.pipe(transformEnvEntries, updateEnvironment)(
             affectedEnvEntries(event.dest)
           );
-          debug(envNext);
+          return R.assoc('env', envNext, next);
         })
-        .log();
+        .onValue(v => debug(v.env));
       debug('Automation started');
     },
   };

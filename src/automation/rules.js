@@ -1,6 +1,10 @@
+// @flow
+
+// TODO: Dead code or still useful?!
+
 const daytimeDusk = () => {};
 const timeMidnight = () => {};
-const runTask = name => {
+const runTask = (name: string) => {
   console.log(`Running task <${name}>`);
 };
 

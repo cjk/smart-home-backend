@@ -4,11 +4,11 @@
    they occur */
 
 import logger from 'debug';
-import type { BusEvent } from '../../types';
+import type { BusEvent$ } from '../../types';
 
 const debug = logger('smt:busevents');
 
-function handleBusEvents(conn: any, busEvents: BusEvent) {
+function handleBusEvents(conn: any, busEvent$: BusEvent$) {
   /* Sends out bus-events to interested clients */
   const sendBusEvent = event => {
     debug('Sending out bus event.');
@@ -19,11 +19,11 @@ function handleBusEvents(conn: any, busEvents: BusEvent) {
     if (isSubscribed) {
       debug(`Some client subscribed to <${eventName}>`);
       response.accept();
-      busEvents.onValue(sendBusEvent);
+      busEvent$.onValue(sendBusEvent);
     } else {
       debug(`Some client unsubscribed to <${eventName}>`);
       //           response.reject();
-      busEvents.offValue(sendBusEvent);
+      busEvent$.offValue(sendBusEvent);
     }
   });
 }
