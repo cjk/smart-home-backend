@@ -13,7 +13,7 @@ const transforms: EnvTransform[] = [
   },
   {
     name: 'activityInWz',
-    on: ['12/0/1'],
+    on: ['13/1/0'],
     action: (event: BusEvent, env: Environment) =>
       event.value === 1 ? assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
   },
@@ -24,10 +24,22 @@ const transforms: EnvTransform[] = [
       assocPath(['rooms', 'cel-2', 'windowsOpen'], event.value, env),
   },
   {
-    name: 'testAlarm',
-    on: ['10/0/10'],
+    name: 'activityInHall1',
+    on: ['13/1/1'],
     action: (event: BusEvent, env: Environment) =>
-      assocPath(['house', 'alarm'], Boolean(event.value), env),
+      event.value === 1 ? assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
+  },
+  {
+    name: 'activityInHall2',
+    on: ['13/0/0'],
+    action: (event: BusEvent, env: Environment) =>
+      event.value === 1 ? assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
+  },
+  {
+    name: 'activityInHby',
+    on: ['13/2/0'],
+    action: (event: BusEvent, env: Environment) =>
+      event.value === 1 ? assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
   },
 ];
 
