@@ -25,7 +25,7 @@ const config: Config = {
   },
   /* Do not really access KNX-bus */
   commands: {
-    simulate: true,
+    simulate: false,
   },
   logging: {
     logBusStateOnEvent: false,
@@ -33,7 +33,7 @@ const config: Config = {
   },
   /* Enable / disable some modules / functionality */
   modules: {
-    addressRefresher: false,
+    addressRefresher: true,
   },
   knx: {
     addresses,
