@@ -10,6 +10,7 @@ import publish from './server';
 import setupCron from './cron';
 import setupScenes from './scenes';
 import startServices from './services';
+import automation from './automation';
 
 const debug = logger('smt:backend:main'),
   error = logger('error');
@@ -53,6 +54,8 @@ clientConnect$.observe({
 
     /* Init + start chronological rules engine, including syncing with cloud */
     setupCron(serverState);
+
+    automation().start(serverState);
 
     /* Setup and configure (websocket-/http-) server and pass event-emitters along
        for use in plugins et. al. */

@@ -9,7 +9,7 @@ import config from './config';
 import knxListener from './knx';
 import addressRefresher from './lib/auto-refresher';
 
-const debug = logger('smt:bus-state'),
+const debug = logger('smt:bus-events'),
   warn = logger('warn');
 
 /* Takes the current bus-state and an event, applies the changes the event
@@ -27,7 +27,7 @@ function updateFromEvent(currentState, event) {
   const currentTs = Date.now();
 
   /* DEBUGGING */
-  const message = `[bus-event-stream] Updating address ${addrId} (${
+  const message = `Updating address ${addrId} (${
     currentState.get(addrId).name
   })`;
 
