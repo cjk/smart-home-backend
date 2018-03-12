@@ -4,6 +4,8 @@
 
 import type { Environment } from '../types';
 
+const hasActivity = lastActTs => (Date.now() - lastActTs) / 1000 < 10;
+
 const environment: Environment = {
   dayTime: {
     outsideLight: -1,
@@ -20,39 +22,39 @@ const environment: Environment = {
     'hall-1': {
       temp: null, // Room temperature
       lastActivity: null, // Last time activity was detected
-      hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10, // Someone in the room right now?
+      hasActivity, // Someone in the room right now?
     },
     'hall-2': {
-      temp: null, // Room temperature
-      lastActivity: null, // Last time activity was detected
-      hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10,
+      temp: null,
+      lastActivity: null,
+      hasActivity,
     },
     wz: {
-      temp: 21.5, // Room temperature
+      temp: 21.5,
       windowsOpen: 0,
-      lastActivity: null, // Last time activity was detected
-      hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10,
+      lastActivity: null,
+      hasActivity,
     },
     knd1: {
       temp: 20,
       windowsOpen: 0,
       lastActivity: null,
-      hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10,
+      hasActivity,
     },
     'cel-1': {
       windowsOpen: 0,
       lastActivity: null,
-      hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10,
+      hasActivity,
     },
     'cel-2': {
       windowsOpen: 0,
       lastActivity: null,
-      hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10,
+      hasActivity,
     },
     hby: {
-      temp: null, // Room temperature
-      lastActivity: null, // Last time activity was detected
-      hasActivity: lastActTs => (Date.now() - lastActTs) / 1000 < 10, // Someone in the room right now?
+      temp: null,
+      lastActivity: null,
+      hasActivity,
     },
   },
   doors: {}, // open and closed doors; TODO: need door-sensors for that (reed-contacts)
