@@ -12,34 +12,34 @@ const transforms: EnvTransform[] = [
       assocPath(['dayTime', 'outsideLight'], event.value, env),
   },
   {
-    name: 'activityInWz',
-    on: ['13/1/0'],
-    action: (event: BusEvent, env: Environment) =>
-      event.value === 1 ? assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
-  },
-  {
     name: 'windowOpenCel2',
     on: ['10/0/10'],
     action: (event: BusEvent, env: Environment) =>
       assocPath(['rooms', 'cel-2', 'windowsOpen'], event.value, env),
   },
   {
+    name: 'activityInWz',
+    on: ['13/1/0'],
+    action: (event: BusEvent, env: Environment) =>
+      event.value === 1 ? assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
+  },
+  {
     name: 'activityInHall1',
     on: ['13/1/1'],
     action: (event: BusEvent, env: Environment) =>
-      event.value === 1 ? assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
+      event.value === 1 ? assocPath(['rooms', 'hall-1', 'lastActivity'], Date.now(), env) : env,
   },
   {
     name: 'activityInHall2',
     on: ['13/0/0'],
     action: (event: BusEvent, env: Environment) =>
-      event.value === 1 ? assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
+      event.value === 1 ? assocPath(['rooms', 'hall-2', 'lastActivity'], Date.now(), env) : env,
   },
   {
     name: 'activityInHby',
     on: ['13/2/0'],
     action: (event: BusEvent, env: Environment) =>
-      event.value === 1 ? assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
+      event.value === 1 ? assocPath(['rooms', 'hby', 'lastActivity'], Date.now(), env) : env,
   },
 ];
 

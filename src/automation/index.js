@@ -29,7 +29,6 @@ function automation() {
           const transformEnvEntries = R.map((transform: EnvTransform): Environment =>
             transform.action(event, env)
           );
-          // TODO: R.reduce is not curried here - does this actually work for multiple environments?!
           const updateEnvironment: Environment[] = R.reduce((acc, t) => R.merge(env, t), env);
 
           const envNext = R.pipe(transformEnvEntries, updateEnvironment)(
@@ -37,7 +36,7 @@ function automation() {
           );
           return R.assoc('env', envNext, next);
         })
-        .onValue(v => {}); // TODO: debug(v.env)
+        .onValue(v => debug(v.env)); // TODO: debug(v.env)
       debug('Automation started');
     },
   };
