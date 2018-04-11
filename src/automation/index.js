@@ -1,12 +1,13 @@
 // @flow
 
 import type { HomeState, ServerState, BusEvent, Environment, EnvTransform } from '../types';
+
+import * as R from 'ramda';
 import K from 'kefir';
 import logger from 'debug';
 
 import initialEnv from './environment';
 import affectedEnvEntries from './transforms';
-import * as R from 'ramda';
 
 const debug = logger('smt:automate');
 
@@ -16,11 +17,11 @@ function automation() {
       debug('Starting automation...');
       const { busEvent$, busState$ } = serverState.streams;
 
-      K.combine([busEvent$], [busState$], (busEvent, busState) => {
-        const event: BusEvent = busEvent.toJS();
-        const state: HomeState = busState.toJS();
-        return { event, state, env: initialEnv };
-      })
+      K.combine([busEvent$], [busState$], (event: BusEvent, state: HomeState) => ({
+        event,
+        state,
+        env: initialEnv,
+      }))
         .scan((prev, next) => {
           // Update environment from bus-state-events
           const { event } = next;

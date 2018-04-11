@@ -1,7 +1,6 @@
 // @flow
 
 import type { Observable } from 'kefir';
-import type { KeyedCollection } from 'immutable';
 
 export type BusState$ = Observable<Object>;
 export type BusEvent$ = Observable<Object>;
@@ -18,6 +17,8 @@ export type Address = {
   control?: ?string,
   fbAddr?: string,
   value?: ?AddressValue,
+  updatedAt?: number,
+  verifiedAt?: number,
 };
 
 /* Minimal address with properties required e.g. for writing to the KNX-bus */
@@ -31,6 +32,8 @@ export type MinimalAddress = {
   control?: ?string,
   fbAddr?: string,
   value: AddressValue,
+  updatedAt?: number,
+  verifiedAt?: number,
 };
 
 export type AddressMap = { [id: string]: Address };
@@ -43,9 +46,9 @@ export type KnxdOpts = {
 };
 
 export type KnxConf = {
-  addresses: AddressList,
-  addressMap: void => KeyedCollection<string, Address>,
-  readableAddr: Array<string>,
+  addressList: AddressList,
+  addressMap: AddressMap,
+  readableAddrMap: AddressMap,
 };
 
 export type BusEvent = {
@@ -54,7 +57,7 @@ export type BusEvent = {
   src: string,
   type: string,
   action: string,
-  created: Date,
+  created: number,
 };
 
 export type Config = {

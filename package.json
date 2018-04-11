@@ -37,7 +37,6 @@
     "gulp-preprocess": "latest",
     "gulp-sourcemaps": "^2.6.1",
     "gulp-watch": "^5.0.0",
-    "immutable": "^3.8.2",
     "kefir": "^3.8.2",
     "nodemon": "^1.17.1",
     "ramda": "^0.25.0",
