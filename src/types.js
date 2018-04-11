@@ -1,8 +1,6 @@
 // @flow
 
 import type { Observable } from 'kefir';
-import type { KeyedCollection } from 'immutable';
-
 export type BusState$ = Observable<Object>;
 export type BusEvent$ = Observable<Object>;
 
@@ -43,9 +41,9 @@ export type KnxdOpts = {
 };
 
 export type KnxConf = {
-  addresses: AddressList,
-  addressMap: void => KeyedCollection<string, Address>,
-  readableAddr: Array<string>,
+  addressList: AddressList,
+  addressMap: void => AddressMap,
+  readableAddrMap: AddressMap => AddressMap,
 };
 
 export type BusEvent = {

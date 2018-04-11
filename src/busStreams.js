@@ -4,7 +4,7 @@ import type { KnxConf } from './types';
 
 import logger from 'debug';
 import Kefir from 'kefir';
-import { List } from 'immutable';
+import * as R from 'ramda';
 import config from './config';
 import knxListener from './knx';
 import addressRefresher from './lib/auto-refresher';
