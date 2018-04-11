@@ -28,6 +28,12 @@ module.exports = {
     },
   ],
 
+  watch: ['app'],
+  ignore_watch: ['node_modules', 'src'],
+  watch_options: {
+    followSymlinks: false,
+  },
+
   /**
    * Deployment section
    * http://pm2.keymetrics.io/docs/usage/deployment/
