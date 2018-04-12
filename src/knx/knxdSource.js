@@ -5,39 +5,35 @@
  */
 
 import type { Emitter } from 'kefir';
-import type { AddressMap, KnxdOpts } from '../types';
+import type { AddressMap, KnxdOpts, BusEvent } from '../types';
 
+import * as R from 'ramda';
 import logger from 'debug';
 import knxd from 'eibd';
-import R from 'ramda';
 import config from '../config';
-import Event from './event';
 import { getTimestamp } from '../lib/debug';
 
 const debug = logger('smt:knx'),
   error = logger('error');
 
-/* Identify name of the event's associated address to make debug-output more
-   readable */
-const addresses: AddressMap = config.knx.addressMap();
+/* Identify name of the event's associated address to make debug-output more readable */
+const addrMap: AddressMap = config.knx.addressMap;
 
-const addressFor = addrId => addresses.get(addrId).name;
+const addrNameFor = addrId => R.path([addrId, 'name'], addrMap);
 
-function createEvent(action, src, dest, type, val) {
-  return new Event({
-    created: Date.now(),
-    action,
-    src,
-    dest,
-    type,
-    value: val,
-  });
-}
+const createEvent = (action, src, dest, type, value): BusEvent => ({
+  created: Date.now(),
+  action,
+  src,
+  dest,
+  type,
+  value,
+});
 
-function _eventHandler(emitter, eventType, src, dest, type, val) {
+const _eventHandler = (emitter, eventType, src, dest, type, val) => {
   try {
     debug(
-      `[${getTimestamp()}] <${eventType}> from ${src} to ${dest} (${addressFor(
+      `[${getTimestamp()}] <${eventType}> from ${src} to ${dest} (${addrNameFor(
         dest
       )}): ${val} [${type}]`
     );
@@ -54,7 +50,7 @@ function _eventHandler(emitter, eventType, src, dest, type, val) {
     return;
   }
   emitter.emit(createEvent(eventType, src, dest, type, val));
-}
+};
 
 const eventHandler = R.curry(_eventHandler);
 

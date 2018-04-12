@@ -1,10 +1,10 @@
-/* @flow */
+// @flow
 
-import type { KnxConf } from './types';
+import type { AddressMap, BusEvent, KnxConf } from './types';
 
+import * as R from 'ramda';
 import logger from 'debug';
 import Kefir from 'kefir';
-import * as R from 'ramda';
 import config from './config';
 import knxListener from './knx';
 import addressRefresher from './lib/auto-refresher';
@@ -14,57 +14,50 @@ const debug = logger('smt:bus-events'),
 
 /* Takes the current bus-state and an event, applies the changes the event
    implies and returns the new bus-state */
-function updateFromEvent(currentState, event) {
+const updateFromEvent = (currentState: AddressMap, event: BusEvent): AddressMap => {
   const addrId = event.dest;
 
-  if (!currentState.has(addrId)) {
+  if (!R.has(addrId, currentState)) {
     warn(`No matching address found for key ${addrId} - ignoring!`);
     return currentState;
   }
 
-  const lastValue = currentState.get(addrId).value;
-  const newValue = event.value;
+  const lastValue = R.path([addrId, 'value'], currentState);
+  const { dest, value } = event;
   const currentTs = Date.now();
 
   /* DEBUGGING */
-  const message = `Updating address ${addrId} (${
-    currentState.get(addrId).name
-  })`;
+  const message = `Updating address ${addrId} (${R.path([addrId, 'name'], currentState)})`;
 
-  if (newValue === lastValue) {
-    debug(
-      `${message}: no update necessary, keeping last value: <${lastValue}>`
-    );
-    return currentState.update(event.dest, addr =>
-      addr.set('verifiedAt', currentTs)
-    );
+  if (value === lastValue) {
+    debug(`${message}: no update necessary, keeping last value: <${lastValue}>`);
+    return R.assocPath([dest, 'verifiedAt'], currentTs, currentState);
   }
 
-  debug(`${message}: changed value from <${lastValue}> to <${event.value}>`);
+  debug(`${message}: changed value from <${lastValue}> to <${value.toString()}>`);
 
-  return currentState.update(event.dest, addr =>
-    addr
-      .set('value', event.value)
-      .set('verifiedAt', currentTs)
-      .set('updatedAt', currentTs)
+  return R.assoc(
+    dest,
+    R.merge(R.prop(dest, currentState), { value, verifiedAt: currentTs, updatedAt: currentTs }),
+    currentState
   );
-}
+};
 
 export default function createBusStreams() {
-  const { addressMap, readableAddr } = (config.knx: KnxConf);
+  const { readableAddrMap } = (config.knx: KnxConf);
 
   /* From all groupaddresses, returns only those with a readable-flag set (see
      config.knx.readableAddr) */
-  function initialStateWithReadableAddr(addresses) {
-    const addressFilter = new List(readableAddr);
-    return addresses.filter((v, k) => addressFilter.contains(k));
-  }
+  // function initialStateWithReadableAddr(addresses) {
+  //   const addressFilter = new List(readableAddr);
+  //   return addresses.filter((v, k) => addressFilter.contains(k));
+  // }
 
-  const initialstate = initialStateWithReadableAddr(addressMap());
+  const initialstate = readableAddrMap;
   /* DEBUGGING */
   debug(JSON.stringify(initialstate));
 
-  const mutatingEvents = new List(['write', 'response']);
+  const mutatingEvents = ['write', 'response'];
 
   /* Create BUS-state */
   /* 1. Create stream to capture *all* KNX-bus events */
@@ -72,9 +65,7 @@ export default function createBusStreams() {
 
   /* 2. Create another (sub-) stream only for events that carry a value, i.e.
      mutate our bus-state */
-  const mutatingBusEvents = busEvent$.filter(e =>
-    mutatingEvents.contains(e.action)
-  );
+  const mutatingBusEvents = busEvent$.filter(e => R.contains(e.action, mutatingEvents));
 
   /* 3. Create a modified (property-) stream derived from busState by applying an
      event-delta when events come in from the bus-events-stream.

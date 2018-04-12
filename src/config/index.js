@@ -1,13 +1,13 @@
 /* @flow */
 /* eslint max-len: 0 */
 
-import type { Address, Config } from '../types';
+import type { Address, AddressMap, AddressList, Config } from '../types';
 
 import * as R from 'ramda';
 import createAddress from '../knx/address';
 import addressList from './group-address-list';
 
-const readableAddrList = [
+const readableAddrList: Array<string> = [
   '1/1/0' /* UG Hobby1 Präsenzmelder Sperre f. Schaltung Licht Hobby-Keller-1+2 */,
   '1/1/5' /* UG Keller-1-2 + Hobby1 via Tasterrückmeldung */,
   '1/1/6' /* UG Keller-2 Deckenleuchte via Schaltaktor 1.1.2 Ausg. 14  */,
@@ -52,7 +52,7 @@ const readableAddrList = [
   '11/2/0' /* OG Kind-2 / Daniel Steckdose Ost 1/5 via Schaltaktor 1.1.45 Ausg. 7 */,
 ];
 
-const toAddressMap = addrList =>
+const toAddressMap = (addrList: AddressList): AddressMap =>
   R.reduce(
     (acc, addr: Address): { [string]: Address } => R.assoc(addr.id, createAddress(addr), acc),
     {},
@@ -60,6 +60,12 @@ const toAddressMap = addrList =>
   );
 
 const addressMap = toAddressMap(addressList);
+
+const readableAddrMap: AddressMap = R.reduce(
+  (acc, knxId: string): { [string]: Address } => R.assoc(knxId, addressMap[knxId], acc),
+  {},
+  readableAddrList
+);
 
 const config: Config = {
   server: {
@@ -92,12 +98,7 @@ const config: Config = {
   knx: {
     addressList,
     addressMap,
-    readableAddrMap: () =>
-      R.reduce(
-        (acc, knxId: string): { [string]: Address } => R.assoc(knxId, addressMap[knxId], acc),
-        {},
-        readableAddrList
-      ),
+    readableAddrMap,
   },
 };
 
