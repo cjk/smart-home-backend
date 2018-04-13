@@ -81,6 +81,7 @@ export type Config = {
     addressRefresher: boolean,
   },
   knx: KnxConf,
+  version: string,
 };
 
 export type Callback = (err: ?Error, res: Object) => void;

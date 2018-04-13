@@ -15,6 +15,8 @@ import automation from './automation';
 const debug = logger('smt:backend:main'),
   error = logger('error');
 
+const { version } = config;
+
 // Allow for clean restarts (e.g. when using pm2 or other process managers)
 const setupCleanupHandler = client => {
   process.on('SIGINT', () => {
@@ -61,7 +63,7 @@ clientConnect$.observe({
        for use in plugins et. al. */
     publish(serverState);
 
-    debug('Server initialized and up running');
+    debug(`Server [v${version}] initialized and up running`);
 
     /* Start the stream by logging from it */
     if (config.knxd.isAvailable) {

@@ -100,6 +100,7 @@ const config: Config = {
     addressMap,
     readableAddrMap,
   },
+  version: '1.1-20180413',
 };
 
 export default config;
