@@ -11,7 +11,7 @@ const debug = logger('smt:refresher');
 
 const runDelaySeconds = 60; // Startup delay
 const maxRefreshLimit = 4;
-const maxAddressAge = 50; // Maxium age in minutes before an address gets refreshed
+const maxAddressAge = 40; // Maxium age in minutes before an address gets refreshed
 const sortByVerificationAge = sortBy(prop('verifiedAt'));
 
 const reduceAddressesToIds = addrMap => map(prop(['id']), addrMap);
