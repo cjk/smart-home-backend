@@ -1,15 +1,16 @@
-import { Record } from 'immutable';
+// @flow
 
-export default Record({
-  id: null,
-  name: 'unknown',
-  value: null,
-  story: null,
-  room: null,
-  type: null,
-  func: null,
+import type { Address } from '../types';
+
+const additionalAddrProps = {
+  value: undefined,
   fbAddr: null,
-  control: null,
   updatedAt: 1451606400000 /* choose guaranteed expired default value so sorting later becomes predictable */,
   verifiedAt: 1451606400000,
-});
+};
+
+function createAddress(addr: Address) {
+  return { ...additionalAddrProps, ...addr };
+}
+
+export default createAddress;
