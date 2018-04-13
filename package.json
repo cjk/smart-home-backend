@@ -7,15 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/cjk/smart-home-backend.git"
   },
-  "keywords": [
-    "node",
-    "knx",
-    "real-time",
-    "websockets",
-    "pubsub",
-    "automation",
-    "realtime"
-  ],
+  "keywords": ["node", "knx", "real-time", "websockets", "pubsub", "automation", "realtime"],
   "author": "@cjk",
   "license": "GPL-2.0",
   "homepage": "https://github.com/cjk/smart-home-backend#readme",
@@ -31,13 +23,6 @@
     "del": "^3.0.0",
     "dotenv": "^5.0.1",
     "eibd": "^0.3.9",
-    "gulp": "latest",
-    "gulp-babel": "^7.0.1",
-    "gulp-changed": "^3.1.1",
-    "gulp-eslint": "^4.0.2",
-    "gulp-preprocess": "latest",
-    "gulp-sourcemaps": "^2.6.1",
-    "gulp-watch": "^5.0.0",
     "kefir": "^3.8.2",
     "nodemon": "^1.17.1",
     "ramda": "^0.25.0",
@@ -56,14 +41,13 @@
     "piping": "latest"
   },
   "scripts": {
-    "dev": "env DEBUG='smt:*,error,debug' PORT=8001 NODE_ENV=development ./node_modules/.bin/nodemon ./app/index.js",
+    "dev":
+      "env DEBUG='smt:*,error,debug' PORT=8001 NODE_ENV=development ./node_modules/.bin/nodemon ./app/index.js",
     "prod": "env DEBUG='error' PORT=8001 NODE_ENV=production node ./app/index.js",
     "start": "env PORT=8001 ./app/index.js"
   },
   "nodemonConfig": {
-    "ignore": [
-      "src/*"
-    ],
+    "ignore": ["src/*"],
     "delay": "2000"
   }
 }
