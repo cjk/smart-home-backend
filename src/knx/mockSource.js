@@ -9,7 +9,7 @@ import type { KnxdOpts } from '../types';
 
 import logger from 'debug';
 import Kefir from 'kefir';
-import Event from './event';
+import createEvent from './event';
 
 const debug = logger('smt:backend');
 
@@ -17,12 +17,7 @@ const getTimestamp = () => new Date().toISOString().slice(0, 19);
 
 const stream = Kefir.later(
   1000,
-  new Event({
-    created: Date.now(),
-    action: 'read',
-    src: '99.99.99',
-    dest: '0.0.7',
-  })
+  createEvent('read', '99.99.99', '0.0.7', 'switch', Math.round(Math.random()))
 );
 
 export default function mockSource(opts: KnxdOpts) {

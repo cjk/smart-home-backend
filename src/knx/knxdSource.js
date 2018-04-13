@@ -5,12 +5,13 @@
  */
 
 import type { Emitter } from 'kefir';
-import type { AddressMap, KnxdOpts, BusEvent } from '../types';
+import type { AddressMap, KnxdOpts } from '../types';
 
 import * as R from 'ramda';
 import logger from 'debug';
 import knxd from 'eibd';
 import config from '../config';
+import createEvent from './event';
 import { getTimestamp } from '../lib/debug';
 
 const debug = logger('smt:knx'),
@@ -20,15 +21,6 @@ const debug = logger('smt:knx'),
 const addrMap: AddressMap = config.knx.addressMap;
 
 const addrNameFor = addrId => R.path([addrId, 'name'], addrMap);
-
-const createEvent = (action, src, dest, type, value): BusEvent => ({
-  created: Date.now(),
-  action,
-  src,
-  dest,
-  type,
-  value,
-});
 
 const _eventHandler = (emitter, eventType, src, dest, type, val) => {
   try {

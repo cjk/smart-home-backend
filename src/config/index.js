@@ -42,6 +42,7 @@ const readableAddrList: Array<string> = [
   '4/2/0' /* Rollladen EG zentral lang via Schaltaktor 1.2.24 Taste 3 + 4 */,
   '4/2/1' /* Rollladen EG zentral kurz via Schaltaktor 1.2.24 Taste 3 + 4 */,
   '6/0/0' /* EG Außenbereich Westwand / Garten 1.1.41 Lichtsensor 107 - resultierender Istwert senden */,
+  '6/0/1' /* UG Keller-1 (Waschraum) / Keller-1 1.1.48 Lichtsensor 107 - resultierender Istwert senden */,
   '8/0/0' /* Zeit wohnen senden - sendet Zeitwert an Taster */,
   '9/0/1' /* EG Wohnzimmer/Esszimmer/Küche Rückmeldeobjekt für Szene "Abendessen" via Taster 1.1.24 Taste 7 (Rückmeldeobjekt Taste 7, Objekt A) */,
   '9/0/3' /* EG Küche Decke Nord+Ost Rückmeldeobjekt via Taster 1.1.24 Taste 5 */,
@@ -100,7 +101,7 @@ const config: Config = {
     addressMap,
     readableAddrMap,
   },
-  version: '1.1-20180413',
+  version: '1.1.2-20180413',
 };
 
 export default config;
