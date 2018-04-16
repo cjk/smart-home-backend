@@ -4,24 +4,13 @@
    event-streams for each running task. */
 import type { Crontab } from '../types';
 
-import logger from 'debug';
 import K from 'kefir';
-import {
-  assoc,
-  tap,
-  isEmpty,
-  filter,
-  flatten,
-  pipe,
-  pickAll,
-  merge,
-  map,
-  reduce,
-} from 'ramda';
+import { assoc, tap, isEmpty, filter, flatten, pipe, pickAll, merge, map, reduce } from 'ramda';
 import { scheduled, scheduledJobIds } from './util';
 import { runTask } from './taskProcessor';
+import { logger } from '../lib/debug';
 
-const debug = logger('smt:dispatcher');
+const log = logger('backend:dispatcher');
 
 /* Given a crontab returns a stream of dispatched tasks */
 export default function dispatch(crontab: Crontab) {
@@ -35,22 +24,15 @@ export default function dispatch(crontab: Crontab) {
     );
 
   /* DEBUG */
-  //   debug(`Scheduled job-list: ${JSON.stringify(scheduledJobIds(crontab))}`);
+  //   log.debug(`Scheduled job-list: ${JSON.stringify(scheduledJobIds(crontab))}`);
 
   const taskStartProps = { status: 'started', startedAt: Date.now() };
   const scheduledTasks = pipe(
     filter(scheduled),
     reduce((acc, j) => acc.concat(pickAll(['jobId', 'tasks'], j)), []),
-    map(j =>
-      map(t => assoc('jobId', j.jobId, merge(t, taskStartProps)), j.tasks)
-    ),
+    map(j => map(t => assoc('jobId', j.jobId, merge(t, taskStartProps)), j.tasks)),
     flatten,
-    tap(
-      lst =>
-        !isEmpty(lst)
-          ? debug(`dispatching tasks: ${JSON.stringify(lst)}`)
-          : false
-    )
+    tap(lst => (!isEmpty(lst) ? log.debug(`dispatching tasks: ${JSON.stringify(lst)}`) : false))
   );
 
   return createAddrWriteStream(scheduledTasks(crontab));

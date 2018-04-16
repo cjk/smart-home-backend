@@ -9,15 +9,9 @@
  * - Monthly tasks
  * - Dynamic tasks (created at runtime, like for ad-hoc actions)
  */
-import logger from 'debug';
 import type { TickState, CronJob, Crontab, Task, TaskEvent } from '../types';
 
-import {
-  differenceInHours,
-  differenceInSeconds,
-  format,
-  parse,
-} from 'date-fns';
+import { differenceInHours, differenceInSeconds, format, parse } from 'date-fns';
 import {
   __,
   assoc,
@@ -46,8 +40,9 @@ import {
   withId,
 } from './util';
 
-const debug = logger('smt:cron'),
-  error = logger('error');
+import { logger } from '../lib/debug';
+
+const log = logger('backend:cron');
 
 const fixedTimeIsNow = (j: CronJob) => {
   const now = new Date();
@@ -65,9 +60,9 @@ const fixedTimeIsNow = (j: CronJob) => {
   const targetTs = parse(format(now, `YYYY-MM-DDT${j.at}`));
   const secondsToStart = differenceInSeconds(targetTs, now);
 
-  //   debug(`Job start-time delta for job <${j.jobId}> with TS <${targetTs}> is ${secondsToStart} seconds`);
+  //   log.debug(`Job start-time delta for job <${j.jobId}> with TS <${targetTs}> is ${secondsToStart} seconds`);
   if (secondsToStart > -2 && secondsToStart <= 60 && secondsToStart % 5 === 0)
-    debug(`Daily job #${j.jobId} will run in ${secondsToStart} seconds.`);
+    log.debug(`Daily job #${j.jobId} will run in ${secondsToStart} seconds.`);
 
   return secondsToStart >= -2 && secondsToStart <= 1;
 };
@@ -124,13 +119,12 @@ function _updateFromTaskEvents(taskEvents: Task, crontab: Crontab) {
 }
 const updateFromTaskEvents = curry(_updateFromTaskEvents);
 
-const schedule = (crontab: Crontab) =>
-  map(j => assoc('scheduled', jobShouldRun(j), j))(crontab);
+const schedule = (crontab: Crontab) => map(j => assoc('scheduled', jobShouldRun(j), j))(crontab);
 
 /* TICK-function called on each cron-timer iteration.
  * Brings over job-state from last tick. */
 export default function scheduleTick(prev: TickState, cur: TickState) {
-  const { crontab, state, taskEvents } = cur;
+  const { crontab, _state, taskEvents } = cur;
 
   const newCrontab = pipe(
     syncWithPrevJobs(prev.crontab),

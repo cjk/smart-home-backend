@@ -3,31 +3,29 @@ import type { ServerState } from './types';
 
 import config from './config';
 import createBusStreams from './busStreams';
-import { addrMapToConsole } from './lib/debug';
+import { addrMapToConsole, logger } from './lib/debug';
 import getClient from './client';
-import logger from 'debug';
 import publish from './server';
 import setupCron from './cron';
 import setupScenes from './scenes';
 import startServices from './services';
 import automation from './automation';
 
-const debug = logger('smt:backend:main'),
-  error = logger('error');
+const log = logger('backend:main');
 
 const { version } = config;
 
 // Allow for clean restarts (e.g. when using pm2 or other process managers)
 const setupCleanupHandler = client => {
   process.on('SIGINT', () => {
-    debug('Received SIGINT. Cleaning up and exiting...');
+    log.debug('Received SIGINT. Cleaning up and exiting...');
     client.close();
     process.exit();
   });
 };
 
 /* PENDING / DEBUGGING: Enable better debugging until we're stable here */
-process.on('unhandledRejection', r => error(r));
+process.on('unhandledRejection', r => log.error(r));
 const clientConnect$ = getClient(config);
 
 const { busEvent$, busState$ } = createBusStreams();
@@ -63,7 +61,7 @@ clientConnect$.observe({
        for use in plugins et. al. */
     publish(serverState);
 
-    debug(`Server [v${version}] initialized and up running`);
+    log.debug(`Server [v${version}] initialized and up running`);
 
     /* Start the stream by logging from it */
     if (config.knxd.isAvailable) {
@@ -75,7 +73,7 @@ clientConnect$.observe({
     error(error);
   },
   end() {
-    debug('deepstream-server connection established');
+    log.debug('deepstream-server connection established');
     process.send('ready');
   },
 });

@@ -4,7 +4,7 @@
 
 // const updateTimes = emitter => {
 //   const ts = Date.now();
-//   debug(ts);
+//   log.debug(ts);
 //   emitter.emit(ts);
 // };
 
@@ -13,12 +13,12 @@
 
 // timerTick$.observe({
 //   value(value) {
-//     debug('value:', value);
+//     log.debug('value:', value);
 //   },
 //   error(error) {
-//     debug('error:', error);
+//     log.debug('error:', error);
 //   },
 //   end() {
-//     debug('end');
+//     log.debug('end');
 //   },
 // });

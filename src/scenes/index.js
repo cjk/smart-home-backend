@@ -1,17 +1,17 @@
 // @flow
 
-import logger from 'debug';
-import loadScenes from './scene-definitions';
-import syncToCloud from './syncToCloud';
-
 import type { Scenes } from '../types';
 
-const debug = logger('smt:scenes');
+import loadScenes from './scene-definitions';
+import syncToCloud from './syncToCloud';
+import { logger } from '../lib/debug';
+
+const log = logger('backend:scenes');
 
 /* Load and transform initial scenes entries */
 function setupScenes(client: Function): Scenes {
   const initialScenes = loadScenes();
-  debug(`[Scenes] Loaded scenes with ${initialScenes.length} entries`);
+  log.debug(`[Scenes] Loaded scenes with ${initialScenes.length} entries`);
 
   syncToCloud(client, initialScenes);
   return initialScenes;

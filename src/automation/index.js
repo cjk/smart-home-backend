@@ -4,17 +4,17 @@ import type { HomeState, ServerState, BusEvent, Environment, EnvTransform } from
 
 import * as R from 'ramda';
 import K from 'kefir';
-import logger from 'debug';
 
 import initialEnv from './environment';
 import affectedEnvEntries from './transforms';
+import { logger } from '../lib/debug';
 
-const debug = logger('smt:automate');
+const log = logger('backend:automate');
 
 function automation() {
   return {
     start: (serverState: ServerState) => {
-      debug('Starting automation...');
+      log.debug('Starting automation...');
       const { busEvent$, busState$ } = serverState.streams;
 
       K.combine([busEvent$], [busState$], (event: BusEvent, state: HomeState) => ({
@@ -37,8 +37,8 @@ function automation() {
           );
           return R.assoc('env', envNext, next);
         })
-        .onValue(v => debug(v.env)); // TODO: debug(v.env)
-      debug('Automation started');
+        .onValue(v => log.debug(v.env)); // TODO: debug(v.env)
+      log.debug('Automation started');
     },
   };
 }

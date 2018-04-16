@@ -8,14 +8,12 @@ import type { Emitter } from 'kefir';
 import type { AddressMap, KnxdOpts } from '../types';
 
 import * as R from 'ramda';
-import logger from 'debug';
 import knxd from 'eibd';
 import config from '../config';
 import createEvent from './event';
-import { getTimestamp } from '../lib/debug';
+import { getTimestamp, logger } from '../lib/debug';
 
-const debug = logger('smt:knx'),
-  error = logger('error');
+const log = logger('backend:knx');
 
 /* Identify name of the event's associated address to make debug-output more readable */
 const addrMap: AddressMap = config.knx.addressMap;
@@ -24,18 +22,18 @@ const addrNameFor = addrId => R.path([addrId, 'name'], addrMap);
 
 const _eventHandler = (emitter, eventType, src, dest, type, val) => {
   try {
-    debug(
+    log.debug(
       `[${getTimestamp()}] <${eventType}> from ${src} to ${dest} (${addrNameFor(
         dest
       )}): ${val} [${type}]`
     );
   } catch (e) {
     if (e instanceof TypeError) {
-      error(
+      log.error(
         `WARNING: Unknown or invalid knx-address <${dest}> with value <${val}>\n- consider updating your address-list.`
       );
     } else {
-      error(
+      log.error(
         `ERROR: Unexpected exception on trying to parse knx-event of type <${type}> from source <${src}> for destination <${dest}>`
       );
     }
@@ -65,7 +63,7 @@ function listener(emitter) {
     parser.on('read', readHandler);
     // DEBUGGING
     // parser.on('telegram', (eType, src, dest, val) => {
-    //   debug(`--> ${eType} / ${src}:${dest} - <${JSON.stringify(val)}>`);
+    //   log.debug(`--> ${eType} / ${src}:${dest} - <${JSON.stringify(val)}>`);
     // });
   };
 }
@@ -80,7 +78,7 @@ function groupSocketListen(opts, callback) {
 
   conn.socketRemote(opts, err => {
     if (err) {
-      error('ERROR connecting to remote KNXd: ', err);
+      log.error('ERROR connecting to remote KNXd: ', err);
       return callback(err);
     }
 

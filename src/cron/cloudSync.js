@@ -1,12 +1,12 @@
 /* @flow */
 
 import type { CronJob, Crontab } from '../types';
-import logger from 'debug';
 
 import K from 'kefir';
 import loadCrontab from './crontab';
 // import { debugPrettyCrontab } from './util';
 import { append, join, map, pluck, prop, propEq, reject } from 'ramda';
+import { logger } from '../lib/debug';
 
 /* Flowtype definitions */
 type NewJob = {
@@ -24,11 +24,11 @@ type CrontabChanges = {
   crontab: Crontab,
 };
 
-const debug = logger('smt:cronCloudSync');
+const log = logger('backend:cronCloudSync');
 
 /* Load and transform initial crontab entries */
 const initialCrontab = loadCrontab();
-debug(`Loaded crontab with ${initialCrontab.length} entries`);
+log.debug(`Loaded crontab with ${initialCrontab.length} entries`);
 
 function syncCrontabWithCloud(client: Function) {
   const cronjobLst = client.record.getList('smartHome/cronjobs');
@@ -37,7 +37,7 @@ function syncCrontabWithCloud(client: Function) {
   const addLstAddHndl = () =>
     K.stream(emitter => {
       cronjobLst.on('entry-added', jobId => {
-        debug(`ADD of new cronjob with jobId <${jobId}> detected`);
+        log.debug(`ADD of new cronjob with jobId <${jobId}> detected`);
         const newJobRec = client.record.getRecord(jobId);
         newJobRec.whenReady(record => emitter.emit({ added: record.get() }));
       });
@@ -47,20 +47,20 @@ function syncCrontabWithCloud(client: Function) {
   const addLstRemoveHndl = () =>
     K.stream(emitter => {
       cronjobLst.on('entry-removed', jobId => {
-        debug(`REMOVE of new cronjob with jobId <${jobId}> detected`);
+        log.debug(`REMOVE of new cronjob with jobId <${jobId}> detected`);
         emitter.emit({ removed: jobId });
       });
     });
 
   const syncToCloud = lst => {
-    debug('Now syncing local crontab to cloud!');
+    log.debug('Now syncing local crontab to cloud!');
     map(j => {
       const newJobRecord = client.record.getRecord(j.jobId);
       newJobRecord.whenReady(record => {
         record.set(j);
         lst.addEntry(j.jobId);
         // DEBUG
-        // debug(`Record set to ${JSON.stringify(j)} `);
+        // log.debug(`Record set to ${JSON.stringify(j)} `);
       });
       return j;
     })(initialCrontab);
@@ -74,22 +74,19 @@ function syncCrontabWithCloud(client: Function) {
   }).flatMap(
     lst =>
       /* Handle added / remove job-list entries */
-      K.merge([addLstAddHndl(), addLstRemoveHndl()]).scan(
-        (prev: Crontab, cur: CrontabChanges) => {
-          const jobAdded = prop('added', cur);
-          const jobIdRemoved = prop('removed', cur);
-          if (jobAdded) {
-            //           debug(`Adding job to crontab: ${JSON.stringify(jobAdded)}`);
-            return append(jobAdded, prev);
-          }
-          if (jobIdRemoved) {
-            //           debug(`Removing job from crontab: ${JSON.stringify(jobIdRemoved)}`);
-            return reject(j => propEq('jobId', jobIdRemoved, j), prev);
-          }
-          return prev;
-        },
-        []
-      )
+      K.merge([addLstAddHndl(), addLstRemoveHndl()]).scan((prev: Crontab, cur: CrontabChanges) => {
+        const jobAdded = prop('added', cur);
+        const jobIdRemoved = prop('removed', cur);
+        if (jobAdded) {
+          //           log.debug(`Adding job to crontab: ${JSON.stringify(jobAdded)}`);
+          return append(jobAdded, prev);
+        }
+        if (jobIdRemoved) {
+          //           log.debug(`Removing job from crontab: ${JSON.stringify(jobIdRemoved)}`);
+          return reject(j => propEq('jobId', jobIdRemoved, j), prev);
+        }
+        return prev;
+      }, [])
     //       .spy('crontab')
   );
 
@@ -99,7 +96,7 @@ function syncCrontabWithCloud(client: Function) {
   //   newJobRecord.whenReady(record => {
   //     record.set({ jobId: 'fake/111', type: 'tester' });
   //     cronjobLst.addEntry('fake/111');
-  //     debug(
+  //     log.debug(
   //       `FAKE-Record set to ${JSON.stringify(newJobRecord.get())} `
   //     );
   //   });
@@ -109,25 +106,25 @@ function syncCrontabWithCloud(client: Function) {
   //   newJobRecord.whenReady(record => {
   //     record.set({ jobId: 'fake/222', type: 'tester' });
   //     cronjobLst.addEntry('fake/222');
-  //     debug(
+  //     log.debug(
   //       `FAKE-Record set to ${JSON.stringify(newJobRecord.get())} `
   //     );
   //   });
   // }, 3000);
   // setTimeout(() => {
   //   cronjobLst.removeEntry('fake/111');
-  //   debug('FAKE-Record removed from list');
+  //   log.debug('FAKE-Record removed from list');
   // }, 5500);
 
   return cron$;
 }
 
 function pushJobToCloud(client: Function, jobs: Array<CronJob>) {
-  debug(`Syncing back job <${join(', ', pluck('name', jobs))}> to cloud.`);
+  log.debug(`Syncing back job <${join(', ', pluck('name', jobs))}> to cloud.`);
   map(
     j =>
       client.record.setData(j.jobId, j, err =>
-        debug(`Failed to update record ${j.name}: ${err}`)
+        log.debug(`Failed to update record ${j.name}: ${err}`)
       ),
     jobs
   );

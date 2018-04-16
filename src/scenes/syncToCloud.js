@@ -1,16 +1,16 @@
 // @flow
 import type { Scenes } from '../types';
 
-import logger from 'debug';
 import { map } from 'ramda';
+import { logger } from '../lib/debug';
 
-const debug = logger('smt:scenes');
+const log = logger('backend:scenes');
 
 function syncToCloud(client: Function, scenes: Scenes) {
   const sceneLst = client.record.getList('smartHome/scenes');
   sceneLst.setEntries([]);
 
-  debug('Now syncing local scenes to cloud!');
+  log.debug('Now syncing local scenes to cloud!');
   map(scene => {
     const newSceneRecord = client.record.getRecord(scene.id);
     newSceneRecord.whenReady(record => {

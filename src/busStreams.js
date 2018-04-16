@@ -3,14 +3,13 @@
 import type { AddressMap, BusEvent, KnxConf } from './types';
 
 import * as R from 'ramda';
-import logger from 'debug';
 import Kefir from 'kefir';
 import config from './config';
 import knxListener from './knx';
 import addressRefresher from './lib/auto-refresher';
+import { logger } from './lib/debug';
 
-const debug = logger('smt:bus-events'),
-  warn = logger('warn');
+const log = logger('backend:bus-events');
 
 /* Takes the current bus-state and an event, applies the changes the event
    implies and returns the new bus-state */
@@ -18,7 +17,7 @@ const updateFromEvent = (currentState: AddressMap, event: BusEvent): AddressMap 
   const addrId = event.dest;
 
   if (!R.has(addrId, currentState)) {
-    warn(`No matching address found for key ${addrId} - ignoring!`);
+    log.error(`No matching address found for key ${addrId} - ignoring!`);
     return currentState;
   }
 
@@ -30,11 +29,11 @@ const updateFromEvent = (currentState: AddressMap, event: BusEvent): AddressMap 
   const message = `Updating address ${addrId} (${R.path([addrId, 'name'], currentState)})`;
 
   if (value === lastValue) {
-    debug(`${message}: no update necessary, keeping last value: <${lastValue}>`);
+    log.debug(`${message}: no update necessary, keeping last value: <${lastValue}>`);
     return R.assocPath([dest, 'verifiedAt'], currentTs, currentState);
   }
 
-  debug(`${message}: changed value from <${lastValue}> to <${value.toString()}>`);
+  log.debug(`${message}: changed value from <${lastValue}> to <${value.toString()}>`);
 
   return R.assoc(
     dest,
@@ -55,7 +54,7 @@ export default function createBusStreams() {
 
   const initialstate = readableAddrMap;
   /* DEBUGGING */
-  debug(JSON.stringify(initialstate));
+  log.debug(JSON.stringify(initialstate));
 
   const mutatingEvents = ['write', 'response'];
 

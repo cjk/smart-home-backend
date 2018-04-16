@@ -1,17 +1,16 @@
 // @flow
 import type { MinimalAddress, Crontab, Task, Callback } from '../types';
 
-import logger from 'debug';
 import K from 'kefir';
 import EventEmitter from 'events';
 import dispatch from './taskDispatcher';
 import { assoc, compose, curry, of } from 'ramda';
+import { logger } from '../lib/debug';
 /* KNX-bus related */
 import { writeGroupAddr } from '../knx/performBusAction';
 import { createAddress } from '../knx/knx-lib';
 
-const debug = logger('smt:cron-runner'),
-  error = logger('error');
+const log = logger('backend:cron-runner');
 
 const eventEmitter = new EventEmitter();
 
@@ -25,7 +24,7 @@ function createTaskEventStream() {
 
 /* Taskrunner: What a task is actually doing - your sideeffects go here! */
 function runTask(task: Task, callback: Callback) {
-  debug(`Running task ${JSON.stringify(task)}...`);
+  log.debug(`Running task ${JSON.stringify(task)}...`);
   eventEmitter.emit('taskStarted', [task]);
 
   const address: MinimalAddress = createAddress({
@@ -57,11 +56,7 @@ function processTaskEvents() {
         eventEmitter.emit('taskEnded', [taskState]);
       },
       error(taskState) {
-        error(
-          `[CRON task-proc] Error while executing task: ${JSON.stringify(
-            taskState
-          )}`
-        );
+        log.error(`[CRON task-proc] Error while executing task: ${JSON.stringify(taskState)}`);
         eventEmitter.emit('taskEnded', [taskState]);
       },
     });

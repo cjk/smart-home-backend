@@ -1,14 +1,14 @@
 /* @flow */
 
-import logger from 'debug';
 import type { ServerState } from '../types';
 import busServer from './busServer';
+import { logger } from '../lib/debug';
 
-const debug = logger('smt:server');
+const log = logger('backend:server');
 
 function publish(props: ServerState) {
   busServer(props);
-  debug('==> Server started');
+  log.debug('==> Server started');
 }
 
 export default publish;

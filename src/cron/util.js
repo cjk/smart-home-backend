@@ -3,7 +3,6 @@
 import type { Crontab, CronJob, CrontabTask } from '../types';
 
 /* General purpose functions */
-import logger from 'debug';
 import {
   all,
   any,
@@ -24,8 +23,9 @@ import {
   reject,
   scan,
 } from 'ramda';
+import { logger } from '../lib/debug';
 
-const debug = logger('smt');
+const log = logger('backend:cron');
 
 const scheduled = (j: CronJob) => j.scheduled;
 const running = (j: CronJob) => j.running;
@@ -40,8 +40,7 @@ const runningJobIds = compose(pluck('jobId'), filter(scheduled));
 
 const withId = propEq('id');
 
-const anyRunningTasks = (j: CronJob) =>
-  any(t => t.status === 'started', j.tasks);
+const anyRunningTasks = (j: CronJob) => any(t => t.status === 'started', j.tasks);
 const onlyEndedTasks = (j: CronJob) => all(t => t.status === 'ended', j.tasks);
 
 function _getJob(jobId, crontab) {
@@ -55,10 +54,10 @@ function syncWithPrevJobs(prevCrontab: Crontab) {
     const syncedProps = ['running', 'scheduled', 'lastRun'];
     const prevJob = find(propEq('jobId', j.jobId), prevCrontab);
     if (isNil(prevJob)) {
-      debug(`No previous job <${j.jobId}> found.`);
+      log.debug(`No previous job <${j.jobId}> found.`);
       return j;
     }
-    //     debug(`SYNC-WITH-PREV-JOB: ${JSON.stringify(j)}`);
+    //     log.debug(`SYNC-WITH-PREV-JOB: ${JSON.stringify(j)}`);
     return assoc('tasks', prevJob.tasks, merge(j, pick(syncedProps, prevJob)));
   });
 }
@@ -84,10 +83,7 @@ function normalizeTasks(taskArray: Array<CrontabTask>) {
       removeEmptyTasks(
         scan(
           (acc, target) =>
-            merge(
-              removeTaskTargets(task),
-              merge(taskMeta, addTargetPropToTask(target, acc))
-            ),
+            merge(removeTaskTargets(task), merge(taskMeta, addTargetPropToTask(target, acc))),
           {},
           task.targets
         )
@@ -98,9 +94,7 @@ function normalizeTasks(taskArray: Array<CrontabTask>) {
 }
 
 function debugPrettyCrontab(ct: Crontab) {
-  return map(
-    pick(['jobId', 'repeat', 'at', 'scheduled', 'running', 'lastRun'])
-  )(ct);
+  return map(pick(['jobId', 'repeat', 'at', 'scheduled', 'running', 'lastRun']))(ct);
 }
 
 export {

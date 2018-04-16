@@ -6,21 +6,10 @@
 
 import type { TickState } from '../types';
 
-import logger from 'debug';
-import R, {
-  and,
-  compose,
-  converge,
-  filter,
-  isEmpty,
-  join,
-  map,
-  pick,
-  prop,
-  propEq,
-} from 'ramda';
+import R, { and, compose, converge, filter, isEmpty, join, map, pick, prop, propEq } from 'ramda';
+import { logger } from '../lib/debug';
 
-const debug = logger('smt:cron-gc');
+const log = logger('backend:cron-gc');
 
 export default function garbageCollect(prev: TickState, next: TickState) {
   const p = prev.crontab;
@@ -36,29 +25,20 @@ export default function garbageCollect(prev: TickState, next: TickState) {
   const runningTemporaryJobs = converge(and, [isTempJob, isRunning]);
   const endedTemporaryJobs = converge(and, [isTempJob, notRunning]);
 
-  const pastRunningJobIds = compose(
-    map(pick(['jobId'])),
-    filter(runningTemporaryJobs)
-  )(p);
+  const pastRunningJobIds = compose(map(pick(['jobId'])), filter(runningTemporaryJobs))(p);
 
   // nothing to clean up?
   if (isEmpty(pastRunningJobIds)) return next;
 
-  // debug(pastRunningJobIds);
+  // log.debug(pastRunningJobIds);
 
-  const presentEndedOneshots = compose(
-    map(pick(['jobId'])),
-    filter(endedTemporaryJobs)
-  )(c);
+  const presentEndedOneshots = compose(map(pick(['jobId'])), filter(endedTemporaryJobs))(c);
 
-  const garbageJobIds = map(
-    prop('jobId'),
-    R.intersection(pastRunningJobIds, presentEndedOneshots)
-  );
+  const garbageJobIds = map(prop('jobId'), R.intersection(pastRunningJobIds, presentEndedOneshots));
 
   if (isEmpty(garbageJobIds)) return next;
 
-  debug(`Removing task(s) <${join('|', garbageJobIds)}> from crontab`);
+  log.debug(`Removing task(s) <${join('|', garbageJobIds)}> from crontab`);
 
   // Propagate crontab-changes to network-data-store aka "cloud":
   client.record.getList('smartHome/cronjobs').whenReady(lst => {

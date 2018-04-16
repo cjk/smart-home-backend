@@ -2,12 +2,11 @@
 import type { Address, AddressMap, AddressList, BusState$ } from '../types';
 
 import { filter, isNil, map, pipe, prop, sortBy, take, values } from 'ramda';
-import logger from 'debug';
 import Kefir from 'kefir';
 import busScanner from './bus-scanner';
-import { getTimestamp } from './debug';
+import { getTimestamp, logger } from './debug';
 
-const debug = logger('smt:refresher');
+const log = logger('backend:refresher');
 
 const runDelaySeconds = 60; // Startup delay
 const maxRefreshLimit = 4;
@@ -41,7 +40,7 @@ function refreshStaleAddresses(stream: BusState$) {
 
     /* DEBUGGING: */
     if (staleAddrList.length > 0) {
-      debug(
+      log.debug(
         `[${getTimestamp()}]: We have ${
           staleAddrList.length
         } stale addresses: ${reduceAddressesToIds(staleAddrList).join(
@@ -49,7 +48,7 @@ function refreshStaleAddresses(stream: BusState$) {
         )} - refreshing a max of ${maxRefreshLimit} of these.`
       );
     } else {
-      debug(`[${getTimestamp()}]: All addresses up to date - nothing to do :)`);
+      log.debug(`[${getTimestamp()}]: All addresses up to date - nothing to do :)`);
     }
     pipe(values, take(maxRefreshLimit), busScanner)(staleAddrList);
   });

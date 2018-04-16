@@ -7,11 +7,11 @@
 import type { Emitter } from 'kefir';
 import type { KnxdOpts } from '../types';
 
-import logger from 'debug';
 import Kefir from 'kefir';
 import createEvent from './event';
+import { logger } from '../lib/debug';
 
-const debug = logger('smt:backend');
+const log = logger('backend:mockSource');
 
 const getTimestamp = () => new Date().toISOString().slice(0, 19);
 
@@ -24,7 +24,7 @@ export default function mockSource(opts: KnxdOpts) {
   return (emitter: Emitter<*>) => {
     /* generate mocked events from stream */
     stream.onValue(e => {
-      debug(`[${getTimestamp()}] Read from ${e.src} to ${e.dest}`);
+      log.debug(`[${getTimestamp()}] Read from ${e.src} to ${e.dest}`);
       emitter.value(e);
     });
     return () => {};

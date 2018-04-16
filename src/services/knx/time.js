@@ -2,9 +2,9 @@
 
 import { createAddress, dateTimeToDPT10Array } from '../../knx/knx-lib';
 import { writeGroupAddr } from '../../knx/performBusAction';
-import logger from 'debug';
+import { logger } from '../../lib/debug';
 
-const debug = logger('smt:knxPublishTime');
+const log = logger('backend:knxPublishTime');
 
 const timeFormatter = (ts: Date) => dateTimeToDPT10Array(ts);
 
@@ -16,10 +16,10 @@ const publishTime = (knxTime: number[]) => {
     value: knxTime,
   });
 
-  debug(`Sending time-event ${JSON.stringify(addr)}.`);
+  log.debug(`Sending time-event ${JSON.stringify(addr)}.`);
   writeGroupAddr(addr, err => {
     if (err) {
-      debug(`Error writing time to KNX-bus: ${err}`);
+      log.debug(`Error writing time to KNX-bus: ${err}`);
     }
   });
 };

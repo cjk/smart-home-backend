@@ -1,13 +1,14 @@
 /* @flow */
 
-/* Subscribes to / handle busWriteRequests from other clients */
-import logger from 'debug';
-import K from 'kefir';
-import Address from '../../knx/address';
-import { writeGroupAddr } from '../../knx/performBusAction';
+import type { MinimalAddress } from '../../types';
 
-const debug = logger('smt:backend'),
-  error = logger('error');
+/* Subscribes to / handle busWriteRequests from other clients */
+import K from 'kefir';
+import createAddress from '../../knx/address';
+import { writeGroupAddr } from '../../knx/performBusAction';
+import { logger } from '../../lib/debug';
+
+const log = logger('backend:busServer');
 
 const createBusWriteEventSubStream = client =>
   K.stream(emitter => {
@@ -20,30 +21,24 @@ const createBusWriteEventSubStream = client =>
     };
   });
 
-function writeAddressToBus(addr) {
-  debug(
-    `About to perform address-write on request for address: ${JSON.stringify(
-      addr
-    )}`
-  );
+function writeAddressToBus(addr: MinimalAddress) {
+  log.debug(`About to perform address-write on request for address: ${JSON.stringify(addr)}`);
   if (addr.id) {
     // Sending a new value for an address in a specific format to the knx-bus may fail. Catch and print errors but don't let it crash
     try {
-      writeGroupAddr(new Address(addr));
+      writeGroupAddr(createAddress(addr));
     } catch (e) {
-      error(
+      log.error(
         `Failed to write to KNX-bus for address ${addr.id}. Check the address-type and format.`
       );
     }
   } else {
-    error(
-      'Illegal KNX-address received for bus-writing - will not perform any bus action!'
-    );
+    log.error('Illegal KNX-address received for bus-writing - will not perform any bus action!');
   }
 }
 
 function errorHandler(err) {
-  error(err);
+  log.error(err);
 }
 
 function handleBusWrites(conn: Function) {

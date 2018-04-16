@@ -1,10 +1,10 @@
 /* @flow */
 import type { BusState$ } from '../../types';
 
-import logger from 'debug';
 import R from 'ramda';
+import { logger } from '../../lib/debug';
 
-const debug = logger('smt:state-sync');
+const log = logger('backend:state-sync');
 
 /* Handles initial-bus-state requests */
 function updateRemoteInitialState(client: any, busState$: BusState$) {
@@ -16,7 +16,7 @@ function updateRemoteInitialState(client: any, busState$: BusState$) {
   // });
 
   const putBusStateIntoEther = R.curry((bsRecord, state) => {
-    debug('[busServer] Pushing full bus-state to deepstream-server');
+    log.debug('[busServer] Pushing full bus-state to deepstream-server');
     bsRecord.set(state);
   });
 
@@ -25,12 +25,12 @@ function updateRemoteInitialState(client: any, busState$: BusState$) {
   });
 
   const callback = (match, isSubscribed, response) => {
-    debug('Handling subscriptionChanged...');
+    log.debug('Handling subscriptionChanged...');
     if (isSubscribed) {
-      debug('Someone subscribed to initial busState records');
+      log.debug('Someone subscribed to initial busState records');
       response.accept();
     } else {
-      debug('Unsubscribing to delivering initial busState records');
+      log.debug('Unsubscribing to delivering initial busState records');
       busState$.offValue(putBusStateIntoEther);
       client.record.getRecord('knx/initialBusState').discard();
       response.reject();
