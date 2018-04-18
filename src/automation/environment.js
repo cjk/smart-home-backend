@@ -9,11 +9,6 @@ const hasActivity = lastActTs => (Date.now() - lastActTs) / 1000 < 10;
 const environment: Environment = {
   dayTime: {
     outsideLight: -1,
-    itsDusk: false,
-    itsDawn: false,
-    itsDaylight: true,
-    itsNight: false,
-    itsEvening: false,
   },
   outside: {
     temp: 5.5, // TODO: outside-temperature

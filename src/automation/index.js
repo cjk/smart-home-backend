@@ -37,7 +37,7 @@ function automation() {
           );
           return R.assoc('env', envNext, next);
         })
-        .onValue(v => log.debug(v.env)); // TODO: debug(v.env)
+        .onValue(v => log.debug(v.env));
       log.debug('Automation started');
     },
   };

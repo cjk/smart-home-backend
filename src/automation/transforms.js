@@ -41,6 +41,12 @@ const transforms: EnvTransform[] = [
     action: (event: BusEvent, env: Environment) =>
       event.value === 1 ? assocPath(['rooms', 'hby', 'lastActivity'], Date.now(), env) : env,
   },
+  {
+    name: 'activityInCel1',
+    on: ['13/2/1'],
+    action: (event: BusEvent, env: Environment) =>
+      event.value === 1 ? assocPath(['rooms', 'cel-1', 'lastActivity'], Date.now(), env) : env,
+  },
 ];
 
 // Return all events, that have the given address-/string in one of their 'on'-keys
