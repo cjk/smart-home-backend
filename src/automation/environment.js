@@ -7,11 +7,9 @@ import type { Environment } from '../types';
 const hasActivity = lastActTs => (Date.now() - lastActTs) / 1000 < 10;
 
 const environment: Environment = {
-  dayTime: {
-    outsideLight: -1,
-  },
   outside: {
-    temp: 5.5, // TODO: outside-temperature
+    ambientLight: -1,
+    temp: -1,
   },
   rooms: {
     'hall-1': {
@@ -40,6 +38,7 @@ const environment: Environment = {
       windowsOpen: 0,
       lastActivity: null,
       hasActivity,
+      ambientLight: undefined,
     },
     'cel-2': {
       windowsOpen: 0,

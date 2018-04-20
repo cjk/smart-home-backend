@@ -53,7 +53,7 @@ export type KnxConf = {
 
 export type BusEvent = {
   dest: string,
-  value: AddressValue,
+  value: number | number[],
   src: string,
   type: string,
   action: string,
@@ -117,8 +117,7 @@ export type CronJob = {
 
 export type Crontab = Array<CronJob>;
 
-// TODO: Describe in more detail
-export type HomeState = Object;
+export type HomeState = AddressMap;
 
 export type TickState = {
   crontab: Crontab,
@@ -145,12 +144,25 @@ export type ServerState = {
 };
 
 // Automate type, like environment and transforms
+type roomEnv = {
+  temp?: ?number,
+  lastActivity: ?number,
+  hasActivity: (number) => boolean,
+};
+
 export type Environment = {
-  dayTime: Object,
-  outside: Object,
-  rooms: Object,
+  outside: {
+    ambientLight: number,
+    temp: number,
+  },
+  rooms: {
+    [string]: roomEnv,
+  },
   doors: Object,
-  house: Object,
+  house: {
+    alarm: boolean,
+    empty: boolean,
+  },
 };
 
 export type EnvTransform = {

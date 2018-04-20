@@ -6,10 +6,16 @@ import { any, assocPath, filter, prop } from 'ramda';
 
 const transforms: EnvTransform[] = [
   {
-    name: 'dayLight',
+    name: 'outsideLight',
     on: ['6/0/0'],
     action: (event: BusEvent, env: Environment) =>
-      assocPath(['dayTime', 'outsideLight'], event.value, env),
+      assocPath(['outside', 'ambientLight'], event.value, env),
+  },
+  {
+    name: 'ambientLightCel1',
+    on: ['6/0/1'],
+    action: (event: BusEvent, env: Environment) =>
+      assocPath(['rooms', 'cel-1', 'ambientLight'], event.value, env),
   },
   {
     name: 'windowOpenCel2',
