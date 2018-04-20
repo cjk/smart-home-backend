@@ -1,27 +1,33 @@
 // @flow
 
-import type { Environment, HomeState } from '../types';
+import type { AutomataStateProps } from '../types';
 
 import * as R from 'ramda';
 import { logger } from '../lib/debug';
 
 const log = logger('backend:rules');
 
-const runTask = (name: string) => {
-  console.log(`Running task <${name}>`);
+const runTask = (onOrOff: boolean) => {
+  console.log(`Running task with <${onOrOff.toString()}> decicsion`);
 };
 
 const rulesLst = [
   {
     name: 'Heizraum-Licht Auto',
-    on: (env: Environment, state: HomeState) => {
+    on: ({ env, busState }: AutomataStateProps) => {
       const lstActive = R.path(['rooms', 'cel-1', 'lastActivity'], env);
-      log.debug(state);
-      const isOff = R.propSatisfies(v => R.isNil(v) || v === 0, 'value', R.prop('1/1/9', state));
-      return R.isNil(lstActive) ? false : isOff(); // Date.now() - lstActive > 1000;
+      const isTargetOff = R.propSatisfies(
+        v => R.isNil(v) || v === 0,
+        'value',
+        R.prop('1/1/9', busState)
+      );
+      // Return true if there is an lastActivity-timestamp for Cel-1 and the activity occured within the last 10
+      // seconds:
+      const onOrOff = R.isNil(lstActive) ? false : isTargetOff && Date.now() - lstActive < 10000;
+      return onOrOff;
     },
     // off: timeMidnight,
-    act: runTask,
+    act: (cond: boolean) => runTask(cond),
   },
 ];
 

@@ -1,12 +1,12 @@
 // @flow
 
-import type { HomeState, ServerState, BusEvent, Environment, EnvTransform } from '../types';
+import type { AutomataStateProps, HomeState, ServerState, BusEvent } from '../types';
 
 import * as R from 'ramda';
 import K from 'kefir';
 
 import initialEnv from './environment';
-import affectedEnvEntries from './transforms';
+import applyEnvTransforms from './transforms';
 
 import rulesLst from './rules';
 
@@ -32,28 +32,11 @@ function automation() {
           env: initialEnv,
         })
       )
-        .scan((prev, next) => {
-          // Update environment from bus-state-events...
-          const env = R.merge(next.env, prev.env);
-          const { event } = next;
-
-          log.debug('Current event: %O', event);
-          log.debug('Previous event: %O', prev.event);
-
-          const transformEnvEntries = R.map((transform: EnvTransform): Environment =>
-            transform.action(event, env)
-          );
-          const updateEnvironment: Environment[] = R.reduce((acc, t) => R.merge(env, t), env);
-          const envNext = R.pipe(transformEnvEntries, updateEnvironment)(
-            affectedEnvEntries(event.dest)
-          );
-
-          // ...and return updated environment
-          return R.pipe(R.assoc('env', envNext), R.assoc('event', { dest: '0/0/0' }))(next);
-        })
+        .scan(applyEnvTransforms)
         .observe({
-          value(state) {
-            log.debug('Value: %j', R.dissoc('busState', state));
+          value(stateProps: AutomataStateProps) {
+            log.debug('Value: %j', R.dissoc('busState', stateProps)); // log state, but without bus-state
+            R.map(rule => log.debug(rule.on(stateProps)))(rulesLst);
           },
         });
       log.debug('Automation started');

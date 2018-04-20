@@ -147,7 +147,7 @@ export type ServerState = {
 type roomEnv = {
   temp?: ?number,
   lastActivity: ?number,
-  hasActivity: (number) => boolean,
+  hasActivity: number => boolean,
 };
 
 export type Environment = {
@@ -169,4 +169,11 @@ export type EnvTransform = {
   name: string,
   on: Array<string>,
   action: (BusEvent, Environment) => Environment,
+};
+
+// This is the data automata-modules receive from our bus-/state-streams along with each bus-event:
+export type AutomataStateProps = {
+  event: BusEvent,
+  busState: HomeState,
+  env: Environment,
 };
