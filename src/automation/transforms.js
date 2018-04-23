@@ -3,6 +3,20 @@
 import type { AutomataStateProps, BusEvent, Environment, EnvTransform } from '../types';
 
 import * as R from 'ramda';
+import { addrValueToBoolean } from '../knx/knx-lib';
+import { logger } from '../lib/debug';
+
+const log = logger('backend:automate:transform');
+
+const updateRoomActivityIn = (room: string, isActive: boolean, env) => {
+  const roomPath = ['rooms', room];
+  return isActive
+    ? R.pipe(
+        R.assocPath([...roomPath, 'lastActivity'], Date.now()),
+        R.assocPath([...roomPath, 'hasActivity'], true)
+      )(env)
+    : R.assocPath([...roomPath, 'hasActivity'], false, env);
+};
 
 const transforms: EnvTransform[] = [
   {
@@ -27,31 +41,31 @@ const transforms: EnvTransform[] = [
     name: 'activityInWz',
     on: ['13/1/0'],
     action: (event: BusEvent, env: Environment) =>
-      event.value === 1 ? R.assocPath(['rooms', 'wz', 'lastActivity'], Date.now(), env) : env,
+      updateRoomActivityIn('wz', addrValueToBoolean(event), env),
   },
   {
     name: 'activityInHall1',
     on: ['13/1/1'],
     action: (event: BusEvent, env: Environment) =>
-      event.value === 1 ? R.assocPath(['rooms', 'hall-1', 'lastActivity'], Date.now(), env) : env,
+      updateRoomActivityIn('hall-1', addrValueToBoolean(event), env),
   },
   {
     name: 'activityInHall2',
     on: ['13/0/0'],
     action: (event: BusEvent, env: Environment) =>
-      event.value === 1 ? R.assocPath(['rooms', 'hall-2', 'lastActivity'], Date.now(), env) : env,
+      updateRoomActivityIn('hall-2', addrValueToBoolean(event), env),
   },
   {
     name: 'activityInHby',
     on: ['13/2/0'],
     action: (event: BusEvent, env: Environment) =>
-      event.value === 1 ? R.assocPath(['rooms', 'hby', 'lastActivity'], Date.now(), env) : env,
+      updateRoomActivityIn('hby', addrValueToBoolean(event), env),
   },
   {
     name: 'activityInCel1',
     on: ['13/2/1'],
     action: (event: BusEvent, env: Environment) =>
-      event.value === 1 ? R.assocPath(['rooms', 'cel-1', 'lastActivity'], Date.now(), env) : env,
+      updateRoomActivityIn('cel-1', addrValueToBoolean(event), env),
   },
 ];
 
@@ -73,7 +87,7 @@ function applyEnvTransforms(prev: AutomataStateProps, next: AutomataStateProps) 
 
   // ...and return updated environment + dummy event (Reason for dummy-event: to prevent same event is re-applied on
   // next tick, which may be before an actual new event occurs!)
-  return R.pipe(R.assoc('env', envNext), R.assoc('event', { dest: '0/0/0' }))(next);
+  return R.pipe(R.assoc('env', envNext), R.dissoc('event'))(next);
 }
 
 export default applyEnvTransforms;

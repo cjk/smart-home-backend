@@ -1,7 +1,10 @@
 // @flow
 
-import type { Address, MinimalAddress } from '../types';
+import type { Address, BusEvent, MinimalAddress } from '../types';
 import getISODay from 'date-fns/get_iso_day';
+import { logger } from '../lib/debug';
+
+const log = logger('backend:knx-lib');
 
 /* Guess correct KNX-datatype / format from address-properties */
 function deriveAddrFormat(addr: Address | MinimalAddress) {
@@ -42,6 +45,22 @@ function deriveAddrFormat(addr: Address | MinimalAddress) {
   return undefined;
 }
 
+// Helper if you want a save way to make sure an KNX event-value can be used to switch something (light, ...) on or off
+// and you're *almost* certain the address-type is compatible (i.e. a number 0 or 1):
+// Tries to convert an event-value of a knx-bus-event to a boolean value (like on|off or true|false) and print an error
+// return false if this is not possible, since sum knx-address-types cannot be converted into a Boolean value
+function addrValueToBoolean(event: BusEvent): boolean {
+  if (typeof event.value === 'number' && event.type.match('DPT1|DPT2')) {
+    return Boolean(event.value);
+  }
+  log.error(
+    'Cannot convert KNX-event of type %s with value <%s> to boolean!',
+    event.type,
+    event.value
+  );
+  return false;
+}
+
 function createAddress(props: MinimalAddress): MinimalAddress {
   const addressDefaults = {
     name: 'none',
@@ -59,4 +78,4 @@ function dateTimeToDPT10Array(ts: Date): Array<number> {
   return [getISODay(ts), ts.getHours(), ts.getMinutes(), ts.getSeconds()];
 }
 
-export { createAddress, dateTimeToDPT10Array, deriveAddrFormat };
+export { addrValueToBoolean, createAddress, dateTimeToDPT10Array, deriveAddrFormat };

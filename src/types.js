@@ -147,7 +147,7 @@ export type ServerState = {
 type roomEnv = {
   temp?: ?number,
   lastActivity: ?number,
-  hasActivity: number => boolean,
+  hasActivity: boolean,
 };
 
 export type Environment = {

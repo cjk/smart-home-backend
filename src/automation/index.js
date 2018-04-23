@@ -14,7 +14,8 @@ import { logger } from '../lib/debug';
 
 const log = logger('backend:automate');
 
-const ticker$ = K.interval(5000, { answer: 42 });
+// TODO: Tick-payload is as of now not strictly needed - see also 'tick' below!
+const ticker$ = K.interval(5000, { from: Date.now() });
 
 function automation() {
   return {
