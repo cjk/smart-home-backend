@@ -148,6 +148,7 @@ type roomEnv = {
   temp?: ?number,
   lastActivity: ?number,
   hasActivity: boolean,
+  lightsOff: ?boolean,
 };
 
 export type Environment = {
@@ -174,6 +175,6 @@ export type EnvTransform = {
 // This is the data automata-modules receive from our bus-/state-streams along with each bus-event:
 export type AutomataStateProps = {
   event: BusEvent,
-  busState: HomeState,
   env: Environment,
+  busState: HomeState,
 };

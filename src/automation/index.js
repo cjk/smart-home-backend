@@ -36,8 +36,8 @@ function automation() {
         .scan(applyEnvTransforms)
         .observe({
           value(stateProps: AutomataStateProps) {
-            log.debug('Value: %j', R.dissoc('busState', stateProps)); // log state, but without bus-state
-            R.map(rule => log.debug(rule.on(stateProps)))(rulesLst);
+            log.debug('Value: %j', R.dissoc('busState', stateProps)); // log state, but without verbose bus-state
+            // R.map(rule => log.debug(rule.on(stateProps)))(rulesLst);
           },
         });
       log.debug('Automation started');
