@@ -72,6 +72,25 @@ const transforms: EnvTransform[] = [
     action: ({ event, env }) => updateRoomActivityIn('cel-1', addrValueToBoolean(event), env),
   },
   {
+    name: 'lightsOffWz',
+    on: ['1/2/4', '1/2/13', '1/2/14', '1/2/10', '1/2/15'],
+    // $FlowFixMe
+    action: ({ busState, env }): Environment =>
+      R.assocPath(
+        ['rooms', 'wz', 'lightsOff'],
+        R.not(
+          R.any(light => R.path([light, 'value'], busState) === 1, [
+            '1/2/4',
+            '1/2/13',
+            '1/2/14',
+            '1/2/10',
+            '1/2/15',
+          ])
+        ),
+        env
+      ),
+  },
+  {
     name: 'lightsOffKit',
     on: ['1/2/1', '1/2/7', '9/0/3'],
     // $FlowFixMe
