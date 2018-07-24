@@ -1,5 +1,9 @@
 // @flow
 
+// SmartHome-Backend realtime-automation engine
+// Reacts on state-changes in our environment based on a rule-engine (see './rules.js')
+// WIP: Currently in experimental state!
+
 import type { AutomataStateProps, HomeState, ServerState, BusEvent } from '../types';
 
 import * as R from 'ramda';
@@ -36,8 +40,11 @@ function automation() {
         .scan(applyEnvTransforms)
         .observe({
           value(stateProps: AutomataStateProps) {
-            log.debug('Value: %j', R.dissoc('busState', stateProps)); // log state, but without verbose bus-state
-            // R.map(rule => log.debug(rule.on(stateProps)))(rulesLst);
+            // DEBUGGING: log some state, like current environment, but exclude bus-state if not needed
+
+            // Enable this to see current environment and state of our rule-engine on each tick:
+            // log.debug('post-processed environment: %j', R.dissoc('busState', stateProps));
+            R.map(rule => log.debug(rule.on(stateProps)))(rulesLst);
           },
         });
       log.debug('Automation started');

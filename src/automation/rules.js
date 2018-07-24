@@ -13,18 +13,42 @@ const runTask = (onOrOff: boolean) => {
 
 const rulesLst = [
   {
-    name: 'Heizraum-Licht Auto',
-    on: ({ env, busState }: AutomataStateProps) => {
-      const lstActive = R.path(['rooms', 'cel-1', 'lastActivity'], env);
-      const isTargetOff = R.propSatisfies(
-        v => R.isNil(v) || v === 0,
-        'value',
-        R.prop('1/1/9', busState)
-      );
-      // Return true if there is an lastActivity-timestamp for Cel-1 and the activity occured within the last 10
-      // seconds:
-      const onOrOff = R.isNil(lstActive) ? false : isTargetOff && Date.now() - lstActive < 10000;
-      return onOrOff;
+    name: 'WZ/Kitchen Licht Auto',
+    on: ({ env }: AutomataStateProps) => {
+      const wzEnv = R.path(['rooms', 'wz'], env);
+
+      const lightsOffKitchen = R.path(['rooms', 'kit', 'lightsOff'], env);
+      const { ambientLight } = env.outside;
+      const { lastActivity, hasActivity, lightsOff } = wzEnv;
+
+      // TODO: useful?
+      // const isTargetOff = R.propSatisfies(
+      //   v => R.isNil(v) || v === 0,
+      //   'value',
+      //   R.prop('1/1/9', busState)
+      // );
+
+      if (ambientLight > 500 || ambientLight < 0) {
+        log.debug(
+          `[WZ/Kitchen Licht Auto]: Not switching lights on: too bright outside or no data (${ambientLight}).`
+        );
+        return false;
+      }
+
+      if (!(lightsOffKitchen && lightsOff)) {
+        log.debug(
+          '[WZ/Kitchen Licht Auto] - Not switching lights on: Some lights in WZ/Kit already on or in unknown state.'
+        );
+        return false;
+      }
+
+      if (!hasActivity && Date.now() - lastActivity > 5000) {
+        log.debug('[WZ/Kitchen Licht Auto] - Not switching lights on - no recent activity.');
+        return false;
+      }
+
+      log.debug('[WZ/Kitchen Licht Auto] - Switching on Auto-lights!');
+      return true;
     },
     // off: timeMidnight,
     act: (cond: boolean) => runTask(cond),

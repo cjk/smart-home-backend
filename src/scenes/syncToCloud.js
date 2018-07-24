@@ -10,7 +10,7 @@ function syncToCloud(client: Function, scenes: Scenes) {
   const sceneLst = client.record.getList('smartHome/scenes');
   sceneLst.setEntries([]);
 
-  log.debug('Now syncing local scenes to cloud!');
+  log.debug('Syncing local scenes to cloud.');
   map(scene => {
     const newSceneRecord = client.record.getRecord(scene.id);
     newSceneRecord.whenReady(record => {
