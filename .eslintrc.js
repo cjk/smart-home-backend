@@ -5,7 +5,7 @@ module.exports = {
     browser: false,
     node: true,
   },
-  extends: ['airbnb-base', 'plugin:flowtype/recommended'],
+  extends: ['eslint:recommended', 'plugin:flowtype/recommended'],
   plugins: ['flowtype'],
   globals: {
     APP_NAME: true,
@@ -20,8 +20,7 @@ module.exports = {
   // AirBnb is great, but very strict. Feel free to add anything.
   rules: {
     'arrow-parens': 0, // Does not work with Flow generic types.
-    'comma-dangle': 0, // Because some files are still in ES5.
-    'import/first': 0, // Este sorts by atom/sort lines natural order.
+    'import/first': 0, // We sort by atom/sort lines natural order.
     'import/prefer-default-export': 0, // Actions can have just one action.
     indent: 0, // Prettier.
     'function-paren-newline': 0, // Prettier.
@@ -39,4 +38,4 @@ module.exports = {
     'no-return-assign': ['error', 'except-parens'],
     'one-var': 0,
   },
-};
+}
