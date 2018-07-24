@@ -1,10 +1,10 @@
 // @flow
-import type { Config } from '../types';
-import deepstream from 'deepstream.io-client-js';
-import K from 'kefir';
+import type { Config } from '../types'
+import deepstream from 'deepstream.io-client-js'
+import K from 'kefir'
 
 function getClient$(config: Config) {
-  const { wsServer } = config;
+  const { wsServer } = config
 
   return K.fromPromise(
     new Promise((resolve, reject) => {
@@ -12,14 +12,14 @@ function getClient$(config: Config) {
         { username: wsServer.user },
         (success, _data) => {
           if (success) {
-            resolve(client);
+            resolve(client)
           } else {
-            reject(new Error('Failed to connect to deepstream-server!'));
+            reject(new Error('Failed to connect to deepstream-server!'))
           }
         }
-      );
+      )
     })
-  );
+  )
 }
 
-export default getClient$;
+export default getClient$

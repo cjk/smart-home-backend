@@ -2,7 +2,7 @@
 
 // Defines an environment-structure that is derived from sensor-data and the current bus-state
 
-import type { Environment } from '../types';
+import type { Environment } from '../types'
 
 const environment: Environment = {
   outside: {
@@ -86,6 +86,6 @@ const environment: Environment = {
     alarm: false,
     empty: false,
   },
-};
+}
 
-export default environment;
+export default environment

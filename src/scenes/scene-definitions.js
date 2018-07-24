@@ -1,8 +1,8 @@
 // @flow
-import type { Scenes } from '../types';
+import type { Scenes } from '../types'
 
-import { assoc, map } from 'ramda';
-import { normalizeTasks } from '../cron/util';
+import { assoc, map } from 'ramda'
+import { normalizeTasks } from '../cron/util'
 
 const scenes: Scenes = [
   {
@@ -23,12 +23,9 @@ const scenes: Scenes = [
   {
     id: 'scene/Test001',
     name: 'Test-Szene',
-    tasks: [
-      { targets: ['1/1/5'], act: 'on' },
-      { targets: ['1/1/6'], act: 'off' },
-    ],
+    tasks: [{ targets: ['1/1/5'], act: 'on' }, { targets: ['1/1/6'], act: 'off' }],
   },
-];
+]
 
 /* Normalizes scene-task-structure
  *
@@ -37,7 +34,7 @@ const scenes: Scenes = [
  *
  */
 function loadScenes() {
-  return map(j => assoc('tasks', normalizeTasks(j.tasks), j), scenes);
+  return map(j => assoc('tasks', normalizeTasks(j.tasks), j), scenes)
 }
 
-export default loadScenes;
+export default loadScenes

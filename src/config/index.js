@@ -1,11 +1,11 @@
 /* @flow */
 /* eslint max-len: 0 */
 
-import type { Address, AddressMap, AddressList, Config } from '../types';
+import type { Address, AddressMap, AddressList, Config } from '../types'
 
-import * as R from 'ramda';
-import createAddress from '../knx/address';
-import addressList from './group-address-list';
+import * as R from 'ramda'
+import createAddress from '../knx/address'
+import addressList from './group-address-list'
 
 const readableAddrList: Array<string> = [
   '1/1/0' /* UG Hobby1 Präsenzmelder Sperre f. Schaltung Licht Hobby-Keller-1+2 */,
@@ -53,31 +53,25 @@ const readableAddrList: Array<string> = [
   '10/1/0' /* EG Türen Haustür Kontakt via Binäreingang 1.1.47 Ausg. A-0  */,
   '11/1/0' /* WZ Steckd.-Erker West 2+3 (Stehlampe, ...) */,
   '11/2/0' /* OG Kind-2 / Daniel Steckdose Ost 1/5 via Schaltaktor 1.1.45 Ausg. 7 */,
-];
+]
 
 const toAddressMap = (addrList: AddressList): AddressMap =>
-  R.reduce(
-    (acc, addr: Address): { [string]: Address } => R.assoc(addr.id, createAddress(addr), acc),
-    {},
-    addrList
-  );
+  R.reduce((acc, addr: Address): { [string]: Address } => R.assoc(addr.id, createAddress(addr), acc), {}, addrList)
 
-const addressMap = toAddressMap(addressList);
+const addressMap = toAddressMap(addressList)
 
 const readableAddrMap: AddressMap = R.reduce(
   (acc, knxId: string): { [string]: Address } => R.assoc(knxId, addressMap[knxId], acc),
   {},
   readableAddrList
-);
+)
 
 const config: Config = {
   server: {
     port: process.env.PORT || '3005' /* TODO: no longer used?! */,
   },
   knxd: {
-    host:
-      process.env
-        .KNXD_ADDR /* see your .env- or ecosystem.config.js file, e.g. '192.168.1.28' or 'localhost'  */,
+    host: process.env.KNXD_ADDR /* see your .env- or ecosystem.config.js file, e.g. '192.168.1.28' or 'localhost'  */,
     port: process.env.KNXD_PORT,
     isAvailable: true,
   },
@@ -104,6 +98,6 @@ const config: Config = {
     readableAddrMap,
   },
   version: '1.1.3-20180418',
-};
+}
 
-export default config;
+export default config

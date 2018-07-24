@@ -1,10 +1,10 @@
 // @flow
 
-import type { Address, BusEvent, MinimalAddress } from '../types';
-import getISODay from 'date-fns/get_iso_day';
-import { logger } from '../lib/debug';
+import type { Address, BusEvent, MinimalAddress } from '../types'
+import getISODay from 'date-fns/get_iso_day'
+import { logger } from '../lib/debug'
 
-const log = logger('backend:knx-lib');
+const log = logger('backend:knx-lib')
 
 /* Guess correct KNX-datatype / format from address-properties */
 function deriveAddrFormat(addr: Address | MinimalAddress) {
@@ -12,37 +12,37 @@ function deriveAddrFormat(addr: Address | MinimalAddress) {
   switch (addr.func) {
     case 'light':
       /* DPT1 - 1 bit (0,1) */
-      return 'DPT1';
+      return 'DPT1'
 
     case 'shut':
       /* DPT1 - 1 bit (0,1) */
-      return 'DPT1';
+      return 'DPT1'
 
     case 'inhibit':
       /* DPT2 - 1 bit (0,1) + value (0,1) */
-      return 'DPT2';
+      return 'DPT2'
 
     case 'scene':
       /* DPT17 or DPT5 - 1 byte unsigned (0-255) */
-      return 'DPT5';
+      return 'DPT5'
 
     case 'dim':
       /* DPT 3 - (Position, Control, Value)  1 Bit, 4 Bit, 8 Bit [0,0]...[1,7] */
       /* PENDING: 1 byte is used for (physical) knx-switches?! */
-      break;
+      break
 
     case 'heat':
       /* DPT1 - 1 bit (0,1) */
-      break;
+      break
 
     case 'time':
       /* DPT10 - 3 bytes (weekday+hour/minutes/seconds) */
-      return 'DPT10';
+      return 'DPT10'
 
     default:
-      return undefined;
+      return undefined
   }
-  return undefined;
+  return undefined
 }
 
 // Helper if you want a save way to make sure an KNX event-value can be used to switch something (light, ...) on or off
@@ -51,14 +51,10 @@ function deriveAddrFormat(addr: Address | MinimalAddress) {
 // return false if this is not possible, since sum knx-address-types cannot be converted into a Boolean value
 function addrValueToBoolean(event: BusEvent): boolean {
   if (typeof event.value === 'number' && event.type.match('DPT1|DPT2')) {
-    return Boolean(event.value);
+    return Boolean(event.value)
   }
-  log.error(
-    'Cannot convert KNX-event of type %s with value <%s> to boolean!',
-    event.type,
-    event.value
-  );
-  return false;
+  log.error('Cannot convert KNX-event of type %s with value <%s> to boolean!', event.type, event.value)
+  return false
 }
 
 function createAddress(props: MinimalAddress): MinimalAddress {
@@ -69,13 +65,13 @@ function createAddress(props: MinimalAddress): MinimalAddress {
     type: 'switch',
     func: 'light',
     control: 'none',
-  };
+  }
 
-  return Object.assign({}, addressDefaults, props);
+  return Object.assign({}, addressDefaults, props)
 }
 
 function dateTimeToDPT10Array(ts: Date): Array<number> {
-  return [getISODay(ts), ts.getHours(), ts.getMinutes(), ts.getSeconds()];
+  return [getISODay(ts), ts.getHours(), ts.getMinutes(), ts.getSeconds()]
 }
 
-export { addrValueToBoolean, createAddress, dateTimeToDPT10Array, deriveAddrFormat };
+export { addrValueToBoolean, createAddress, dateTimeToDPT10Array, deriveAddrFormat }

@@ -1,46 +1,46 @@
 /* @flow */
-import type { ServerState } from './types';
+import type { ServerState } from './types'
 
-import config from './config';
-import createBusStreams from './busStreams';
-import { addrMapToConsole, logger } from './lib/debug';
-import getClient from './client';
-import publish from './server';
-import setupCron from './cron';
-import setupScenes from './scenes';
-import startServices from './services';
-import automation from './automation';
+import config from './config'
+import createBusStreams from './busStreams'
+import { addrMapToConsole, logger } from './lib/debug'
+import getClient from './client'
+import publish from './server'
+import setupCron from './cron'
+import setupScenes from './scenes'
+import startServices from './services'
+import automation from './automation'
 
-const log = logger('backend:main');
+const log = logger('backend:main')
 
-const { version } = config;
+const { version } = config
 
 // Allow for clean restarts (e.g. when using pm2 or other process managers)
 const setupCleanupHandler = client => {
   process.on('SIGINT', () => {
-    log.debug('Received SIGINT. Cleaning up and exiting...');
-    client.close();
-    process.exit();
-  });
-};
+    log.debug('Received SIGINT. Cleaning up and exiting...')
+    client.close()
+    process.exit()
+  })
+}
 
 /* PENDING / DEBUGGING: Enable better debugging until we're stable here */
-process.on('unhandledRejection', r => log.error(r));
-const clientConnect$ = getClient(config);
+process.on('unhandledRejection', r => log.error(r))
+const clientConnect$ = getClient(config)
 
-const { busEvent$, busState$ } = createBusStreams();
+const { busEvent$, busState$ } = createBusStreams()
 
 // Start bus-services, like setting the current time on the (knx-) bus
-startServices();
+startServices()
 
 /* Should be connected to backend / deepstreamIO before continuing... */
 clientConnect$.observe({
   value(client) {
     // On reload/restarts/interrupt cleanup state
-    setupCleanupHandler(client);
+    setupCleanupHandler(client)
 
     // Load scenes from definitions-file and sync them to cloud, so other clients/frontends may use and invoke them
-    const scenes = setupScenes(client);
+    const scenes = setupScenes(client)
 
     const serverState: ServerState = {
       conf: config,
@@ -50,30 +50,30 @@ clientConnect$.observe({
       },
       client,
       scenes,
-    };
+    }
 
     /* Init + start chronological rules engine, including syncing with cloud */
-    setupCron(serverState);
+    setupCron(serverState)
 
-    automation().start(serverState);
+    automation().start(serverState)
 
     /* Setup and configure (websocket-/http-) server and pass event-emitters along
        for use in plugins et. al. */
-    publish(serverState);
+    publish(serverState)
 
-    log.debug(`Server [v${version}] initialized and up running`);
+    log.debug(`Server [v${version}] initialized and up running`)
 
     /* Start the stream by logging from it */
     if (config.knxd.isAvailable) {
-      busState$.map(addrMapToConsole);
+      busState$.map(addrMapToConsole)
     }
   },
   error(error) {
-    error('Connection error to deepstream-server occured:');
-    error(error);
+    error('Connection error to deepstream-server occured:')
+    error(error)
   },
   end() {
-    log.debug('deepstream-server connection established');
-    process.send('ready');
+    log.debug('deepstream-server connection established')
+    process.send('ready')
   },
-});
+})

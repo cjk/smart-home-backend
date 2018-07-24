@@ -1,9 +1,9 @@
 // @flow
 
-import { assoc, map } from 'ramda';
+import { assoc, map } from 'ramda'
 
-import type { Crontab } from '../types';
-import { normalizeTasks } from './util';
+import type { Crontab } from '../types'
+import { normalizeTasks } from './util'
 
 // Some default / example tasks
 // The following task-types are scheduled and dispatched automatically:
@@ -59,7 +59,7 @@ const crontab: Crontab = [
     lastRun: null,
     tasks: [{ targets: ['99/1/7'], act: 'off' }],
   },
-];
+]
 
 /* Normalizes crontab-structure
  *
@@ -67,7 +67,7 @@ const crontab: Crontab = [
  *
  */
 function loadCrontab() {
-  return map(j => assoc('tasks', normalizeTasks(j.tasks), j), crontab);
+  return map(j => assoc('tasks', normalizeTasks(j.tasks), j), crontab)
 }
 
-export default loadCrontab;
+export default loadCrontab

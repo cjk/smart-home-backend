@@ -1,9 +1,9 @@
 // @flow
 
-import suncalc from 'suncalc';
-import { DateTime } from 'luxon';
+import suncalc from 'suncalc'
+import { DateTime } from 'luxon'
 
-const times = suncalc.getTimes(new Date(), 48.6, 9.1);
+const times = suncalc.getTimes(new Date(), 48.6, 9.1)
 // { solarNoon: 2018-04-24T11:22:53.986Z,
 //   nadir: 2018-04-23T23:22:53.986Z,
 //   sunrise: 2018-04-24T04:17:39.192Z,
@@ -20,7 +20,7 @@ const times = suncalc.getTimes(new Date(), 48.6, 9.1);
 //   goldenHour: 2018-04-24T17:44:58.960Z }
 
 // now you can e.g.:
-const localSunrise = DateTime.fromISO(times.sunrise.toISOString());
+const localSunrise = DateTime.fromISO(times.sunrise.toISOString())
 // result:
 // DateTime {
 //   ts: 2018-04-24T06:17:39.192+02:00,
