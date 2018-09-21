@@ -6,8 +6,8 @@ import { logger } from '../lib/debug'
 
 const log = logger('backend:server')
 
-function publish(props: ServerState) {
-  busServer(props)
+function publish(state: ServerState) {
+  busServer(state)
   log.debug('==> Server started')
 }
 
