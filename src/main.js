@@ -6,6 +6,7 @@ import createBusStreams from './busStreams'
 import { addrMapToConsole, logger } from './lib/debug'
 import getClient from './client'
 import publish from './server'
+import { init_store } from './lib/store'
 import setupCron from './cron'
 import setupScenes from './scenes'
 import startServices from './services'
@@ -60,6 +61,8 @@ clientConnect$.observe({
     /* Setup and configure (websocket-/http-) server and pass event-emitters along
        for use in plugins et. al. */
     publish(serverState)
+    // Setup distributed store to save local and receive remote changes:
+    init_store(serverState)
 
     log.debug(`Server [v${version}] initialized and up running`)
 

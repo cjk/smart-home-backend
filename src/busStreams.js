@@ -45,16 +45,9 @@ const updateFromEvent = (currentState: AddressMap, event: BusEvent): AddressMap 
 export default function createBusStreams() {
   const { readableAddrMap } = (config.knx: KnxConf)
 
-  /* From all groupaddresses, returns only those with a readable-flag set (see
-     config.knx.readableAddr) */
-  // function initialStateWithReadableAddr(addresses) {
-  //   const addressFilter = new List(readableAddr);
-  //   return addresses.filter((v, k) => addressFilter.contains(k));
-  // }
-
   const initialstate = readableAddrMap
   /* DEBUGGING */
-  // log.debug(JSON.stringify(initialstate));
+  log.debug(JSON.stringify(initialstate))
 
   const mutatingEvents = ['write', 'response']
 
