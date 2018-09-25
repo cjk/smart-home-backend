@@ -5,7 +5,7 @@ import type { Observable } from 'kefir'
 export type BusState$ = Observable<Object>
 export type BusEvent$ = Observable<Object>
 
-export type AddressValue = number | number[] | typeof undefined
+export type AddressValue = number | number[] | null
 
 export type Address = {
   id: string,
