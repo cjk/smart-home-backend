@@ -4,6 +4,7 @@
 build
 coverage
 app
+radata
 
 # dependencies
 node_modules

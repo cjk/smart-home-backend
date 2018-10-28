@@ -47,7 +47,7 @@ export default function createBusStreams() {
 
   const initialstate = readableAddrMap
   /* DEBUGGING */
-  log.debug(JSON.stringify(initialstate))
+  // log.debug(JSON.stringify(initialstate))
 
   const mutatingEvents = ['write', 'response']
 

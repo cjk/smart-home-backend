@@ -53,6 +53,9 @@ const readableAddrList: Array<string> = [
   '10/1/0' /* EG Türen Haustür Kontakt via Binäreingang 1.1.47 Ausg. A-0  */,
   '11/1/0' /* WZ Steckd.-Erker West 2+3 (Stehlampe, ...) */,
   '11/2/0' /* OG Kind-2 / Daniel Steckdose Ost 1/5 via Schaltaktor 1.1.45 Ausg. 7 */,
+  '13/0/0' /* OG Hall-2 - Aktivität-Diele-OG */,
+  '13/1/0' /* EG KIT-2 - Aktivität-Küche-EZ-EG */,
+  '13/1/1' /* EG Hall-1 - Aktivität-Diele-EG */,
 ]
 
 const toAddressMap = (addrList: AddressList): AddressMap =>

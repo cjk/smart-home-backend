@@ -6,7 +6,7 @@ import createBusStreams from './busStreams'
 import { addrMapToConsole, logger } from './lib/debug'
 import getClient from './client'
 import publish from './server'
-import { initStore } from './lib/store'
+import { createStore } from './lib/store'
 import setupCron from './cron'
 import setupScenes from './scenes'
 import startServices from './services'
@@ -63,7 +63,7 @@ clientConnect$.observe({
     // DEPRECATED: the store should take over all remote / communication work - see below!
     publish(serverState)
     // Setup distributed store to save local and receive remote changes:
-    initStore(serverState)
+    createStore(serverState)
 
     log.debug(`Server [v${version}] initialized and up running`)
 
