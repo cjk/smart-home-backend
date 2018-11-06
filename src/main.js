@@ -6,7 +6,7 @@ import createBusStreams from './busStreams'
 import { addrMapToConsole, logger } from './lib/debug'
 import getClient from './client'
 import publish from './server'
-import { createStore } from './lib/store'
+import { createStore } from './store'
 import setupCron from './cron'
 import setupScenes from './scenes'
 import startServices from './services'
@@ -20,64 +20,52 @@ const { version } = config
 const setupCleanupHandler = client => {
   process.on('SIGINT', () => {
     log.debug('Received SIGINT. Cleaning up and exiting...')
-    client.close()
+    client.shutdown()
     process.exit()
   })
 }
 
 /* PENDING / DEBUGGING: Enable better debugging until we're stable here */
 process.on('unhandledRejection', r => log.error(r))
-const clientConnect$ = getClient(config)
 
 const { busEvent$, busState$ } = createBusStreams()
 
 // Start bus-services, like setting the current time on the (knx-) bus
 startServices()
 
-/* Should be connected to backend / deepstreamIO before continuing... */
-clientConnect$.observe({
-  value(client) {
-    // On reload/restarts/interrupt cleanup state
-    setupCleanupHandler(client)
+// TODO: REFACTOR
+// // Load scenes from definitions-file and sync them to cloud, so other clients/frontends may use and invoke them
+// const scenes = setupScenes(client)
 
-    // Load scenes from definitions-file and sync them to cloud, so other clients/frontends may use and invoke them
-    const scenes = setupScenes(client)
+const serverState: ServerState = {
+  conf: config,
+  streams: {
+    busEvent$,
+    busState$,
+  },
+  // scenes,
+}
 
-    const serverState: ServerState = {
-      conf: config,
-      streams: {
-        busEvent$,
-        busState$,
-      },
-      client,
-      scenes,
-    }
-
-    /* Init + start chronological rules engine, including syncing with cloud */
-    setupCron(serverState)
-
-    automation().start(serverState)
-
-    /* Setup and configure (websocket-/http-) server and pass event-emitters along
+/* Setup and configure (websocket-/http-) server and pass event-emitters along
        for use in plugins et. al. */
-    // DEPRECATED: the store should take over all remote / communication work - see below!
-    publish(serverState)
-    // Setup distributed store to save local and receive remote changes:
-    createStore(serverState)
+// DEPRECATED: the store should take over all remote / communication work - see below.
+// Also as of 30.10.2018 the publish-logic used 100% CPU after a while, thus it's deactivated for now!
+// publish(serverState)
+// Setup distributed store to save local and receive remote changes:
+const store = createStore(serverState)
 
-    log.debug(`Server [v${version}] initialized and up running`)
+// On reload/restarts/interrupt cleanup state
+setupCleanupHandler(store)
 
-    /* Start the stream by logging from it */
-    if (config.knxd.isAvailable) {
-      busState$.map(addrMapToConsole)
-    }
-  },
-  error(error) {
-    error('Connection error to deepstream-server occured:')
-    error(error)
-  },
-  end() {
-    log.debug('deepstream-server connection established')
-    process.send('ready')
-  },
-})
+// TODO: REFACTOR
+// /* Init + start chronological rules engine, including syncing with cloud */
+// setupCron(serverState)
+
+automation().start(serverState)
+
+log.debug(`Server [v${version}] initialized and up running`)
+
+/* Start the stream by logging from it */
+if (config.knxd.isAvailable) {
+  busState$.map(addrMapToConsole)
+}

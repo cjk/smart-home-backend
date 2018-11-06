@@ -27,6 +27,8 @@ function runTask(task: Task, callback: Callback) {
   log.debug(`Running task ${JSON.stringify(task)}...`)
   eventEmitter.emit('taskStarted', [task])
 
+  // TODO / PENDING: #createAddress exists twice - once in knx/address and once in knx/knx-lib; use the one in knx/address and
+  // remove knx-lib#createAddress !
   const address: MinimalAddress = createAddress({
     id: task.target,
     func: 'light',

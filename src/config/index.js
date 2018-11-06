@@ -4,8 +4,8 @@
 import type { Address, AddressMap, AddressList, Config } from '../types'
 
 import * as R from 'ramda'
-import createAddress from '../knx/address'
 import addressList from './group-address-list'
+import { createAddress } from '../knx/address'
 
 const readableAddrList: Array<string> = [
   '1/1/0' /* UG Hobby1 Präsenzmelder Sperre f. Schaltung Licht Hobby-Keller-1+2 */,
