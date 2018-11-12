@@ -100,8 +100,7 @@ export type Task = {
 export type TaskEvent = Task & { jobId: string }
 
 export type CrontabTask = {
-  targets: Array<string>,
-  act: string,
+  [string]: 'on' | 'off',
 }
 
 export type CronJob = {
@@ -129,7 +128,7 @@ export type TickState = {
 export type Scene = {
   id: string,
   name: string,
-  tasks: Array<CrontabTask>,
+  tasks: CrontabTask,
 }
 export type Scenes = Array<Scene>
 

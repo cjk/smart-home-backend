@@ -37,12 +37,12 @@ const fromAddrUpdateStream = addrNodeLst =>
 // This first saves the current knx-bus-state into our peer-db to make it available to other peers.
 // Then it subscribes to our knx-bus-event stream and syncs those events to the peer-db when they happen.
 const handleKnxLivestate = ({ busState$, busEvent$ }) => {
-  const knxAddrState = gun.get('knxAddrList')
+  const peerKnxAddrLst = gun.get('knxAddrList')
 
   // 1. Load initial knx-address state into the store:
   busState$.take(1).observe(
     function onValue(addrLst) {
-      R.mapObjIndexed((addr, key) => knxAddrState.get(key).put(addr), addrLst)
+      R.mapObjIndexed((addr, key) => peerKnxAddrLst.get(key).put(addr), addrLst)
     },
 
     function onError(err) {
@@ -60,7 +60,7 @@ const handleKnxLivestate = ({ busState$, busEvent$ }) => {
       busState$.take(1).onValue((nextState: AddressMap) => {
         const addrId = event.dest
         if (R.has(addrId, nextState)) {
-          knxAddrState.get(addrId).put(nextState[addrId])
+          peerKnxAddrLst.get(addrId).put(nextState[addrId])
           log.debug(`Updated store with new value for address <${addrId}>: %O`, nextState[addrId])
         }
       })
@@ -76,7 +76,7 @@ const handleKnxLivestate = ({ busState$, busEvent$ }) => {
   )
 
   // 3. Listen to remote address-changes and merge them into our local livestate
-  K.combine([fromAddrUpdateStream(knxAddrState)], [busState$], (addr: Address, addrList: AddressMap) => ({
+  K.combine([fromAddrUpdateStream(peerKnxAddrLst)], [busState$], (addr: Address, addrList: AddressMap) => ({
     addr,
     addrList,
   }))
@@ -94,10 +94,24 @@ const handleKnxLivestate = ({ busState$, busEvent$ }) => {
     })
 }
 
+const syncScenesToCloud = scenes => {
+  const peerSceneLst = gun.get('scenes')
+
+  R.map(scene => {
+    peerSceneLst.get(scene.id).put(scene)
+  }, scenes)
+
+  // // DEBUGGING:
+  // log.debug('Currently synced scenes:')
+  // peerSceneLst.map().once(e => log.debug(JSON.stringify(e)))
+}
+
 function createStore(state: ServerState) {
   log.debug('Initializing store...')
 
   handleKnxLivestate(state.streams)
+
+  syncScenesToCloud(state.scenes)
 
   return {
     peer: gun,

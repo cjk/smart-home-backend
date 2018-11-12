@@ -4,7 +4,6 @@ import type { ServerState } from './types'
 import config from './config'
 import createBusStreams from './busStreams'
 import { addrMapToConsole, logger } from './lib/debug'
-import getClient from './client'
 import publish from './server'
 import { createStore } from './store'
 import setupCron from './cron'
@@ -33,9 +32,8 @@ const { busEvent$, busState$ } = createBusStreams()
 // Start bus-services, like setting the current time on the (knx-) bus
 startServices()
 
-// TODO: REFACTOR
-// // Load scenes from definitions-file and sync them to cloud, so other clients/frontends may use and invoke them
-// const scenes = setupScenes(client)
+// Load scenes from definitions-file and sync them to cloud, so other clients/frontends may use and invoke them
+const scenes = setupScenes()
 
 const serverState: ServerState = {
   conf: config,
@@ -43,7 +41,7 @@ const serverState: ServerState = {
     busEvent$,
     busState$,
   },
-  // scenes,
+  scenes,
 }
 
 /* Setup and configure (websocket-/http-) server and pass event-emitters along

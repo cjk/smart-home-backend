@@ -8,22 +8,35 @@ const scenes: Scenes = [
   {
     id: 'scene/Abends',
     name: 'Abends',
-    tasks: [{ targets: ['1/2/13', '1/2/15'], act: 'on' }],
+    tasks: {
+      '1/2/13': 'on',
+      '1/2/15': 'on',
+    },
   },
   {
     id: 'scene/Abendessen',
     name: 'Abendessen',
-    tasks: [{ targets: ['1/2/13', '1/2/15', '1/2/4', '1/2/7'], act: 'on' }],
+    tasks: {
+      '1/2/13': 'on',
+      '1/2/15': 'on',
+      '1/2/4': 'on',
+      '1/2/7': 'on',
+    },
   },
   {
     id: 'scene/Arbeiten',
     name: 'Arbeiten',
-    tasks: [{ targets: ['1/1/7'], act: 'on' }],
+    tasks: {
+      '1/1/7': 'on',
+    },
   },
   {
     id: 'scene/Test001',
     name: 'Test-Szene',
-    tasks: [{ targets: ['1/1/5'], act: 'on' }, { targets: ['1/1/6'], act: 'off' }],
+    tasks: {
+      '1/1/5': 'on',
+      '1/1/6': 'off',
+    },
   },
 ]
 
