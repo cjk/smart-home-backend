@@ -57,7 +57,7 @@ setupCleanupHandler(store)
 
 // TODO: REFACTOR
 // /* Init + start chronological rules engine, including syncing with cloud */
-// setupCron(serverState)
+setupCron(serverState, store)
 
 automation().start(serverState)
 

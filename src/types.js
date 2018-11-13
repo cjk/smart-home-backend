@@ -111,7 +111,7 @@ export type CronJob = {
   scheduled: boolean,
   running: boolean,
   lastRun: Date | null,
-  tasks: Array<CrontabTask | Task>,
+  tasks: CrontabTask | Task,
 }
 
 export type Crontab = Array<CronJob>
@@ -138,7 +138,6 @@ export type ServerState = {
     busState$: BusState$,
     busEvent$: BusEvent$,
   },
-  client: Function,
   scenes: Scenes,
 }
 
@@ -176,4 +175,10 @@ export type AutomataStateProps = {
   event: BusEvent,
   env: Environment,
   busState: HomeState,
+}
+
+export type Store = {
+  peer: any,
+  crontabNode: any,
+  shutdown: Function,
 }

@@ -1,27 +1,28 @@
 /* @flow */
 import type { Observable } from 'kefir'
-import type { Crontab, ServerState, TickState } from '../types'
+import type { Crontab, ServerState, Store, TickState } from '../types'
 
-// import logger from 'debug';
+// import logger from 'debug'
 // import { debugPrettyCrontab } from './util';
 
+import * as R from 'ramda'
 import K from 'kefir'
+
 import { createTaskEventStream, processTaskEvents } from './taskProcessor'
 import scheduleTick from './schedule'
 import { syncCrontabWithCloud, pushJobToCloud } from './cloudSync'
 import garbageCollect from './garbageCollector'
-import { differenceWith, isEmpty } from 'ramda'
 
-// const debug = logger('smt:cron-tick');
+// const debug = logger('smt:cron-tick')
 
 /* How often to check crontab and schedule / dispatch jobs */
 const tickInterval = 1000
 
 const eqJobs = (j1, j2) => j1.lastRun === j2.lastRun && j1.running === j2.running && j1.scheduled === j2.scheduled
 
-export default function init({ streams: { busState$ }, client }: ServerState) {
+export default function init({ streams: { busState$ } }: ServerState, store: Store) {
   const tick$: Observable<number> = K.interval(tickInterval, 1)
-  const crontabFromCloud$: Observable<Crontab> = syncCrontabWithCloud(client)
+  const crontabFromCloud$: Observable<Crontab> = syncCrontabWithCloud(store)
 
   const crontick$ = K.combine([tick$], [crontabFromCloud$], (tick, crontab) => crontab)
 
@@ -32,7 +33,7 @@ export default function init({ streams: { busState$ }, client }: ServerState) {
       crontab,
       taskEvents,
       state,
-      client,
+      // client,
     }))
       /* Jobs and tasks get synced (from last tick), scheduled and (indirectly) run from here: */
       .scan(scheduleTick)
@@ -42,8 +43,8 @@ export default function init({ streams: { busState$ }, client }: ServerState) {
       .scan((prev, cur) => {
         const cp = prev.crontab
         const cc = cur.crontab
-        const changedJobs = differenceWith(eqJobs, cc, cp)
-        if (!isEmpty(changedJobs)) pushJobToCloud(client, changedJobs)
+        const changedJobs = R.differenceWith(eqJobs, cc, cp)
+        if (!R.isEmpty(changedJobs)) pushJobToCloud(store, changedJobs)
         return cur
       })
       // DEBUG

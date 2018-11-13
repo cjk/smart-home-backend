@@ -115,6 +115,9 @@ function createStore(state: ServerState) {
 
   return {
     peer: gun,
+    crontabNode() {
+      return gun.get('crontab')
+    },
     shutdown() {
       // abort + cleanup logic goes here:
       gun.get('knxAddrList').off()

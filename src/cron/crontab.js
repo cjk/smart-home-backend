@@ -19,7 +19,7 @@ const crontab: Crontab = [
     scheduled: false,
     running: false,
     lastRun: null,
-    tasks: [{ targets: ['1/3/1'], act: 'off' }],
+    tasks: { '1/3/1': 'off' },
   },
   {
     jobId: 'cronjobs/j1esevoj-2nhotlynd8i',
@@ -29,25 +29,19 @@ const crontab: Crontab = [
     scheduled: false,
     running: false,
     lastRun: null,
-    tasks: [
-      {
-        targets: [
-          '11/1/0',
-          '1/2/15',
-          '1/2/10',
-          '1/2/5',
-          '1/2/3',
-          '1/2/12',
-          '1/2/14',
-          '1/2/5',
-          '1/2/13',
-          '1/2/7',
-          '1/2/1',
-          '1/2/4',
-        ],
-        act: 'off',
-      },
-    ],
+    tasks: {
+      '11/1/0': 'off',
+      '1/2/15': 'off',
+      '1/2/10': 'off',
+      '1/2/5': 'off',
+      '1/2/3': 'off',
+      '1/2/12': 'off',
+      '1/2/14': 'off',
+      '1/2/13': 'off',
+      '1/2/7': 'off',
+      '1/2/1': 'off',
+      '1/2/4': 'off',
+    },
   },
   {
     jobId: 'cronjobs/j1esevoj-3pf3chcujrg',
@@ -57,7 +51,7 @@ const crontab: Crontab = [
     scheduled: false,
     running: false,
     lastRun: null,
-    tasks: [{ targets: ['99/1/7'], act: 'off' }],
+    tasks: { '99/1/7': 'off' },
   },
 ]
 
@@ -66,7 +60,7 @@ const crontab: Crontab = [
  * - Each task-target is extracted into it's own task-entry and enriched with meta-attributes
  *
  */
-function loadCrontab() {
+function loadCrontab(): Crontab {
   return map(j => assoc('tasks', normalizeTasks(j.tasks), j), crontab)
 }
 
