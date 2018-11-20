@@ -48,9 +48,10 @@
     "eslint-plugin-import": "^2.9.0"
   },
   "scripts": {
+    "build": "babel src --out-dir app",
     "dev": "env DEBUG='smt:*,error,debug' PORT=8001 NODE_ENV=development ./node_modules/.bin/nodemon ./app/index.js",
     "prod": "env DEBUG='error' PORT=8001 NODE_ENV=production node ./app/index.js",
-    "start": "env PORT=8001 ./app/index.js"
+    "watch": "babel src --watch --out-dir app"
   },
   "nodemonConfig": {
     "ignore": [
