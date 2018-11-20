@@ -84,6 +84,12 @@ export type Config = {
   version: string,
 }
 
+export type Store = {
+  peer: any,
+  crontabNode: Function,
+  shutdown: Function,
+}
+
 export type Callback = (err: ?Error, res: Object) => void
 
 // Cron types
@@ -122,7 +128,7 @@ export type TickState = {
   crontab: Crontab,
   state: HomeState,
   taskEvents: Array<Task>,
-  client: Function,
+  store: Store,
 }
 
 export type Scene = {

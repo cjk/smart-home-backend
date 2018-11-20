@@ -11,7 +11,7 @@ import K from 'kefir'
 import { createTaskEventStream, processTaskEvents } from './taskProcessor'
 import scheduleTick from './schedule'
 import { syncCrontabWithCloud, pushJobToCloud } from './cloudSync'
-import garbageCollect from './garbageCollector'
+import cleanupCrontab from './garbageCollector'
 
 // const debug = logger('smt:cron-tick')
 
@@ -21,6 +21,8 @@ const tickInterval = 1000
 const eqJobs = (j1, j2) => j1.lastRun === j2.lastRun && j1.running === j2.running && j1.scheduled === j2.scheduled
 
 export default function init({ streams: { busState$ } }: ServerState, store: Store) {
+  const cleanupCrontabWStore = R.curry(cleanupCrontab)(store)
+
   const tick$: Observable<number> = K.interval(tickInterval, 1)
   const crontabFromCloud$: Observable<Crontab> = syncCrontabWithCloud(store)
 
@@ -33,12 +35,9 @@ export default function init({ streams: { busState$ } }: ServerState, store: Sto
       crontab,
       taskEvents,
       state,
-      // client,
     }))
       /* Jobs and tasks get synced (from last tick), scheduled and (indirectly) run from here: */
       .scan(scheduleTick)
-      // Run garbage collector to remove ended one-shot jobs (like scene-actions, ...)
-      .scan(garbageCollect)
       // Compare cronjobs for changes since last tick and update changed jobs to cloud
       .scan((prev, cur) => {
         const cp = prev.crontab
@@ -47,6 +46,8 @@ export default function init({ streams: { busState$ } }: ServerState, store: Sto
         if (!R.isEmpty(changedJobs)) pushJobToCloud(store, changedJobs)
         return cur
       })
+      // Run garbage collector to remove ended one-shot jobs (like scene-actions, ...) and sync deleted jobs to cloud
+      .scan(cleanupCrontabWStore)
       // DEBUG
       //       .onValue(({ crontab }) => log.debug(debugPrettyCrontab(crontab)))
       /* Subscribe to cron-stream and return a subscription object (for handling unsubscribe) */
