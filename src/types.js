@@ -5,7 +5,7 @@ import type { Observable } from 'kefir'
 export type BusState$ = Observable<Object>
 export type BusEvent$ = Observable<Object>
 
-export type AddressValue = number | number[] | typeof undefined
+export type AddressValue = number | number[] | null
 
 export type Address = {
   id: string,
@@ -84,6 +84,12 @@ export type Config = {
   version: string,
 }
 
+export type Store = {
+  peer: any,
+  crontabNode: Function,
+  shutdown: Function,
+}
+
 export type Callback = (err: ?Error, res: Object) => void
 
 // Cron types
@@ -100,8 +106,7 @@ export type Task = {
 export type TaskEvent = Task & { jobId: string }
 
 export type CrontabTask = {
-  targets: Array<string>,
-  act: string,
+  [string]: 'on' | 'off',
 }
 
 export type CronJob = {
@@ -112,7 +117,7 @@ export type CronJob = {
   scheduled: boolean,
   running: boolean,
   lastRun: Date | null,
-  tasks: Array<CrontabTask | Task>,
+  tasks: CrontabTask | Task,
 }
 
 export type Crontab = Array<CronJob>
@@ -123,13 +128,13 @@ export type TickState = {
   crontab: Crontab,
   state: HomeState,
   taskEvents: Array<Task>,
-  client: Function,
+  store: Store,
 }
 
 export type Scene = {
   id: string,
   name: string,
-  tasks: Array<CrontabTask>,
+  tasks: CrontabTask,
 }
 export type Scenes = Array<Scene>
 
@@ -139,7 +144,6 @@ export type ServerState = {
     busState$: BusState$,
     busEvent$: BusEvent$,
   },
-  client: Function,
   scenes: Scenes,
 }
 
@@ -177,4 +181,10 @@ export type AutomataStateProps = {
   event: BusEvent,
   env: Environment,
   busState: HomeState,
+}
+
+export type Store = {
+  peer: any,
+  crontabNode: any,
+  shutdown: Function,
 }

@@ -1,127 +1,74 @@
-/* @flow */
+// @flow
 
-import type { CronJob, Crontab } from '../types'
+import type { CronJob, Crontab, Store } from '../types'
 
 import K from 'kefir'
+import * as R from 'ramda'
 import loadCrontab from './crontab'
 // import { debugPrettyCrontab } from './util';
-import { append, join, map, pluck, prop, propEq, reject } from 'ramda'
 import { logger } from '../lib/debug'
 
-/* Flowtype definitions */
-type NewJob = {
-  added: CronJob,
-}
-
-type RemovedJob = {
-  removed: string,
-}
-
-type ChangeSet = NewJob | RemovedJob
-
-type CrontabChanges = {
-  changes: ChangeSet,
-  crontab: Crontab,
+type CrontabObj = {
+  [string]: CronJob,
 }
 
 const log = logger('backend:cronCloudSync')
 
 /* Load and transform initial crontab entries */
-const initialCrontab = loadCrontab()
+const initialCrontab: Crontab = loadCrontab()
 log.debug(`Loaded crontab with ${initialCrontab.length} entries`)
+// log.debug(initialCrontab)
 
-function syncCrontabWithCloud(client: Function) {
-  const cronjobLst = client.record.getList('smartHome/cronjobs')
-  cronjobLst.setEntries([])
+function syncCrontabWithCloud(store: Store) {
+  const crontabNode = store.crontabNode()
 
-  const addLstAddHndl = () =>
-    K.stream(emitter => {
-      cronjobLst.on('entry-added', jobId => {
-        log.debug(`ADD of new cronjob with jobId <${jobId}> detected`)
-        const newJobRec = client.record.getRecord(jobId)
-        newJobRec.whenReady(record => emitter.emit({ added: record.get() }))
-      })
-    })
+  const crontab: CrontabObj = R.reduce((acc, cronjob) => ({ [cronjob.jobId]: cronjob, ...acc }), {}, initialCrontab)
 
-  /* Handle removed job-list entries */
-  const addLstRemoveHndl = () =>
-    K.stream(emitter => {
-      cronjobLst.on('entry-removed', jobId => {
-        log.debug(`REMOVE of new cronjob with jobId <${jobId}> detected`)
-        emitter.emit({ removed: jobId })
-      })
-    })
+  // Experimental: Wait some time before starting cron-stream after setting remote/local crontab.
+  // see also usage of #skipUntilBy below.
+  const crontabWasStored = K.fromCallback(cb => crontabNode.put(crontab, cb())).delay(250)
 
-  const syncToCloud = lst => {
-    log.debug('Now syncing local crontab to cloud!')
-    map(j => {
-      const newJobRecord = client.record.getRecord(j.jobId)
-      newJobRecord.whenReady(record => {
-        record.set(j)
-        lst.addEntry(j.jobId)
-        // DEBUG
-        // log.debug(`Record set to ${JSON.stringify(j)} `);
-      })
-      return j
-    })(initialCrontab)
-  }
+  const cron$ = K.stream(jobEmitter => {
+    crontabNode
+      // filter out null -> deleted jobs until we someday actually garbage-collect them
+      .map(j => (j === null ? undefined : j))
+      // meaning we're listening to new cronjobs from the cloud, but not for changes in existing ones! (-> #on)
+      .once(
+        job => {
+          K.stream(taskEmitter =>
+            crontabNode
+              .get(job.jobId)
+              .get('tasks')
+              .map()
+              .once(t => taskEmitter.emit(t))
+          )
+            .map(t => R.dissoc('_', t))
+            .scan((tasks, task) => R.append(task, tasks), [])
+            .onValue(tasks => jobEmitter.emit(R.assoc('tasks', tasks, R.dissoc('_', job))))
+        },
+        { change: true }
+      )
+    return () => crontabNode.map().off()
+  }).scan((prevCrontab: Crontab, updJob: CronJob): Crontab => {
+    const idx = R.indexOf(R.find(R.propEq('jobId', updJob.jobId), prevCrontab), prevCrontab)
+    // // For DEBUGGING updated cron-jobs:
+    // log.debug(`Job #${updJob.jobId} was updated: ${JSON.stringify(updJob)}`)
+    return R.update(idx, updJob, prevCrontab)
+  }, initialCrontab)
 
-  const cron$ = K.fromCallback(cb => {
-    cronjobLst.whenReady(lst => {
-      syncToCloud(lst)
-      cb(lst)
-    })
-  }).flatMap(
-    lst =>
-      /* Handle added / remove job-list entries */
-      K.merge([addLstAddHndl(), addLstRemoveHndl()]).scan((prev: Crontab, cur: CrontabChanges) => {
-        const jobAdded = prop('added', cur)
-        const jobIdRemoved = prop('removed', cur)
-        if (jobAdded) {
-          //           log.debug(`Adding job to crontab: ${JSON.stringify(jobAdded)}`);
-          return append(jobAdded, prev)
-        }
-        if (jobIdRemoved) {
-          //           log.debug(`Removing job from crontab: ${JSON.stringify(jobIdRemoved)}`);
-          return reject(j => propEq('jobId', jobIdRemoved, j), prev)
-        }
-        return prev
-      }, [])
-    //       .spy('crontab')
-  )
-
-  /* TESTING + DEBUGGING */
-  // setTimeout(() => {
-  //   const newJobRecord = client.record.getRecord('fake/111');
-  //   newJobRecord.whenReady(record => {
-  //     record.set({ jobId: 'fake/111', type: 'tester' });
-  //     cronjobLst.addEntry('fake/111');
-  //     log.debug(
-  //       `FAKE-Record set to ${JSON.stringify(newJobRecord.get())} `
-  //     );
-  //   });
-  // }, 2000);
-  // setTimeout(() => {
-  //   const newJobRecord = client.record.getRecord('fake/222');
-  //   newJobRecord.whenReady(record => {
-  //     record.set({ jobId: 'fake/222', type: 'tester' });
-  //     cronjobLst.addEntry('fake/222');
-  //     log.debug(
-  //       `FAKE-Record set to ${JSON.stringify(newJobRecord.get())} `
-  //     );
-  //   });
-  // }, 3000);
-  // setTimeout(() => {
-  //   cronjobLst.removeEntry('fake/111');
-  //   log.debug('FAKE-Record removed from list');
-  // }, 5500);
-
-  return cron$
+  // Allow Peer-graph to settle before start observing values
+  return cron$.skipUntilBy(crontabWasStored)
 }
 
-function pushJobToCloud(client: Function, jobs: Array<CronJob>) {
-  log.debug(`Syncing back job <${join(', ', pluck('name', jobs))}> to cloud.`)
-  map(j => client.record.setData(j.jobId, j, err => log.debug(`Failed to update record ${j.name}: ${err}`)), jobs)
+// Write changes to jobs we modified locally back into cloud
+function pushJobToCloud(store: any, jobs: Array<CronJob>) {
+  log.debug(`Syncing back job <${R.join(', ', R.pluck('name', jobs))}> to cloud.`)
+  R.map(j => {
+    store
+      .crontabNode()
+      .get(j.jobId)
+      .put(j)
+  }, jobs)
 }
 
 export { syncCrontabWithCloud, pushJobToCloud }

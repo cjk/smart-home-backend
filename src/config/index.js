@@ -4,8 +4,8 @@
 import type { Address, AddressMap, AddressList, Config } from '../types'
 
 import * as R from 'ramda'
-import createAddress from '../knx/address'
 import addressList from './group-address-list'
+import { createAddress } from '../knx/address'
 
 const readableAddrList: Array<string> = [
   '1/1/0' /* UG Hobby1 Präsenzmelder Sperre f. Schaltung Licht Hobby-Keller-1+2 */,
@@ -53,6 +53,9 @@ const readableAddrList: Array<string> = [
   '10/1/0' /* EG Türen Haustür Kontakt via Binäreingang 1.1.47 Ausg. A-0  */,
   '11/1/0' /* WZ Steckd.-Erker West 2+3 (Stehlampe, ...) */,
   '11/2/0' /* OG Kind-2 / Daniel Steckdose Ost 1/5 via Schaltaktor 1.1.45 Ausg. 7 */,
+  '13/0/0' /* OG Hall-2 - Aktivität-Diele-OG */,
+  '13/1/0' /* EG KIT-2 - Aktivität-Küche-EZ-EG */,
+  '13/1/1' /* EG Hall-1 - Aktivität-Diele-EG */,
 ]
 
 const toAddressMap = (addrList: AddressList): AddressMap =>

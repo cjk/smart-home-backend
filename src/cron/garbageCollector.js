@@ -11,10 +11,9 @@ import { logger } from '../lib/debug'
 
 const log = logger('backend:cron-gc')
 
-export default function garbageCollect(prev: TickState, next: TickState) {
+export default function garbageCollect(store: any, prev: TickState, next: TickState) {
   const p = prev.crontab
   const c = next.crontab
-  const { client } = next
 
   // Was there a running job in last tick?
   const isTempJob = propEq('repeat', 'oneShot')
@@ -46,10 +45,10 @@ export default function garbageCollect(prev: TickState, next: TickState) {
 
   log.debug(`Removing task(s) <${join('|', garbageJobIds)}> from crontab`)
 
-  // Propagate crontab-changes to network-data-store aka "cloud":
-  client.record.getList('smartHome/cronjobs').whenReady(lst => {
-    lst.removeEntry(R.head(garbageJobIds))
-  })
+  store
+    .crontabNode()
+    .get(R.head(garbageJobIds))
+    .put(null)
 
   return next
 }
