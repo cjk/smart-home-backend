@@ -78,11 +78,6 @@ const config: Config = {
     port: process.env.KNXD_PORT,
     isAvailable: true,
   },
-  wsServer: {
-    host: process.env.DEEPSTREAM_ADDR,
-    port: process.env.DEEPSTREAM_PORT,
-    user: 'smartHomeBackend',
-  },
   /* Do not really access KNX-bus */
   commands: {
     simulate: false,
@@ -100,7 +95,7 @@ const config: Config = {
     addressMap,
     readableAddrMap,
   },
-  version: '1.1.3-20180418',
+  version: '1.2.0-20181012',
 }
 
 export default config

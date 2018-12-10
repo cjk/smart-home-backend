@@ -4,7 +4,6 @@ import type { ServerState } from './types'
 import config from './config'
 import createBusStreams from './busStreams'
 import { addrMapToConsole, logger } from './lib/debug'
-import publish from './server'
 import { createStore } from './store'
 import setupCron from './cron'
 import setupScenes from './scenes'
@@ -16,10 +15,10 @@ const log = logger('backend:main')
 const { version } = config
 
 // Allow for clean restarts (e.g. when using pm2 or other process managers)
-const setupCleanupHandler = client => {
+const setupCleanupHandler = store => {
   process.on('SIGINT', () => {
     log.debug('Received SIGINT. Cleaning up and exiting...')
-    client.shutdown()
+    store.shutdown()
     process.exit()
   })
 }
@@ -44,19 +43,17 @@ const serverState: ServerState = {
   scenes,
 }
 
-/* Setup and configure (websocket-/http-) server and pass event-emitters along
-       for use in plugins et. al. */
-// DEPRECATED: the store should take over all remote / communication work - see below.
-// Also as of 30.10.2018 the publish-logic used 100% CPU after a while, thus it's deactivated for now!
-// publish(serverState)
 // Setup distributed store to save local and receive remote changes:
 const store = createStore(serverState)
 
 // On reload/restarts/interrupt cleanup state
 setupCleanupHandler(store)
 
-// TODO: REFACTOR
-// /* Init + start chronological rules engine, including syncing with cloud */
+// TODO: The cron-engine was left as is after migrating from deepstream to gundb. Thus, both work rather inefficiently
+// together; data needs to be transformed from/to the cron-engine, e.g. it makes use of arrays which gundb doesn't
+// support.
+// So consider refactoring the cron-engine for better GunDB-alignment, which should result uin much less glue-code!
+/* Init + start chronological rules engine, including syncing with cloud */
 setupCron(serverState, store)
 
 automation().start(serverState)

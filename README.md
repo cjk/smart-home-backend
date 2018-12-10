@@ -6,7 +6,7 @@
 
 - Right now expects a [KNX](https://en.wikipedia.org/wiki/KNX_(standard))-based backend, but this can be changed pretty easily if your home runs on something else.
 
-- Uses Websockets to communicate with a realtime datastore (deepstream.io) so you can exchange messages with the bus real fast and bi-directional.
+- Uses Websockets to communicate with a realtime datastore (GunDB) so you can exchange messages with the bus real fast and bi-directional.
 
 - Built using modern functional reactive technologies, for clean, readable code and easy to understand program-flow.
 
@@ -14,13 +14,7 @@ This is a NodeJS CLI application, in order to visualize what is going on on your
 
 ## Usage
 
-### For development, start build-process and watcher with hot-reloading enabled using gulp:
-
-```js
-gulp
-```
-
-…then start the server:
+### For development, start build-process and watcher with hot-reloading enabled:
 
 ```js
 yarn run dev
