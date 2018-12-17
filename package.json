@@ -16,7 +16,7 @@
     "automation",
     "realtime"
   ],
-  "author": "@cjk",
+  "author": "Claus Klingberg <cjk@pobox.com>",
   "license": "GPL-2.0",
   "homepage": "https://github.com/cjk/smart-home-backend#readme",
   "dependencies": {
@@ -24,7 +24,7 @@
     "debug": "^4.1.0",
     "del": "^3.0.0",
     "dotenv": "^6.1.0",
-    "eibd": "^0.4.0",
+    "eibd": "^0.4.2",
     "gun": "^0.9.99997",
     "kefir": "^3.8.2",
     "luxon": "^1.6.2",
