@@ -83,7 +83,7 @@ const handleKnxLivestate = ({ busState$, busEvent$ }) => {
     .filter(({ addr }) => isCompleteAddress(addr))
     .observe(function onValue({ addr, addrList }) {
       const oldValue = addrList[addr.id].value
-      // log.debug(`Someone changed address <${addr.id}> to %O`, addr)
+      log.debug(`Some remote peer changed address <${addr.id}> to <${addr.value}>`)
       if (oldValue !== addr.value) {
         try {
           writeGroupAddr(createAddress(R.dissoc('_', addr)))

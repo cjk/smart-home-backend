@@ -95,7 +95,7 @@ const config: Config = {
     addressMap,
     readableAddrMap,
   },
-  version: '1.2.0-20181012',
+  version: '1.2.1-20190104',
 }
 
 export default config
