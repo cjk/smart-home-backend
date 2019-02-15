@@ -6,7 +6,7 @@
 
 import type { TickState } from '../types'
 
-import R, { and, compose, converge, filter, isEmpty, join, map, pick, prop, propEq } from 'ramda'
+import R, { allPass, and, compose, converge, filter, isEmpty, join, map, pick, prop, propEq } from 'ramda'
 import { logger } from '../lib/debug'
 
 const log = logger('backend:cron-gc')
@@ -19,10 +19,11 @@ export default function garbageCollect(store: any, prev: TickState, next: TickSt
   const isTempJob = propEq('repeat', 'oneShot')
   const isRunning = propEq('running', true)
   const notRunning = propEq('running', false)
+  const notExpired = j => Date.now() - j.createdAt < 60000
 
   // TODO: Instead of #converge use #allPass
   const runningTemporaryJobs = converge(and, [isTempJob, isRunning])
-  const endedTemporaryJobs = converge(and, [isTempJob, notRunning])
+  const endedOrNotExpiredTemporaryJobs = allPass([isTempJob, notRunning, notExpired])
 
   const pastRunningJobIds = compose(
     map(pick(['jobId'])),
@@ -36,7 +37,7 @@ export default function garbageCollect(store: any, prev: TickState, next: TickSt
 
   const presentEndedOneshots = compose(
     map(pick(['jobId'])),
-    filter(endedTemporaryJobs)
+    filter(endedOrNotExpiredTemporaryJobs)
   )(c)
 
   const garbageJobIds = map(prop('jobId'), R.intersection(pastRunningJobIds, presentEndedOneshots))

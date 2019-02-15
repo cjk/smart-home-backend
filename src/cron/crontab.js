@@ -1,8 +1,7 @@
 // @flow
 
-import { assoc, map } from 'ramda'
-
 import type { Crontab } from '../types'
+import * as R from 'ramda'
 import { normalizeTasks } from './util'
 
 // Some default / example tasks
@@ -61,7 +60,10 @@ const crontab: Crontab = [
  *
  */
 function loadCrontab(): Crontab {
-  return map(j => assoc('tasks', normalizeTasks(j.tasks), j), crontab)
+  return R.pipe(
+    R.map(j => R.assoc('tasks', normalizeTasks(j.tasks), j)),
+    R.map(j => R.assoc('createdAt', Date.now(), j))
+  )(crontab)
 }
 
 export default loadCrontab

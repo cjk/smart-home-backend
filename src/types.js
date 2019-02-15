@@ -118,6 +118,7 @@ export type CronJob = {
   running: boolean,
   lastRun: Date | null,
   tasks: CrontabTask | Task,
+  createdAt: number,
 }
 
 export type Crontab = Array<CronJob>

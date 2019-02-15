@@ -5,7 +5,7 @@ import type { CronJob, Crontab, Store } from '../types'
 import K from 'kefir'
 import * as R from 'ramda'
 import loadCrontab from './crontab'
-// import { debugPrettyCrontab } from './util';
+import { debugPrettyCrontab, normalizeTasks } from './util'
 import { logger } from '../lib/debug'
 
 type CrontabObj = {
@@ -63,12 +63,15 @@ function syncCrontabWithCloud(store: Store) {
 // Write changes to jobs we modified locally back into cloud
 function pushJobToCloud(store: any, jobs: Array<CronJob>) {
   log.debug(`Syncing back job <${R.join(', ', R.pluck('name', jobs))}> to cloud.`)
-  R.map(j => {
-    store
-      .crontabNode()
-      .get(j.jobId)
-      .put(j)
-  }, jobs)
+  R.pipe(
+    R.map(j => R.assoc('tasks', normalizeTasks(j.tasks), j)),
+    R.map(j => {
+      store
+        .crontabNode()
+        .get(j.jobId)
+        .put(j)
+    })
+  )(jobs)
 }
 
 export { syncCrontabWithCloud, pushJobToCloud }
