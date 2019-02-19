@@ -30,11 +30,15 @@ import {
   T,
   update,
 } from 'ramda'
-import { anyRunningTasks, onlyEndedTasks, setEnded, setLastRun, setRunning, syncWithPrevJobs, withId } from './util'
+import { anyRunningTasks, onlyEndedTasks, setEnded, setLastRun, setRunning, withId } from './util'
 
 import { logger } from '../lib/debug'
 
 const log = logger('backend:cron')
+
+const isDaily = propEq('repeat', 'daily')
+const isOneShot = propEq('repeat', 'oneShot')
+const notRunning = propEq('running', false)
 
 const fixedTimeIsNow = (j: CronJob) => {
   const now = new Date()
@@ -42,9 +46,16 @@ const fixedTimeIsNow = (j: CronJob) => {
   const noFixedTime = isNil(prop('at', j))
   const runNow = propEq('at', 'now', j)
   const hasRun = differenceInHours(now, lastRunTs) <= 23
+  const isExpired = j => Date.now() - j.createdAt > 10000
 
   /* Bail on unsupported task-properties */
   if (noFixedTime || hasRun) return false
+
+  if (isOneShot(j) && isExpired(j)) {
+    log.debug(`WARNING: Not scheduling expired job <${j.jobId}>:`)
+    log.debug(j)
+    return false
+  }
 
   // Some jobs are meant to be run immediately
   if (runNow) return true
@@ -60,11 +71,7 @@ const fixedTimeIsNow = (j: CronJob) => {
 }
 
 const jobShouldRun = (j: CronJob) => {
-  const isDaily = propEq('repeat', 'daily', j)
-  const isOneShot = propEq('repeat', 'oneShot', j)
-  const notRunning = propEq('running', false, j)
-
-  return (isDaily || isOneShot) && notRunning && fixedTimeIsNow(j)
+  return (isDaily(j) || isOneShot(j)) && notRunning(j) && fixedTimeIsNow(j)
 }
 
 /* TODO: Out of place here, move to dispatcher?! */
@@ -118,11 +125,10 @@ const schedule = (crontab: Crontab) => map(j => assoc('scheduled', jobShouldRun(
 
 /* TICK-function called on each cron-timer iteration.
  * Brings over job-state from last tick. */
-export default function scheduleTick(prev: TickState, cur: TickState) {
-  const { crontab, _state, taskEvents } = cur
+export default function scheduleTick(tickstate: TickState) {
+  const { crontab, _state, taskEvents } = tickstate
 
   const newCrontab = pipe(
-    syncWithPrevJobs(prev.crontab),
     schedule,
     updateFromTaskEvents(taskEvents)
   )(crontab)
@@ -131,7 +137,5 @@ export default function scheduleTick(prev: TickState, cur: TickState) {
   const jobs = map(j => (j.scheduled ? initiateJob(j) : j), newCrontab)
 
   /* Update state with new crontab */
-  const newState = assoc('crontab', jobs, cur)
-
-  return newState
+  return assoc('crontab', jobs, tickstate)
 }

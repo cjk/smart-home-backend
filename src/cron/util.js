@@ -35,18 +35,20 @@ function _getJob(jobId, crontab) {
 }
 const getJob = R.curry(_getJob)
 
-function syncWithPrevJobs(prevCrontab: Crontab) {
+function syncWithPrevJobs(
+  { crontab: prevCrontab }: { crontab: Crontab },
+  { crontab: currCrontab }: { crontab: Crontab }
+) {
   return R.map(j => {
     /* Map current crontab */
-    const syncedProps = ['running', 'scheduled', 'lastRun']
     const prevJob = R.find(R.propEq('jobId', j.jobId), prevCrontab)
     if (R.isNil(prevJob)) {
       log.debug(`No previous job <${j.jobId}> found.`)
       return j
     }
     // log.debug(`SYNC-WITH-PREV-JOB: ${JSON.stringify(j)}`);
-    return R.assoc('tasks', prevJob.tasks, R.merge(j, R.pick(syncedProps, prevJob)))
-  })
+    return R.assoc('tasks', prevJob.tasks, R.merge(j, R.pick(['running', 'scheduled', 'lastRun'], prevJob)))
+  }, currCrontab)
 }
 
 function normalizeTasks(tasks: CrontabTask) {
@@ -63,7 +65,7 @@ function normalizeTasks(tasks: CrontabTask) {
 }
 
 function debugPrettyCrontab(ct: Crontab) {
-  return R.map(R.pick(['jobId', 'repeat', 'at', 'scheduled', 'running', 'lastRun']))(ct)
+  return R.map(R.pick(['jobId', 'repeat', 'at', 'scheduled', 'running', 'lastRun', 'createdAt']))(ct)
 }
 
 export {

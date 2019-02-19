@@ -6,50 +6,35 @@
 
 import type { TickState } from '../types'
 
-import R, { allPass, and, compose, converge, filter, isEmpty, join, map, pick, prop, propEq } from 'ramda'
+import * as R from 'ramda'
 import { logger } from '../lib/debug'
 
 const log = logger('backend:cron-gc')
 
-export default function garbageCollect(store: any, prev: TickState, next: TickState) {
-  const p = prev.crontab
-  const c = next.crontab
+export default function garbageCollect(store: any, tickState: TickState) {
+  const isTempJob = R.propEq('repeat', 'oneShot')
+  const notRunning = R.propEq('running', false)
+  // Temporary jobs older than 10 seconds are expired
+  const isExpired = j => Date.now() - j.createdAt > 10000
 
-  // Was there a running job in last tick?
-  const isTempJob = propEq('repeat', 'oneShot')
-  const isRunning = propEq('running', true)
-  const notRunning = propEq('running', false)
-  const notExpired = j => Date.now() - j.createdAt < 60000
+  const { crontab } = tickState
 
-  // TODO: Instead of #converge use #allPass
-  const runningTemporaryJobs = converge(and, [isTempJob, isRunning])
-  const endedOrNotExpiredTemporaryJobs = allPass([isTempJob, notRunning, notExpired])
+  const garbageJobs = R.filter(j => isTempJob(j) && notRunning(j) && isExpired(j), crontab)
 
-  const pastRunningJobIds = compose(
-    map(pick(['jobId'])),
-    filter(runningTemporaryJobs)
-  )(p)
+  if (R.isEmpty(garbageJobs)) return tickState
 
-  // nothing to clean up?
-  if (isEmpty(pastRunningJobIds)) return next
+  log.debug(`----> Removing task(s) <${R.join('|', R.pluck('jobId', garbageJobs))}> from crontab`)
 
-  // log.debug(pastRunningJobIds);
+  R.forEach(
+    jobId =>
+      store
+        .crontabNode()
+        .get(jobId)
+        .put(null),
+    R.pluck('jobId', garbageJobs)
+  )
 
-  const presentEndedOneshots = compose(
-    map(pick(['jobId'])),
-    filter(endedOrNotExpiredTemporaryJobs)
-  )(c)
+  const jobCmp = (j1, j2) => j1.jobId === j2.jobId
 
-  const garbageJobIds = map(prop('jobId'), R.intersection(pastRunningJobIds, presentEndedOneshots))
-
-  if (isEmpty(garbageJobIds)) return next
-
-  log.debug(`Removing task(s) <${join('|', garbageJobIds)}> from crontab`)
-
-  store
-    .crontabNode()
-    .get(R.head(garbageJobIds))
-    .put(null)
-
-  return next
+  return R.assoc('crontab', R.differenceWith(jobCmp, crontab, garbageJobs), tickState)
 }

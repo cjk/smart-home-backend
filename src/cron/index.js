@@ -2,8 +2,7 @@
 import type { Observable } from 'kefir'
 import type { Crontab, ServerState, Store, TickState } from '../types'
 
-// import logger from 'debug'
-// import { debugPrettyCrontab } from './util';
+import { syncWithPrevJobs } from './util'
 
 import * as R from 'ramda'
 import K from 'kefir'
@@ -13,7 +12,8 @@ import scheduleTick from './schedule'
 import { syncCrontabWithCloud, pushJobToCloud } from './cloudSync'
 import cleanupCrontab from './garbageCollector'
 
-// const debug = logger('smt:cron-tick')
+// import { logger } from '../lib/debug'
+// const log = logger('smt:cron-tick')
 
 /* How often to check crontab and schedule / dispatch jobs */
 const tickInterval = 1000
@@ -36,18 +36,22 @@ export default function init({ streams: { busState$ } }: ServerState, store: Sto
       taskEvents,
       state,
     }))
-      /* Jobs and tasks get synced (from last tick), scheduled and (indirectly) run from here: */
-      .scan(scheduleTick)
-      // Compare cronjobs for changes since last tick and update changed jobs to cloud
-      .scan((prev, cur) => {
-        const cp = prev.crontab
-        const cc = cur.crontab
-        const changedJobs = R.differenceWith(eqJobs, cc, cp)
-        if (!R.isEmpty(changedJobs)) pushJobToCloud(store, changedJobs)
-        return cur
+      // Jobs and tasks get synced (from last tick)
+      .scan((prev, curr) => {
+        const cleanTickstate = cleanupCrontabWStore(curr)
+        return scheduleTick({ ...curr, crontab: syncWithPrevJobs(prev, cleanTickstate) })
       })
-      // Run garbage collector to remove ended one-shot jobs (like scene-actions, ...) and sync deleted jobs to cloud
-      .scan(cleanupCrontabWStore)
+
+      // Compare cronjobs for changes since last tick and update changed jobs to cloud
+      .scan((prev, curr) => {
+        const { crontab: prevCrontab } = prev
+        const { crontab: currCrontab } = curr
+
+        const changedJobs = R.differenceWith(eqJobs, currCrontab, prevCrontab)
+        if (!R.isEmpty(changedJobs)) pushJobToCloud(store, changedJobs)
+        return curr
+      })
+
       // DEBUG
       //       .onValue(({ crontab }) => log.debug(debugPrettyCrontab(crontab)))
       /* Subscribe to cron-stream and return a subscription object (for handling unsubscribe) */
