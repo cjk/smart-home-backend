@@ -82,7 +82,7 @@ const handleKnxLivestate = ({ busState$, busEvent$ }) => {
   }))
     .filter(({ addr }) => isCompleteAddress(addr))
     .observe(function onValue({ addr, addrList }) {
-      const oldValue = addrList[addr.id].value
+      const oldValue = addrList[addr.id] ? addrList[addr.id].value : null
       log.debug(`Some remote peer changed address <${addr.id}> to <${addr.value}>`)
       if (oldValue !== addr.value) {
         try {
