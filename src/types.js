@@ -183,9 +183,3 @@ export type AutomataStateProps = {
   env: Environment,
   busState: HomeState,
 }
-
-export type Store = {
-  peer: any,
-  crontabNode: any,
-  shutdown: Function,
-}
