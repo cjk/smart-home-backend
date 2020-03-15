@@ -26,7 +26,7 @@ function syncCrontabWithCloud(store: Store) {
 
   // Experimental: Wait some time before starting cron-stream after setting remote/local crontab.
   // see also usage of #skipUntilBy below.
-  const crontabWasStored = K.fromCallback(cb => crontabNode.put(crontab, cb())).delay(250)
+  const crontabWasStored = K.fromCallback(cb => crontabNode.put(crontab, cb())).delay(750)
 
   const cron$ = K.stream(jobEmitter => {
     crontabNode
