@@ -1,7 +1,14 @@
 [ignore]
-; Ignore unexpected extra "@providesModule"
-.*/node_modules/.*/node_modules/fbjs/.*
-.*/app/.*
+./app
+./data
+
+[include]
+./src
+
+[lints]
+all=warn
 
 [options]
-suppress_comment= \\(.\\|\n\\)*\\$FlowFixMe
+# lazy_mode=ide
+esproposal.optional_chaining=enable
+esproposal.nullish_coalescing=enable
