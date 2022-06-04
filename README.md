@@ -25,6 +25,7 @@ For production:
 ```js
 yarn run prod
 ```
+But the above may not be enough depending on your environment - see below "Deploying and running manually"
 
 ## Prerequisites
 
@@ -60,6 +61,15 @@ const addresses: AddressList = [
 Since such an address-list contains sensitive information, the default file used for my local KNX-configuration is encrypted into `./src/config/group-address-list.js.cast5`.
 
 There’s a makefile task to encrypt and decrypt the KNX-address file. The needed password is taken from the environment-variable *SMARTHOME_ADDRESSLIST_SECRET*, so make sure you set this before using make to en-/decrypt your addresses.
+
+### Deploying and running manually
+
+Make sure KNXd is up and running
+
+`yarn install`
+`yarn run babel src --out-dir app`
+
+`env DEBUG='smt:*,error' KNXD_ADDR='localhost' KNXD_PORT=6720 NODE_ENV=production node ./app/index.js`
 
 ### Deploying and running using pm2
 
