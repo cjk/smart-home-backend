@@ -1,9 +1,9 @@
 // @flow
 
-import type { Scenes } from '../types'
+import type { Scenes } from '../types.js'
 
-import loadScenes from './scene-definitions'
-import { logger } from '../lib/debug'
+import loadScenes from './scene-definitions.js'
+import { logger } from '../lib/debug.js'
 
 const log = logger('backend:scenes')
 

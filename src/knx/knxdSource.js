@@ -5,20 +5,20 @@
  */
 
 import type { Emitter } from 'kefir'
-import type { AddressMap, KnxdOpts } from '../types'
+import type { AddressMap, KnxdOpts } from '../types.js'
 
 import * as R from 'ramda'
 import knxd from 'eibd'
-import config from '../config'
-import createEvent from './event'
-import { getTimestamp, logger } from '../lib/debug'
+import config from '../config/index.js'
+import createEvent from './event.js'
+import { getTimestamp, logger } from '../lib/debug.js'
 
 const log = logger('backend:knx')
 
 /* Identify name of the event's associated address to make debug-output more readable */
 const addrMap: AddressMap = config.knx.addressMap
 
-const addrNameFor = addrId => R.path([addrId, 'name'], addrMap)
+const addrNameFor = (addrId) => R.path([addrId, 'name'], addrMap)
 
 const _eventHandler = (emitter, eventType, src, dest, type, val) => {
   try {
@@ -48,7 +48,7 @@ function listener(emitter) {
     emittingEventHandler('read'),
   ]
 
-  return parser => {
+  return (parser) => {
     /* TODO: Once EIBd#openGroupSocket allows for an err-object, we can start
        emmiting errors when needed: */
     /* if (err) {
@@ -72,7 +72,7 @@ function listener(emitter) {
 function groupSocketListen(opts, callback) {
   const conn = knxd.Connection()
 
-  conn.socketRemote(opts, err => {
+  conn.socketRemote(opts, (err) => {
     if (err) {
       log.error('ERROR connecting to remote KNXd: ', err)
       return callback(err)

@@ -1,14 +1,14 @@
 // @flow
-import type { MinimalAddress, Crontab, Task, Callback } from '../types'
+import type { MinimalAddress, Crontab, Task, Callback } from '../types.js'
 
 import K from 'kefir'
-import EventEmitter from 'events'
-import dispatch from './taskDispatcher'
+import EventEmitter from 'node:events'
+import dispatch from './taskDispatcher.js'
 import { assoc, compose, curry, of } from 'ramda'
-import { logger } from '../lib/debug'
+import { logger } from '../lib/debug.js'
 /* KNX-bus related */
-import { writeGroupAddr } from '../knx/performBusAction'
-import { createAddress } from '../knx/knx-lib'
+import { writeGroupAddr } from '../knx/performBusAction.js'
+import { createAddress } from '../knx/knx-lib.js'
 
 const log = logger('backend:cron-runner')
 
@@ -35,10 +35,7 @@ function runTask(task: Task, callback: Callback) {
     type: 'switch',
     value: task.act === 'on' ? 1 : 0,
   })
-  const markAsEnded = compose(
-    (t: Task) => assoc('endedAt', Date.now(), t),
-    assoc('status', 'ended')
-  )
+  const markAsEnded = compose((t: Task) => assoc('endedAt', Date.now(), t), assoc('status', 'ended'))
 
   /* Write to KNX-bus, then call our task-has-ended-callback with the ended task provided */
   const onEnd = curry((task, err) => {

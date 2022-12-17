@@ -1,6 +1,6 @@
 // @flow
 
-import type { AddressValue, BusEvent } from '../types'
+import type { AddressValue, BusEvent } from '../types.js'
 
 const createEvent = (action: string, src: string, dest: string, type: string, value: AddressValue): BusEvent => ({
   created: Date.now(),

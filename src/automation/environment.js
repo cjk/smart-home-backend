@@ -2,7 +2,7 @@
 
 // Defines an environment-structure that is derived from sensor-data and the current bus-state
 
-import type { Environment } from '../types'
+import type { Environment } from '../types.js'
 
 const environment: Environment = {
   outside: {

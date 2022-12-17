@@ -1,8 +1,9 @@
 // @flow
 
-import type { Crontab } from '../types'
+import type { Crontab } from '../types.js'
+
 import * as R from 'ramda'
-import { normalizeTasks } from './util'
+import { normalizeTasks } from './util.js'
 
 // Some default / example tasks
 // The following task-types are scheduled and dispatched automatically:
@@ -61,8 +62,8 @@ const crontab: Crontab = [
  */
 function loadCrontab(): Crontab {
   return R.pipe(
-    R.map(j => R.assoc('tasks', normalizeTasks(j.tasks), j)),
-    R.map(j => R.assoc('createdAt', Date.now(), j))
+    R.map((j) => R.assoc('tasks', normalizeTasks(j.tasks), j)),
+    R.map((j) => R.assoc('createdAt', Date.now(), j))
   )(crontab)
 }
 

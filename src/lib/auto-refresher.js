@@ -1,10 +1,10 @@
 /* @flow */
-import type { Address, AddressMap, AddressList, BusState$ } from '../types'
+import type { Address, AddressMap, AddressList, BusState$ } from '../types.js'
 
 import { filter, isNil, map, pipe, prop, sortBy, take, values } from 'ramda'
 import Kefir from 'kefir'
-import busScanner from './bus-scanner'
-import { getTimestamp, logger } from './debug'
+import busScanner from './bus-scanner.js'
+import { getTimestamp, logger } from './debug.js'
 
 const log = logger('backend:refresher')
 
@@ -13,11 +13,11 @@ const maxRefreshLimit = 4
 const maxAddressAge = 40 // Maxium age in minutes before an address gets refreshed
 const sortByVerificationAge = sortBy(prop('verifiedAt'))
 
-const reduceAddressesToIds = addrMap => map(prop(['id']), addrMap)
+const reduceAddressesToIds = (addrMap) => map(prop(['id']), addrMap)
 
 function refreshStaleAddresses(stream: BusState$) {
   /* Check address-timestamps every n seconds */
-  const timer = Kefir.withInterval(runDelaySeconds * 1000, emitter => {
+  const timer = Kefir.withInterval(runDelaySeconds * 1000, (emitter) => {
     emitter.emit()
   })
 
@@ -46,11 +46,7 @@ function refreshStaleAddresses(stream: BusState$) {
     } else {
       log.debug(`[${getTimestamp()}]: All addresses up to date - nothing to do :)`)
     }
-    pipe(
-      values,
-      take(maxRefreshLimit),
-      busScanner
-    )(staleAddrList)
+    pipe(values, take(maxRefreshLimit), busScanner)(staleAddrList)
   })
 }
 

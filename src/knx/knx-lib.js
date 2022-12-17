@@ -1,8 +1,8 @@
 // @flow
 
-import type { Address, BusEvent, MinimalAddress } from '../types'
-import getISODay from 'date-fns/get_iso_day'
-import { logger } from '../lib/debug'
+import type { Address, BusEvent, MinimalAddress } from '../types.js'
+import { getISODay } from 'date-fns'
+import { logger } from '../lib/debug.js'
 
 const log = logger('backend:knx-lib')
 

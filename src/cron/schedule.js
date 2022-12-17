@@ -9,9 +9,9 @@
  * - Monthly tasks
  * - Dynamic tasks (created at runtime, like for ad-hoc actions)
  */
-import type { TickState, CronJob, Crontab, Task, TaskEvent } from '../types'
+import type { TickState, CronJob, Crontab, Task, TaskEvent } from '../types.js'
 
-import { differenceInHours, differenceInSeconds, format, parse } from 'date-fns'
+import { differenceInHours, differenceInSeconds, format, parseISO } from 'date-fns'
 import {
   __,
   assoc,
@@ -30,9 +30,9 @@ import {
   T,
   update,
 } from 'ramda'
-import { anyRunningTasks, onlyEndedTasks, setEnded, setLastRun, setRunning, withId } from './util'
+import { anyRunningTasks, onlyEndedTasks, setEnded, setLastRun, setRunning, withId } from './util.js'
 
-import { logger } from '../lib/debug'
+import { logger } from '../lib/debug.js'
 
 const log = logger('backend:cron')
 
@@ -46,7 +46,7 @@ const fixedTimeIsNow = (j: CronJob) => {
   const noFixedTime = isNil(prop('at', j))
   const runNow = propEq('at', 'now', j)
   const hasRun = differenceInHours(now, lastRunTs) <= 23
-  const isExpired = j => Date.now() - j.createdAt > 10000
+  const isExpired = (j) => Date.now() - j.createdAt > 10000
 
   /* Bail on unsupported task-properties */
   if (noFixedTime || hasRun) return false
@@ -60,7 +60,7 @@ const fixedTimeIsNow = (j: CronJob) => {
   // Some jobs are meant to be run immediately
   if (runNow) return true
 
-  const targetTs = parse(format(now, `YYYY-MM-DDT${j.at}`))
+  const targetTs = parseISO(format(now, `yyyy-MM-ddT${j.at}`))
   const secondsToStart = differenceInSeconds(targetTs, now)
 
   //   log.debug(`Job start-time delta for job <${j.jobId}> with TS <${targetTs}> is ${secondsToStart} seconds`);
@@ -75,16 +75,13 @@ const jobShouldRun = (j: CronJob) => {
 }
 
 /* TODO: Out of place here, move to dispatcher?! */
-const initiateJob = pipe(
-  setRunning,
-  setLastRun
-)
+const initiateJob = pipe(setRunning, setLastRun)
 
 const setJobStateFromTasksState = (j: CronJob) =>
   cond([
     [anyRunningTasks, setRunning],
     [onlyEndedTasks, setEnded],
-    [T, job => job] /* Default fallback: return job unchanged */,
+    [T, (job) => job] /* Default fallback: return job unchanged */,
   ])(j)
 
 const updateTaskInJob = (job: CronJob, task: Task) =>
@@ -121,20 +118,17 @@ function _updateFromTaskEvents(taskEvents: Task, crontab: Crontab) {
 }
 const updateFromTaskEvents = curry(_updateFromTaskEvents)
 
-const schedule = (crontab: Crontab) => map(j => assoc('scheduled', jobShouldRun(j), j))(crontab)
+const schedule = (crontab: Crontab) => map((j) => assoc('scheduled', jobShouldRun(j), j))(crontab)
 
 /* TICK-function called on each cron-timer iteration.
  * Brings over job-state from last tick. */
 export default function scheduleTick(tickstate: TickState) {
   const { crontab, _state, taskEvents } = tickstate
 
-  const newCrontab = pipe(
-    schedule,
-    updateFromTaskEvents(taskEvents)
-  )(crontab)
+  const newCrontab = pipe(schedule, updateFromTaskEvents(taskEvents))(crontab)
 
   /* Set scheduled jobs as running + lastRun-timestamp */
-  const jobs = map(j => (j.scheduled ? initiateJob(j) : j), newCrontab)
+  const jobs = map((j) => (j.scheduled ? initiateJob(j) : j), newCrontab)
 
   /* Update state with new crontab */
   return assoc('crontab', jobs, tickstate)

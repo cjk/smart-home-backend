@@ -2,29 +2,28 @@
 
 // Our store is currently a GunDB backed distributed-graph database
 // Here we establish handler to sync backend-state with our remote-peers and listen to updates from remote peers.
-import type { Address, AddressMap, BusEvent, ServerState } from '../types'
+import type { Address, AddressMap, BusEvent, ServerState } from '../types.js'
 
+import http from 'node:http'
 import Gun from 'gun'
 import K from 'kefir'
-import R from 'ramda'
-import { createAddress, isCompleteAddress } from '../knx/address'
-import { writeGroupAddr } from '../knx/performBusAction'
-import { logger } from '../lib/debug'
+import * as R from 'ramda'
+import { createAddress, isCompleteAddress } from '../knx/address.js'
+import { writeGroupAddr } from '../knx/performBusAction.js'
+import { logger } from '../lib/debug.js'
 
 const port = 8765
 const log = logger('store:gun')
 
-const { createServer } = require('http')
-
-const server = createServer((req, res) => Gun.serve(req, res))
+const server = http.createServer((req, res) => Gun.serve(req, res))
 
 const gun = Gun({ web: server })
 
 server.listen(port)
 log.debug(`Store available on port <${port}> at /gun`)
 
-const fromAddrUpdateStream = addrNodeLst =>
-  K.stream(emitter => {
+const fromAddrUpdateStream = (addrNodeLst) =>
+  K.stream((emitter) => {
     const onAddrChange = (addr, id) => {
       emitter.emit({ ...addr, id })
     }
@@ -94,10 +93,10 @@ const handleKnxLivestate = ({ busState$, busEvent$ }) => {
     })
 }
 
-const syncScenesToCloud = scenes => {
+const syncScenesToCloud = (scenes) => {
   const peerSceneLst = gun.get('scenes')
 
-  R.map(scene => {
+  R.map((scene) => {
     peerSceneLst.get(scene.id).put(scene)
   }, scenes)
 

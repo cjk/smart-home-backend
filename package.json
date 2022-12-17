@@ -1,65 +1,60 @@
 {
   "name": "home-automation-backend",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "Provides a real-time API for reading and writing to your home's devices",
   "main": "./app/index.js",
+  "type": "module",
+  "bin": {
+    "smart_home_backend": "app/index.js"
+  },
+  "engines": {
+    "node": ">=16.14.0"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/cjk/smart-home-backend.git"
   },
-  "keywords": [
-    "node",
-    "knx",
-    "real-time",
-    "websockets",
-    "pubsub",
-    "automation",
-    "realtime"
-  ],
+  "keywords": ["node", "knx", "real-time", "websockets", "pubsub", "automation", "realtime"],
   "author": "Claus Klingberg <cjk@pobox.com>",
   "license": "GPL-2.0",
   "homepage": "https://github.com/cjk/smart-home-backend#readme",
   "dependencies": {
-    "date-fns": "^1.28.2",
+    "date-fns": "^2.29.3",
     "debug": "^4.1.0",
     "del": "^5.1.0",
-    "dotenv": "^8.2.0",
+    "dotenv": "^16.0.3",
     "eibd": "^0.4.2",
     "gun": "~0.9.9999991",
-    "kefir": "^3.8.2",
+    "kefir": "^3.8.8",
     "luxon": "^1.6.2",
-    "nodemon": "^2.0.2",
-    "ramda": "^0.27.0",
-    "suncalc": "^1.8.0",
+    "ramda": "^0.28.0",
+    "suncalc": "^1.9.0",
     "supports-color": "^7.1.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.10.5",
-    "@babel/core": "7.11.0",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
-    "@babel/plugin-proposal-object-rest-spread": "7.11.0",
-    "@babel/plugin-proposal-optional-chaining": "^7.7.5",
-    "@babel/plugin-proposal-throw-expressions": "^7.2.0",
-    "@babel/plugin-transform-flow-strip-types": "7.10.4",
-    "@babel/preset-env": "7.11.0",
-    "@babel/preset-flow": "7.10.4",
-    "@babel/register": "7.10.5",
-    "babel-eslint": "^10.0.1",
-    "eslint-config-recommended": "^4.0.0",
-    "eslint-plugin-flowtype": "^5.2.0",
-    "eslint-plugin-fp": "^2.3.0",
-    "eslint-plugin-import": "^2.9.0"
+    "@babel/cli": "~7.19.3",
+    "@babel/core": "~7.20.5",
+    "@babel/eslint-parser": "~7.19.1",
+    "@babel/preset-flow": "~7.18.6",
+    "@babel/register": "~7.18.9",
+    "eslint": "^8.30.0",
+    "eslint-config-recommended": "~4.1.0",
+    "eslint-plugin-flowtype": "~8.0.3",
+    "eslint-plugin-fp": "~2.3.0",
+    "eslint-plugin-import": "~2.26.0",
+    "eslint-plugin-n": "^15.6.0",
+    "eslint-plugin-unicorn": "^45.0.2",
+    "flow-bin": "^0.196.0",
+    "nodemon": "~2.0.20"
   },
   "scripts": {
-    "build": "babel src --out-dir app",
-    "dev": "env DEBUG='smt:*,error,debug' PORT=8001 NODE_ENV=development ./node_modules/.bin/nodemon ./app/index.js",
-    "prod": "env DEBUG='error' PORT=8001 NODE_ENV=production node ./app/index.js",
-    "watch": "babel src --watch --out-dir app"
+    "build": "npx babel src --out-dir app",
+    "dev": "env DEBUG='smt:*,error,debug' PORT=8001 LOG_LEVEL=${LOG_LEVEL-debug} NODE_ENV=development node -r dotenv/config ./app/index.js",
+    "prod": "env DEBUG='error' PORT=8001 LOG_LEVEL=${LOG_LEVEL-info} NODE_ENV=production node -r dotenv/config ./app/index.js",
+    "watch": "npx babel src --watch --out-dir app"
   },
   "nodemonConfig": {
-    "ignore": [
-      "src/*"
-    ],
+    "ignore": ["src/*"],
     "delay": "2000"
   }
 }

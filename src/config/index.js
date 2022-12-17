@@ -1,11 +1,11 @@
 /* @flow */
 /* eslint max-len: 0 */
 
-import type { Address, AddressMap, AddressList, Config } from '../types'
+import type { Address, AddressMap, AddressList, Config } from '../types.js'
 
 import * as R from 'ramda'
-import addressList from './group-address-list'
-import { createAddress } from '../knx/address'
+import addressList from './group-address-list.js'
+import { createAddress } from '../knx/address.js'
 
 const readableAddrList: Array<string> = [
   '1/1/0' /* UG Hobby1 Präsenzmelder Sperre f. Schaltung Licht Hobby-Keller-1+2 */,
@@ -95,7 +95,7 @@ const config: Config = {
     addressMap,
     readableAddrMap,
   },
-  version: '1.3.1-20190226',
+  version: '1.4.x-20221217',
 }
 
 export default config

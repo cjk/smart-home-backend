@@ -1,10 +1,10 @@
 /* @flow */
 
-import type { Crontab, CronJob, CrontabTask } from '../types'
+import type { Crontab, CronJob, CrontabTask } from '../types.js'
 
 /* General purpose functions */
 import * as R from 'ramda'
-import { logger } from '../lib/debug'
+import { logger } from '../lib/debug.js'
 
 const log = logger('backend:cron')
 
@@ -15,20 +15,14 @@ const setRunning = R.assoc('running', true)
 const setEnded = R.assoc('running', false)
 const setLastRun = (j: CronJob) => R.assoc('lastRun', Date.now(), j)
 
-const scheduledJobIds = R.compose(
-  R.pluck('jobId'),
-  R.filter(running)
-)
+const scheduledJobIds = R.compose(R.pluck('jobId'), R.filter(running))
 
-const runningJobIds = R.compose(
-  R.pluck('jobId'),
-  R.filter(scheduled)
-)
+const runningJobIds = R.compose(R.pluck('jobId'), R.filter(scheduled))
 
 const withId = R.propEq('id')
 
-const anyRunningTasks = (j: CronJob) => R.any(t => t.status === 'started', j.tasks)
-const onlyEndedTasks = (j: CronJob) => R.all(t => t.status === 'ended', j.tasks)
+const anyRunningTasks = (j: CronJob) => R.any((t) => t.status === 'started', j.tasks)
+const onlyEndedTasks = (j: CronJob) => R.all((t) => t.status === 'ended', j.tasks)
 
 function _getJob(jobId, crontab) {
   return R.find(R.propEq('jobId', jobId), crontab)
@@ -39,7 +33,7 @@ function syncWithPrevJobs(
   { crontab: prevCrontab }: { crontab: Crontab },
   { crontab: currCrontab }: { crontab: Crontab }
 ) {
-  return R.map(j => {
+  return R.map((j) => {
     /* Map current crontab */
     const prevJob = R.find(R.propEq('jobId', j.jobId), prevCrontab)
     if (R.isNil(prevJob)) {
@@ -47,7 +41,7 @@ function syncWithPrevJobs(
       return j
     }
     // log.debug(`SYNC-WITH-PREV-JOB: ${JSON.stringify(j)}`);
-    return R.assoc('tasks', prevJob.tasks, R.merge(j, R.pick(['running', 'scheduled', 'lastRun'], prevJob)))
+    return R.assoc('tasks', prevJob.tasks, R.mergeRight(j, R.pick(['running', 'scheduled', 'lastRun'], prevJob)))
   }, currCrontab)
 }
 
@@ -59,7 +53,7 @@ function normalizeTasks(tasks: CrontabTask) {
   /* Make sure all task-IDs are unique */
   const incId = () => (idIdx += 1)
 
-  const normalizeTask = (act, id, _) => R.merge(taskMeta, { id: incId(), act: act, target: id })
+  const normalizeTask = (act, id, _) => R.mergeRight(taskMeta, { id: incId(), act: act, target: id })
 
   return R.mapObjIndexed(normalizeTask, tasks)
 }

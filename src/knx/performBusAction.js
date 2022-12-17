@@ -1,11 +1,11 @@
 /* @flow */
 
-import type { MinimalAddress } from '../types'
+import type { MinimalAddress } from '../types.js'
 import knxd from 'eibd'
-import R from 'ramda'
-import config from '../config'
-import { deriveAddrFormat } from './knx-lib'
-import { logger } from '../lib/debug'
+import * as R from 'ramda'
+import config from '../config/index.js'
+import { deriveAddrFormat } from './knx-lib.js'
+import { logger } from '../lib/debug.js'
 
 const log = logger('backend:bus')
 
@@ -17,7 +17,7 @@ function defaultCallback(err) {
   log.debug('Success sending APDU to KNXd.')
 }
 
-const isWriteOnly = action => action === 'write'
+const isWriteOnly = (action) => action === 'write'
 const knxReadMsg = R.unary(knxd.createMessage)
 const knxWriteMsg = R.partial(knxd.createMessage, ['write'])
 
@@ -27,7 +27,7 @@ function sendReqToBusFor(action, datatype, address: MinimalAddress, callback = d
   const conf = config.knxd
 
   conn.socketRemote(conf, () => {
-    conn.openTGroup(addrId, isWriteOnly(action), err => {
+    conn.openTGroup(addrId, isWriteOnly(action), (err) => {
       if (err) {
         return callback(err)
       }
@@ -43,9 +43,7 @@ function sendReqToBusFor(action, datatype, address: MinimalAddress, callback = d
 /* Do not really try to read/write to KNX-bus, just simulate it - good for testing / debugging */
 function fakeReqToBusFor(action, datatype, address: MinimalAddress, callback = defaultCallback) {
   log.debug(
-    `*Fakeing* <${action}> bus-request to address ${address.id} with value [${
-      address.value
-    }] and datatype <${datatype}>`
+    `*Fakeing* <${action}> bus-request to address ${address.id} with value [${address.value}] and datatype <${datatype}>`
   )
   setTimeout(callback, 250, null)
 }

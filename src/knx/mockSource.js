@@ -5,11 +5,11 @@
  */
 
 import type { Emitter } from 'kefir'
-import type { KnxdOpts } from '../types'
+import type { KnxdOpts } from '../types.js'
 
 import Kefir from 'kefir'
-import createEvent from './event'
-import { logger } from '../lib/debug'
+import createEvent from './event.js'
+import { logger } from '../lib/debug.js'
 
 const log = logger('backend:mockSource')
 
@@ -20,7 +20,7 @@ const stream = Kefir.later(1000, createEvent('read', '99.99.99', '0.0.7', 'switc
 export default function mockSource(opts: KnxdOpts) {
   return (emitter: Emitter<*>) => {
     /* generate mocked events from stream */
-    stream.onValue(e => {
+    stream.onValue((e) => {
       log.debug(`[${getTimestamp()}] Read from ${e.src} to ${e.dest}`)
       emitter.value(e)
     })

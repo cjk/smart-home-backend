@@ -1,16 +1,16 @@
 /* @flow */
 import type { Observable } from 'kefir'
-import type { Crontab, ServerState, Store, TickState } from '../types'
+import type { Crontab, ServerState, Store, TickState } from '../types.js'
 
-import { syncWithPrevJobs } from './util'
+import { syncWithPrevJobs } from './util.js'
 
 import * as R from 'ramda'
 import K from 'kefir'
 
-import { createTaskEventStream, processTaskEvents } from './taskProcessor'
-import scheduleTick from './schedule'
-import { syncCrontabWithCloud, pushJobToCloud } from './cloudSync'
-import cleanupCrontab from './garbageCollector'
+import { createTaskEventStream, processTaskEvents } from './taskProcessor.js'
+import scheduleTick from './schedule.js'
+import { syncCrontabWithCloud, pushJobToCloud } from './cloudSync.js'
+import cleanupCrontab from './garbageCollector.js'
 
 // import { logger } from '../lib/debug'
 // const log = logger('smt:cron-tick')

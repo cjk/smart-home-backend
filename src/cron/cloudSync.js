@@ -1,12 +1,13 @@
 // @flow
 
-import type { CronJob, Crontab, Store } from '../types'
+import type { CronJob, Crontab, Store } from '../types.js'
 
 import K from 'kefir'
 import * as R from 'ramda'
-import loadCrontab from './crontab'
-import { debugPrettyCrontab, normalizeTasks } from './util'
-import { logger } from '../lib/debug'
+
+import loadCrontab from './crontab.js'
+import { debugPrettyCrontab, normalizeTasks } from './util.js'
+import { logger } from '../lib/debug.js'
 
 type CrontabObj = {
   [string]: CronJob,
@@ -26,25 +27,25 @@ function syncCrontabWithCloud(store: Store) {
 
   // Experimental: Wait some time before starting cron-stream after setting remote/local crontab.
   // see also usage of #skipUntilBy below.
-  const crontabWasStored = K.fromCallback(cb => crontabNode.put(crontab, cb())).delay(250)
+  const crontabWasStored = K.fromCallback((cb) => crontabNode.put(crontab, cb())).delay(250)
 
-  const cron$ = K.stream(jobEmitter => {
+  const cron$ = K.stream((jobEmitter) => {
     crontabNode
       // filter out null -> deleted jobs until we someday actually garbage-collect them
-      .map(j => (j === null ? undefined : j))
+      .map((j) => (j === null ? undefined : j))
       // meaning we're listening to new cronjobs from the cloud, but not for changes in existing ones! (-> #on)
       .once(
-        job => {
-          K.stream(taskEmitter =>
+        (job) => {
+          K.stream((taskEmitter) =>
             crontabNode
               .get(job.jobId)
               .get('tasks')
               .map()
-              .once(t => taskEmitter.emit(t))
+              .once((t) => taskEmitter.emit(t))
           )
-            .map(t => R.dissoc('_', t))
+            .map((t) => R.dissoc('_', t))
             .scan((tasks, task) => R.append(task, tasks), [])
-            .onValue(tasks => jobEmitter.emit(R.assoc('tasks', tasks, R.dissoc('_', job))))
+            .onValue((tasks) => jobEmitter.emit(R.assoc('tasks', tasks, R.dissoc('_', job))))
         },
         { change: true }
       )
@@ -64,12 +65,9 @@ function syncCrontabWithCloud(store: Store) {
 function pushJobToCloud(store: any, jobs: Array<CronJob>) {
   log.debug(`Syncing back job <${R.join(', ', R.pluck('jobId', jobs))}> to cloud.`)
   R.pipe(
-    R.map(j => R.assoc('tasks', normalizeTasks(j.tasks), j)),
-    R.map(j => {
-      store
-        .crontabNode()
-        .get(j.jobId)
-        .put(j)
+    R.map((j) => R.assoc('tasks', normalizeTasks(j.tasks), j)),
+    R.map((j) => {
+      store.crontabNode().get(j.jobId).put(j)
     })
   )(jobs)
 }

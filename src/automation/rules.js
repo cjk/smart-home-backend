@@ -1,9 +1,9 @@
 // @flow
 
-import type { AutomataStateProps } from '../types'
+import type { AutomataStateProps } from '../types.js'
 
 import * as R from 'ramda'
-import { logger } from '../lib/debug'
+import { logger } from '../lib/debug.js'
 
 const log = logger('backend:rules')
 

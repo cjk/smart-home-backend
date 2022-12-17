@@ -1,6 +1,20 @@
+; https://flow.org/en/docs/config/ignore/
 [ignore]
+<PROJECT_ROOT>/\.git/.*
 ./app
 ./data
+./mockData
+
+; https://flow.org/en/docs/config/untyped/
+[untyped]
+
+; https://flow.org/en/docs/config/declarations/
+[declarations]
+.+/node_modules/.+
+
+; https://flow.org/en/docs/config/libs/
+; [libs]
+; ./flow-typed/
 
 [include]
 ./src
@@ -9,6 +23,14 @@
 all=warn
 
 [options]
-# lazy_mode=ide
-esproposal.optional_chaining=enable
-esproposal.nullish_coalescing=enable
+emoji=true
+exact_by_default=true
+include_warnings=true
+inference_mode=constrain_writes
+facebook.fbt=FbtWithoutString
+; https://flow.org/en/docs/enums/
+enums=true
+lazy_mode=true
+; This option is always ON in the strict mode. We are enabling it even for the classic mode.
+; Function parameters are considered const (i.e., treated as if they were declared with const rather than let).
+experimental.const_params=true

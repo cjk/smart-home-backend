@@ -1,13 +1,13 @@
 // @flow
 
-import type { AddressMap, BusEvent, KnxConf } from './types'
+import type { AddressMap, BusEvent, KnxConf } from './types.js'
 
 import * as R from 'ramda'
 import Kefir from 'kefir'
-import config from './config'
-import knxListener from './knx'
-import addressRefresher from './lib/auto-refresher'
-import { logger } from './lib/debug'
+import config from './config/index.js'
+import knxListener from './knx/index.js'
+import addressRefresher from './lib/auto-refresher.js'
+import { logger } from './lib/debug.js'
 
 const log = logger('backend:bus-events')
 
@@ -37,7 +37,7 @@ const updateFromEvent = (currentState: AddressMap, event: BusEvent): AddressMap 
 
   return R.assoc(
     dest,
-    R.merge(R.prop(dest, currentState), { value, verifiedAt: currentTs, updatedAt: currentTs }),
+    R.mergeRight(R.prop(dest, currentState), { value, verifiedAt: currentTs, updatedAt: currentTs }),
     currentState
   )
 }
@@ -53,11 +53,11 @@ export default function createBusStreams() {
 
   /* Create BUS-state */
   /* 1. Create stream to capture *all* KNX-bus events */
-  const busEvent$ = Kefir.stream(emitter => knxListener(emitter))
+  const busEvent$ = Kefir.stream((emitter) => knxListener(emitter))
 
   /* 2. Create another (sub-) stream only for events that carry a value, i.e.
      mutate our bus-state */
-  const mutatingBusEvents = busEvent$.filter(e => R.contains(e.action, mutatingEvents))
+  const mutatingBusEvents = busEvent$.filter((e) => R.includes(e.action, mutatingEvents))
 
   /* 3. Create a modified (property-) stream derived from busState by applying an
      event-delta when events come in from the bus-events-stream.

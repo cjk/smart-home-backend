@@ -1,10 +1,9 @@
 // @flow
-import type { KnxdOpts } from '../types'
+import type { KnxdOpts } from '../types.js'
 
-import config from '../config'
-
-import knxdSrc from './knxdSource'
-import mockSrc from './mockSource'
+import config from '../config/index.js'
+import knxdSrc from './knxdSource.js'
+import mockSrc from './mockSource.js'
 
 const { host, port, isAvailable } = config.knxd
 const opts: KnxdOpts = { host, port, isAvailable }

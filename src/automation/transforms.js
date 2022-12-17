@@ -3,11 +3,11 @@
 // NOTE: Flow annotations are incomplete here as long as Flow doesn't support destructuring of Arrays and Objects into
 // individual parameters during function calls - see https://github.com/facebook/flow/issues/235
 
-import type { AutomataStateProps, BusEvent, Environment, EnvTransform, HomeState } from '../types'
+import type { AutomataStateProps, BusEvent, Environment, EnvTransform, HomeState } from '../types.js'
 
 import * as R from 'ramda'
-import { addrValueToBoolean } from '../knx/knx-lib'
-import { logger } from '../lib/debug'
+import { addrValueToBoolean } from '../knx/knx-lib.js'
+import { logger } from '../lib/debug.js'
 
 const log = logger('backend:automate:transform')
 
@@ -78,7 +78,7 @@ const transforms: EnvTransform[] = [
       R.assocPath(
         ['rooms', 'wz', 'lightsOff'],
         R.not(
-          R.any(light => R.path([light, 'value'], busState) === 1, ['1/2/4', '1/2/13', '1/2/14', '1/2/10', '1/2/15'])
+          R.any((light) => R.path([light, 'value'], busState) === 1, ['1/2/4', '1/2/13', '1/2/14', '1/2/10', '1/2/15'])
         ),
         env
       ),
@@ -90,7 +90,7 @@ const transforms: EnvTransform[] = [
     action: ({ busState, env }): Environment =>
       R.assocPath(
         ['rooms', 'kit', 'lightsOff'],
-        R.not(R.any(light => R.path([light, 'value'], busState) === 1, ['1/2/1', '1/2/7'])),
+        R.not(R.any((light) => R.path([light, 'value'], busState) === 1, ['1/2/1', '1/2/7'])),
         env
       ),
   },
@@ -101,7 +101,7 @@ const transforms: EnvTransform[] = [
     action: ({ busState, env }): Environment =>
       R.assocPath(
         ['rooms', 'bath', 'lightsOff'],
-        R.not(R.any(light => R.path([light, 'value'], busState) === 1, ['1/3/3', '1/3/10'])),
+        R.not(R.any((light) => R.path([light, 'value'], busState) === 1, ['1/3/3', '1/3/10'])),
         env
       ),
   },
@@ -112,7 +112,7 @@ const transforms: EnvTransform[] = [
     action: ({ busState, env }): Environment =>
       R.assocPath(
         ['rooms', 'knd-1', 'lightsOff'],
-        R.not(R.any(light => R.path([light, 'value'], busState) === 1, ['1/3/0', '1/3/12'])),
+        R.not(R.any((light) => R.path([light, 'value'], busState) === 1, ['1/3/0', '1/3/12'])),
         env
       ),
   },
@@ -123,7 +123,7 @@ const transforms: EnvTransform[] = [
     action: ({ busState, env }): Environment =>
       R.assocPath(
         ['rooms', 'knd-2', 'lightsOff'],
-        R.not(R.any(light => R.path([light, 'value'], busState) === 1, ['1/3/1', '11/2/0'])),
+        R.not(R.any((light) => R.path([light, 'value'], busState) === 1, ['1/3/1', '11/2/0'])),
         env
       ),
   },
@@ -134,7 +134,7 @@ const transforms: EnvTransform[] = [
     action: ({ busState, env }): Environment =>
       R.assocPath(
         ['rooms', 'hby', 'lightsOff'],
-        R.not(R.any(light => R.path([light, 'value'], busState) === 1, ['1/1/5'])),
+        R.not(R.any((light) => R.path([light, 'value'], busState) === 1, ['1/1/5'])),
         env
       ),
   },
@@ -145,7 +145,7 @@ const transforms: EnvTransform[] = [
     action: ({ busState, env }): Environment =>
       R.assocPath(
         ['rooms', 'cel-1', 'lightsOff'],
-        R.not(R.any(light => R.path([light, 'value'], busState) === 1, ['1/1/9'])),
+        R.not(R.any((light) => R.path([light, 'value'], busState) === 1, ['1/1/9'])),
         env
       ),
   },
@@ -156,7 +156,7 @@ const transforms: EnvTransform[] = [
     action: ({ busState, env }): Environment =>
       R.assocPath(
         ['rooms', 'cel-2', 'lightsOff'],
-        R.not(R.any(light => R.path([light, 'value'], busState) === 1, ['1/1/6'])),
+        R.not(R.any((light) => R.path([light, 'value'], busState) === 1, ['1/1/6'])),
         env
       ),
   },
@@ -167,7 +167,7 @@ const transforms: EnvTransform[] = [
     action: ({ busState, env }): Environment =>
       R.assocPath(
         ['rooms', 'cel-3', 'lightsOff'],
-        R.not(R.any(light => R.path([light, 'value'], busState) === 1, ['1/1/7'])),
+        R.not(R.any((light) => R.path([light, 'value'], busState) === 1, ['1/1/7'])),
         env
       ),
   },
@@ -175,30 +175,23 @@ const transforms: EnvTransform[] = [
 
 // Return all events, that have the given address-/string in one of their 'on'-keys
 const affectedEnvEntries = (busEventId: string): Array<EnvTransform> =>
-  R.filter(event => R.any(trigger => trigger === busEventId)(R.prop('on', event)), transforms)
+  R.filter((event) => R.any((trigger) => trigger === busEventId)(R.prop('on', event)), transforms)
 
 // Merge old into new environment and apply logic from transforms that match the event-address
 function applyEnvTransforms(prev: AutomataStateProps, next: AutomataStateProps) {
   // Updates environment from a stream of bus-state-events...
-  const env = R.merge(next.env, prev.env)
+  const env = R.mergeRight(next.env, prev.env)
   const { event, busState } = next
 
-  const transformEnvEntries = R.map(
-    (transform: EnvTransform): Environment =>
-      // $FlowFixMe
-      transform.action({ event, env, busState })
+  const transformEnvEntries = R.map((transform: EnvTransform): Environment =>
+    // $FlowFixMe
+    transform.action({ event, env, busState })
   )
-  const updateEnvironment: Environment[] = R.reduce((acc, t) => R.merge(env, t), env)
-  const envNext = R.pipe(
-    transformEnvEntries,
-    updateEnvironment
-  )(affectedEnvEntries(event.dest))
+  const updateEnvironment: Environment[] = R.reduce((acc, t) => R.mergeRight(env, t), env)
+  const envNext = R.pipe(transformEnvEntries, updateEnvironment)(affectedEnvEntries(event.dest))
 
   // ...and return updated environment + remove event-object (to prevent same event is re-applied on next tick)
-  return R.pipe(
-    R.assoc('env', envNext),
-    R.dissoc('event')
-  )(next)
+  return R.pipe(R.assoc('env', envNext), R.dissoc('event'))(next)
 }
 
 export default applyEnvTransforms

@@ -7,10 +7,10 @@ import logFactory from 'debug'
 const debug = logFactory('smt:debug')
 const LOG_PREFIX = 'smt'
 
-const tsFormat = 'YYYY-MM-DDTHH:mm:ss'
+const tsFormat = 'yyyy-MM-ddTHH:mm:ss'
 
 function addrMapToConsole(addrMap: any) {
-  return addrMap.map(a => debug(`[${a.room}>${a.name}]: ${a.value} @${format(a.updatedAt, 'HH:mm:s')}|`))
+  return addrMap.map((a) => debug(`[${a.room}>${a.name}]: ${a.value} @${format(a.updatedAt, 'HH:mm:s')}|`))
 }
 
 function getTimeFrom(ts: number) {

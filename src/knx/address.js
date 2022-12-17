@@ -1,6 +1,6 @@
 // @flow
 
-import type { Address, MinimalAddress } from '../types'
+import type { Address, MinimalAddress } from '../types.js'
 import * as R from 'ramda'
 
 const additionalAddrProps = {

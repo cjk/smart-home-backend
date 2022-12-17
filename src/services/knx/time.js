@@ -1,8 +1,8 @@
 // @flow
 
-import { createAddress, dateTimeToDPT10Array } from '../../knx/knx-lib'
-import { writeGroupAddr } from '../../knx/performBusAction'
-import { logger } from '../../lib/debug'
+import { createAddress, dateTimeToDPT10Array } from '../../knx/knx-lib.js'
+import { writeGroupAddr } from '../../knx/performBusAction.js'
+import { logger } from '../../lib/debug.js'
 
 const log = logger('backend:knxPublishTime')
 
@@ -17,7 +17,7 @@ const publishTime = (knxTime: number[]) => {
   })
 
   log.debug(`Sending time-event ${JSON.stringify(addr)}.`)
-  writeGroupAddr(addr, err => {
+  writeGroupAddr(addr, (err) => {
     if (err) {
       log.debug(`Error writing time to KNX-bus: ${err}`)
     }
