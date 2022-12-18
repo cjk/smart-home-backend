@@ -11,7 +11,7 @@ module.exports = {
       wait_ready: true,
       env: {
         PORT: 8001,
-        KNXD_ADDR: '192.168.1.28',
+        KNXD_ADDR: '192.168.178.28',
         KNXD_PORT: 6720,
         DEBUG: 'smt:*,error,debug',
       },
@@ -37,13 +37,13 @@ module.exports = {
   deploy: {
     production: {
       user: 'cjk',
-      host: '192.168.1.28',
+      host: '192.168.178.28',
       ref: 'origin/master',
       repo: 'git@github.com:cjk/smart-home-backend.git',
       path: '/home/cjk/apps/smarthome-backend',
       'pre-deploy': 'rm -Rf app/*',
       'post-deploy':
-        'yarn install && source /etc/profile.d/smarthome-backend-auth.sh && make decrypt_conf && yarn run babel src --out-dir app && pm2 reload ecosystem.config.js --env production',
+        'npm install && source /etc/profile.d/smarthome-backend-auth.sh && make decrypt_conf && npx babel src --out-dir app && pm2 reload ecosystem.config.js --env production',
     },
   },
 }
