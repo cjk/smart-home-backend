@@ -17,13 +17,13 @@ This is a NodeJS CLI application, in order to visualize what is going on on your
 ### For development, start build-process and watcher with hot-reloading enabled:
 
 ```js
-yarn run dev
+npm run dev
 ```
 
 For production:
 
 ```js
-yarn run prod
+npm run prod
 ```
 But the above may not be enough depending on your environment - see below "Deploying and running manually"
 
@@ -66,8 +66,8 @@ There’s a makefile task to encrypt and decrypt the KNX-address file. The neede
 
 Make sure KNXd is up and running
 
-`yarn install`
-`yarn run babel src --out-dir app`
+`npm install`
+`npx run babel src --out-dir app`
 
 `env DEBUG='smt:*,error' KNXD_ADDR='localhost' KNXD_PORT=6720 NODE_ENV=production node ./app/index.js`
 
