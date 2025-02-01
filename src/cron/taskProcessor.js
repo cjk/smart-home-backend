@@ -19,7 +19,7 @@ function createTaskEventStream() {
   const endedEvents$ = K.fromEvents(eventEmitter, 'taskEnded')
 
   /* Create task-event-stream that returns task-events as they finished running */
-  return K.merge([startedEvents$, endedEvents$]).toProperty(() => of({}))
+  return K.merge([startedEvents$, endedEvents$]).toProperty(() => of(Array, {}))
 }
 
 /* Taskrunner: What a task is actually doing - your sideeffects go here! */

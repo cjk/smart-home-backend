@@ -89,7 +89,7 @@ const updateTaskInJob = (job: CronJob, task: Task) =>
     findIndex(withId(task.id)),
     update(__, task, job.tasks),
     assoc('tasks', __, job),
-    setJobStateFromTasksState
+    setJobStateFromTasksState,
   )(job.tasks)
 
 const updateTaskFromEvent = (event: TaskEvent, crontab: Crontab) => {
@@ -113,7 +113,7 @@ function _updateFromTaskEvents(taskEvents: Task, crontab: Crontab) {
       return updateTaskFromEvent(event, tab)
     },
     crontab,
-    taskEvents
+    taskEvents,
   )
 }
 const updateFromTaskEvents = curry(_updateFromTaskEvents)
