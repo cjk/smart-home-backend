@@ -1,9 +1,10 @@
 ; https://flow.org/en/docs/config/ignore/
 [ignore]
 <PROJECT_ROOT>/\.git/.*
-./app
-./data
-./mockData
+.*/app/.*
+.*/data/.*
+.*/mockData/.*
+.*/flow-typed/.*
 
 ; https://flow.org/en/docs/config/untyped/
 [untyped]
@@ -26,7 +27,6 @@ all=warn
 emoji=true
 exact_by_default=true
 include_warnings=true
-inference_mode=constrain_writes
 facebook.fbt=FbtWithoutString
 ; https://flow.org/en/docs/enums/
 enums=true
