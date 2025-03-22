@@ -71,6 +71,10 @@ Make sure KNXd is up and running
 
 `env DEBUG='smt:*,error' KNXD_ADDR='localhost' KNXD_PORT=6720 NODE_ENV=production node ./app/index.js`
 
+Note you can adjust logging to include / exclude certain backend-modules:
+
+`env DEBUG='smt:*,error,-smt:backend:cron' KNXD_ADDR='192.168.178.32' KNXD_PORT=6720 NODE_ENV=production node ./app/index.js`
+
 ### Deploying and running using pm2
 
 Update `./ecosystem.config.js` to match your environment and run:

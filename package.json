@@ -52,7 +52,7 @@
   "scripts": {
     "build": "npx babel src --out-dir app",
     "dev": "env DEBUG='smt:*,error,debug' PORT=8001 LOG_LEVEL=${LOG_LEVEL-debug} NODE_ENV=development node -r dotenv/config ./app/index.js",
-    "prod": "env DEBUG='error' PORT=8001 LOG_LEVEL=${LOG_LEVEL-info} NODE_ENV=production node -r dotenv/config ./app/index.js",
+    "prod": "env DEBUG='smt:*,error' KNXD_ADDR='192.168.178.32' KNXD_PORT=6720 LOG_LEVEL=${LOG_LEVEL-info} NODE_ENV=production node -r dotenv/config ./app/index.js",
     "watch": "npx babel src --watch --out-dir app"
   },
   "nodemonConfig": {
